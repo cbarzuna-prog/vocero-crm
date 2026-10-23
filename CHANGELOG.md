@@ -5,6 +5,24 @@ sigue el SemVer del [README](README.md#versiones): una menor trae funciones
 nuevas y actualizar es redesplegar. Desde 1.4.0, cada tag `vX.Y.Z` publica la
 imagen `ghcr.io/kevinrivm/vocero-crm:X.Y.Z`.
 
+## Fork Knock Knock — sin publicar
+
+Sobre 2.1.0. Dos módulos nuevos, **apagados por defecto**: con las banderas
+apagadas la instancia es exactamente la de upstream. Migración aditiva `0023`
+(solo crea tablas). Spec [046](specs/046-propiedades-y-tareas/spec.md).
+
+### Nuevo
+
+- **Tareas y «Hoy»** (`TAREAS=on`): seguimientos por contacto con tipo, día y
+  hora del negocio; «Hoy» como pantalla de inicio con vencidas, de hoy y tratos
+  sin siguiente paso; completar con un toque y crear la siguiente; contador en
+  el menú.
+- **Propiedades** (`PROPIEDADES=on`): inventario con código `KK-0001`, fotos,
+  filtros por operación, tipo, estado, cantón y precio (USD o ₡); vendedor
+  ligado a un contacto; compradores vinculados a varias propiedades con su
+  estado e historial; lo interno (vendedor, comisión, notas) separado de lo que
+  se comparte.
+
 ## 2.1.0 — 2026-10-22
 
 Una bandeja que se usa como WhatsApp. Actualizar es redesplegar con la

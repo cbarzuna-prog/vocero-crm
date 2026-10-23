@@ -92,6 +92,10 @@ en USD aunque el negocio opere en CRC. Cada propiedad guarda `price_cents` +
 distrito como texto con autocompletado sobre un catálogo estático
 (`src/lib/cr-zonas.ts`), más un campo libre «zona / condominio» (p. ej.
 «Valle del Sol»). Sin mapas ni geocodificación en v1: coordenadas opcionales.
+*Ajuste al implementar (2026-10-23)*: el catálogo trae las 7 provincias y los
+84 cantones; el distrito queda como texto libre. Versionar ~490 distritos sin
+verificarlos contra la fuente oficial (INEC) era arriesgar datos malos; si se
+necesita filtrar por distrito, se carga el catálogo oficial en otra spec.
 
 **D4 — Fotos en el disco local (`MEDIA_DIR`)**, reutilizando `media_asset` y
 `src/lib/storage`. Sin S3 (constitución II). Máximo 20 fotos por propiedad,

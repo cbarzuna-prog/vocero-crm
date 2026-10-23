@@ -70,6 +70,8 @@ Banderas de despliegue (apagadas por defecto; su código viaja siempre en `main`
 |---|---|
 | `AGENDA=on` | Motor de citas: pantalla Citas, Ajustes → Agenda, `/api/bookings`, `/api/calendar/*`, `/api/bot/availability` y `/api/bot/bookings` (`src/server/agenda/flag.ts`) |
 | `CHANNELS=whatsapp,instagram,messenger,tiktok` | Canales extra: webhooks `/api/webhooks/ig`, `/api/webhooks/messenger` y `/api/webhooks/tiktok`, Ajustes → Estado, Instagram, Messenger y TikTok, credenciales por canal, distintivo en la bandeja (`src/server/channels/enabled.ts`) |
+| `TAREAS=on` | (fork Knock Knock, 046) Tareas de seguimiento y pantalla «Hoy» como inicio: `/hoy`, `/api/tareas`, sección Tareas en el panel de contacto y el trato (`src/server/tareas/flag.ts`) |
+| `PROPIEDADES=on` | (fork Knock Knock, 046) Inventario de propiedades con fotos, vendedor e interés comprador↔propiedad: `/propiedades`, `/api/propiedades`, `/api/interes`, `/api/contacts/[id]/propiedades` (`src/server/propiedades/flag.ts`) |
 | `ATRIBUCION=on` | Guardado del `ctwa_clid`, reporte a la Conversions API de Meta, Ajustes → Anuncios y `/api/settings/capi` (`src/server/attribution/flag.ts`). El anuncio de origen se ve siempre, con o sin bandera |
 
 Apagada, cada superficie responde 404 (no 403). El despliegue en producción está en el README («Instalación»: Rutas A y B, y «Otras plataformas» con `render.yaml`, `fly.toml` y `railway.toml`) y en `INSTALL-IA.md`; no se repite aquí.

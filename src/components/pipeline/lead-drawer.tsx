@@ -16,6 +16,7 @@ import { AnuncioOrigen } from "@/components/anuncio-origen";
 import { ContactAvatar } from "@/components/avatar";
 import { FichaPanel } from "@/components/ficha-panel";
 import { TareasContacto } from "@/components/tareas/tareas-contacto";
+import { PropiedadesContacto } from "@/components/propiedades/propiedades-contacto";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PriorityPicker } from "./priority-picker";
@@ -172,6 +173,8 @@ export function LeadDrawer({
 
           {/* 046 — Se pinta solo si la instancia tiene TAREAS. */}
           <TareasContacto contact={lead.contact} />
+          {/* 046 — Se pinta solo si la instancia tiene PROPIEDADES. */}
+          <PropiedadesContacto contact={lead.contact} />
 
           {/* Cuánto */}
           <section className="border-b p-4">

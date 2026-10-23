@@ -16,18 +16,23 @@ import {
 
 const LIST_LIMIT = 300;
 
+/**
+ * Subconsultas correlacionadas con nombres CALIFICADOS a mano: interpolar
+ * `schema.property.id` aquí lo deja como `"id"` a secas, y dentro de la
+ * subconsulta eso es la columna de la tabla interna — la correlación se
+ * rompe en silencio (cada fila vería su propio id).
+ */
 /** Portada = la foto en posición 0. */
 const coverAsset = sql<string | null>`(
-  select ${schema.propertyPhoto.mediaAssetId} from ${schema.propertyPhoto}
-  where ${schema.propertyPhoto.propertyId} = ${schema.property.id}
-  order by ${schema.propertyPhoto.position} asc limit 1
+  select pph."media_asset_id" from "property_photo" pph
+  where pph."property_id" = "property"."id"
+  order by pph."position" asc limit 1
 )`;
 
 /** Interesados vigentes (no descartados). */
 const interesadosCount = sql<number>`(
-  select count(*) from ${schema.propertyInterest}
-  where ${schema.propertyInterest.propertyId} = ${schema.property.id}
-    and ${schema.propertyInterest.status} <> 'descartada'
+  select count(*) from "property_interest" pint
+  where pint."property_id" = "property"."id" and pint."status" <> 'descartada'
 )`.mapWith(Number);
 
 const listColumns = {
