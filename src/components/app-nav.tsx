@@ -52,6 +52,8 @@ export function AppNav({
   theme,
   commit,
   agenda = false,
+  tareas = false,
+  propiedades = false,
   kicker = "CRM · WhatsApp",
   open = false,
   onClose,
@@ -74,6 +76,9 @@ export function AppNav({
    * todavía debe ver la entrada igual.
    */
   agenda?: boolean;
+  /** 046 — módulos del fork; los decide el servidor, igual que la agenda. */
+  tareas?: boolean;
+  propiedades?: boolean;
   /** Solo aplica por debajo de `lg`: en escritorio el lateral es fijo. */
   open?: boolean;
   onClose?: () => void;
@@ -84,6 +89,14 @@ export function AppNav({
   // 045 — Chats con algo sin leer: es lo que WhatsApp cuenta en la pestaña.
   const [chats, setChats] = useState(0);
   const [sonido, setSonido] = useState(true);
+  // 046 — vencidas primero (rojo); sin vencidas, las de hoy (neutro).
+  const [pendientes, setPendientes] = useState({ vencidas: 0, hoy: 0 });
+
+  async function refetchTareas() {
+    if (!tareas) return;
+    const res = await fetch("/api/tareas?vista=contador&de=mias").catch(() => null);
+    if (res?.ok) setPendientes((await res.json()) as { vencidas: number; hoy: number });
+  }
 
   async function refetchUnread() {
     const res = await fetch("/api/conversations").catch(() => null);
@@ -100,6 +113,14 @@ export function AppNav({
     setSonido(sonidoActivado());
   }, []);
 
+  useEffect(() => {
+    void refetchTareas();
+    // Cambia de día sin recargar: se recalcula cada 10 minutos.
+    const t = setInterval(() => void refetchTareas(), 10 * 60_000);
+    return () => clearInterval(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tareas]);
+
   useDesbloquearAudio();
   useTituloNoLeidos(chats);
 
@@ -110,12 +131,13 @@ export function AppNav({
       void refetchUnread();
     },
     onConversationUpdated: () => void refetchUnread(),
+    onTaskChanged: () => void refetchTareas(),
   });
 
   const version = commit ?? { commit: BUILD_COMMIT, verified: BUILD_COMMIT !== "" };
   // #87 — Qué hay en el menú y en qué grupo lo decide `appNavGroups`; aquí
   // solo se pinta.
-  const groups = appNavGroups({ agenda, role });
+  const groups = appNavGroups({ agenda, tareas, propiedades, role });
 
   function renderItem(item: NavItem) {
     const active = isNavActive(pathname, item.href);
@@ -132,6 +154,17 @@ export function AppNav({
           aria-hidden
         />
         <span className="flex-1">{item.label}</span>
+        {item.tareasBadge && (pendientes.vencidas > 0 || pendientes.hoy > 0) && (
+          <span
+            className={cn(
+              "flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-1.5 text-[10.5px] font-bold",
+              pendientes.vencidas > 0 ? "bg-destructive text-destructive-foreground" : "bg-accent text-foreground"
+            )}
+            title={pendientes.vencidas > 0 ? "Tareas vencidas" : "Tareas para hoy"}
+          >
+            {pendientes.vencidas > 0 ? pendientes.vencidas : pendientes.hoy}
+          </span>
+        )}
         {item.badge && unread > 0 && (
           <span className="flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-brand px-1.5 text-[10.5px] font-bold text-brand-fg">
             {unread}

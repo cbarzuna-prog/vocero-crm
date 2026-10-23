@@ -34,6 +34,8 @@ export type SseEvent =
     }
   /** 015 — algo cambió en la agenda: la pantalla de Citas se refresca sola. */
   | { type: "booking.updated"; data: { bookingId: string } }
+  /** 046 — se creó, editó, completó o borró una tarea: «Hoy» y el contacto se refrescan. */
+  | { type: "task.changed"; data: { taskId: string; contactId: string } }
   | {
       type: "lab.run";
       data: {

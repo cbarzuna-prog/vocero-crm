@@ -4,9 +4,11 @@ import {
   FlaskConical,
   Inbox,
   Kanban,
+  Building2,
   ListChecks,
   Settings,
   Sparkles,
+  Sun,
   Users,
   type LucideIcon,
 } from "lucide-react";
@@ -28,6 +30,8 @@ export type NavItem = {
   icon: LucideIcon;
   /** Muestra el contador de no leídos (solo la Bandeja). */
   badge?: boolean;
+  /** 046 — Muestra el contador de tareas vencidas / de hoy (solo «Hoy»). */
+  tareasBadge?: boolean;
 };
 
 export type NavGroup = {
@@ -49,20 +53,28 @@ export const SETTINGS_ITEM: NavItem = {
  */
 export function appNavGroups({
   agenda = false,
+  tareas = false,
+  propiedades = false,
   role,
 }: {
   /** 015 — "Citas" solo existe si esta instancia encendió la agenda. */
   agenda?: boolean;
+  /** 046 — «Hoy» va primero: es la pantalla de inicio cuando existe. */
+  tareas?: boolean;
+  /** 046 — «Propiedades», después de Contactos. */
+  propiedades?: boolean;
   /** #86 — La guía de inicio solo para quien puede configurar. */
   role?: string | null;
 }): NavGroup[] {
   const trabajo: NavItem[] = [
+    ...(tareas ? [{ href: "/hoy", label: "Hoy", icon: Sun, tareasBadge: true }] : []),
     { href: "/inbox", label: "Bandeja", icon: Inbox, badge: true },
     { href: "/pipeline", label: "Pipeline", icon: Kanban },
     { href: "/contacts", label: "Contactos", icon: Users },
   ];
   // Citas va después de Contactos: es el paso siguiente de un trato, no una
   // sección aparte.
+  if (propiedades) trabajo.push({ href: "/propiedades", label: "Propiedades", icon: Building2 });
   if (agenda) trabajo.push({ href: "/bookings", label: "Citas", icon: CalendarDays });
 
   const agente: NavItem[] = [];

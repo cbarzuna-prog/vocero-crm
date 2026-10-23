@@ -15,6 +15,7 @@ import { cn, formatPhone } from "@/lib/utils";
 import { AnuncioOrigen } from "@/components/anuncio-origen";
 import { ContactAvatar } from "@/components/avatar";
 import { FichaPanel } from "@/components/ficha-panel";
+import { TareasContacto } from "@/components/tareas/tareas-contacto";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PriorityPicker } from "./priority-picker";
@@ -168,6 +169,9 @@ export function LeadDrawer({
               </div>
             )}
           </section>
+
+          {/* 046 — Se pinta solo si la instancia tiene TAREAS. */}
+          <TareasContacto contact={lead.contact} />
 
           {/* Cuánto */}
           <section className="border-b p-4">

@@ -28,6 +28,8 @@ export function AppShell({
   theme,
   commit,
   agenda = false,
+  tareas = false,
+  propiedades = false,
   kicker,
   aviso = null,
   children,
@@ -40,6 +42,9 @@ export function AppShell({
   commit?: ResolvedCommit;
   /** 015 — ¿esta instancia tiene agenda? Lo decide el servidor. */
   agenda?: boolean;
+  /** 046 — módulos del fork (banderas `TAREAS` y `PROPIEDADES`). */
+  tareas?: boolean;
+  propiedades?: boolean;
   /** 028 — La etiqueta bajo el logo (`navKicker`). */
   kicker?: string;
   /**
@@ -89,6 +94,8 @@ export function AppShell({
         role={role}
         theme={theme}
         agenda={agenda}
+        tareas={tareas}
+        propiedades={propiedades}
         kicker={kicker}
         open={navOpen}
         onClose={() => setNavOpen(false)}

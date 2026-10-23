@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getSessionOrNull } from "@/lib/auth/session";
 import { guideFirst } from "@/server/onboarding/guide";
+import { tareasEnabled } from "@/server/tareas/flag";
 
 export const dynamic = "force-dynamic";
 
@@ -12,5 +13,6 @@ export const dynamic = "force-dynamic";
 export default async function Home() {
   const session = await getSessionOrNull();
   if (session && (await guideFirst(session))) redirect("/onboarding");
-  redirect("/inbox");
+  // 046 — con tareas, se entra a «Hoy»: lo primero es saber qué toca hoy.
+  redirect(tareasEnabled() ? "/hoy" : "/inbox");
 }

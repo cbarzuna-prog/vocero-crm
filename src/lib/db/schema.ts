@@ -1,15 +1,28 @@
 import {
+  bigint,
   boolean,
   check,
+  date,
+  doublePrecision,
   index,
   integer,
   jsonb,
   pgTable,
+  smallint,
   text,
   timestamp,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
+import {
+  DISCARD_REASONS,
+  INTEREST_STATUSES,
+  PROPERTY_CURRENCIES,
+  PROPERTY_OPERATIONS,
+  PROPERTY_STATUSES,
+  PROPERTY_TYPES,
+} from "@/lib/propiedades-enums";
+import { TASK_TYPES } from "@/lib/tareas-enums";
 
 /**
  * Tiempo: todas las columnas son `timestamp without time zone` y el marco es
@@ -1277,5 +1290,182 @@ export const dispatch = pgTable(
     ),
     // La consulta del worker: pendientes cuya ventana ya venció.
     index("dispatch_status_notbefore_idx").on(t.status, t.notBefore),
+  ]
+);
+
+/* ============================================================
+ * 046 — Propiedades y tareas (fork Knock Knock)
+ *
+ * Tablas nuevas, sin tocar ninguna de upstream. Detrás de las banderas
+ * `PROPIEDADES` y `TAREAS`; la migración se aplica siempre (tablas vacías son
+ * inertes). Detalle y razones en specs/046-propiedades-y-tareas/data-model.md.
+ * ============================================================ */
+
+export const property = pgTable(
+  "property",
+  {
+    id: text("id").primaryKey(),
+    organizationId: text("organization_id")
+      .notNull()
+      .references(() => organization.id, { onDelete: "cascade" }),
+    /** Código legible por org (`KK-0001`); se genera al crear y es editable. */
+    code: text("code").notNull(),
+    title: text("title").notNull(),
+    operation: text("operation", { enum: PROPERTY_OPERATIONS }).notNull(),
+    type: text("type", { enum: PROPERTY_TYPES }).notNull(),
+    /** `captacion` = aún sin contrato de corretaje firmado. */
+    status: text("status", { enum: PROPERTY_STATUSES }).notNull().default("disponible"),
+    /**
+     * Precio en CENTAVOS. bigint: CRC 500 000 000 ya no cabe en integer.
+     * NULL = sin precio todavía (no es cero).
+     */
+    priceCents: bigint("price_cents", { mode: "number" }),
+    /** D2: la moneda va por propiedad; en CR se cotiza en USD aunque el negocio opere en CRC. */
+    currency: text("currency", { enum: PROPERTY_CURRENCIES }).notNull().default("USD"),
+    provincia: text("provincia").notNull(),
+    canton: text("canton"),
+    distrito: text("distrito"),
+    /** Libre: condominio, barrio. */
+    zona: text("zona"),
+    lat: doublePrecision("lat"),
+    lng: doublePrecision("lng"),
+    m2Construccion: integer("m2_construccion"),
+    m2Terreno: integer("m2_terreno"),
+    habitaciones: smallint("habitaciones"),
+    /** Baños ×2 para admitir medios sin decimales: 2.5 baños = 5. */
+    banosX2: smallint("banos_x2"),
+    parqueos: smallint("parqueos"),
+    /** D9: lo compartible con el comprador. */
+    descripcionPublica: text("descripcion_publica"),
+    /** D9: jamás en vistas pensadas para el comprador. */
+    notasInternas: text("notas_internas"),
+    sellerContactId: text("seller_contact_id").references(() => contact.id, {
+      onDelete: "set null",
+    }),
+    /** Comisión en puntos básicos: 5 % = 500. */
+    comisionBp: integer("comision_bp"),
+    exclusiva: boolean("exclusiva").notNull().default(false),
+    captadaAt: date("captada_at"),
+    urlExterna: text("url_externa"),
+    createdBy: text("created_by").references(() => user.id, { onDelete: "set null" }),
+    archivedAt: timestamp("archived_at"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (t) => [
+    uniqueIndex("property_org_code_uq").on(t.organizationId, t.code),
+    index("property_org_status_op_idx").on(t.organizationId, t.status, t.operation),
+    index("property_org_canton_idx").on(t.organizationId, t.canton),
+    index("property_org_seller_idx").on(t.organizationId, t.sellerContactId),
+  ]
+);
+
+export const propertyPhoto = pgTable(
+  "property_photo",
+  {
+    id: text("id").primaryKey(),
+    organizationId: text("organization_id")
+      .notNull()
+      .references(() => organization.id, { onDelete: "cascade" }),
+    propertyId: text("property_id")
+      .notNull()
+      .references(() => property.id, { onDelete: "cascade" }),
+    mediaAssetId: text("media_asset_id")
+      .notNull()
+      .references(() => mediaAsset.id, { onDelete: "cascade" }),
+    /** 0 = portada. */
+    position: integer("position").notNull(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (t) => [index("pph_org_prop_pos_idx").on(t.organizationId, t.propertyId, t.position)]
+);
+
+/**
+ * Comprador ↔ propiedad. El estado ACTUAL; la ÚNICA puerta que lo escribe
+ * (junto con su historial) es `src/server/propiedades/interes.ts`.
+ */
+export const propertyInterest = pgTable(
+  "property_interest",
+  {
+    id: text("id").primaryKey(),
+    organizationId: text("organization_id")
+      .notNull()
+      .references(() => organization.id, { onDelete: "cascade" }),
+    contactId: text("contact_id")
+      .notNull()
+      .references(() => contact.id, { onDelete: "cascade" }),
+    propertyId: text("property_id")
+      .notNull()
+      .references(() => property.id, { onDelete: "cascade" }),
+    status: text("status", { enum: INTEREST_STATUSES }).notNull().default("interesado"),
+    note: text("note"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (t) => [
+    uniqueIndex("pint_org_contact_prop_uq").on(t.organizationId, t.contactId, t.propertyId),
+    index("pint_org_prop_idx").on(t.organizationId, t.propertyId),
+    index("pint_org_contact_idx").on(t.organizationId, t.contactId),
+  ]
+);
+
+/** Historial append-only de `property_interest` (mismo patrón que `lead_stage_event`). */
+export const propertyInterestEvent = pgTable(
+  "property_interest_event",
+  {
+    id: text("id").primaryKey(),
+    organizationId: text("organization_id")
+      .notNull()
+      .references(() => organization.id, { onDelete: "cascade" }),
+    interestId: text("interest_id")
+      .notNull()
+      .references(() => propertyInterest.id, { onDelete: "cascade" }),
+    contactId: text("contact_id")
+      .notNull()
+      .references(() => contact.id, { onDelete: "cascade" }),
+    propertyId: text("property_id")
+      .notNull()
+      .references(() => property.id, { onDelete: "cascade" }),
+    /** NULL = creación del vínculo. */
+    fromStatus: text("from_status", { enum: INTEREST_STATUSES }),
+    toStatus: text("to_status", { enum: INTEREST_STATUSES }).notNull(),
+    discardReason: text("discard_reason", { enum: DISCARD_REASONS }),
+    actorUserId: text("actor_user_id").references(() => user.id, { onDelete: "set null" }),
+    occurredAt: timestamp("occurred_at").notNull().defaultNow(),
+  },
+  (t) => [
+    index("pie_org_occurred_idx").on(t.organizationId, t.occurredAt),
+    index("pie_interest_occurred_idx").on(t.interestId, t.occurredAt),
+  ]
+);
+
+export const task = pgTable(
+  "task",
+  {
+    id: text("id").primaryKey(),
+    organizationId: text("organization_id")
+      .notNull()
+      .references(() => organization.id, { onDelete: "cascade" }),
+    /** D6: toda tarea cuelga de un contacto. */
+    contactId: text("contact_id")
+      .notNull()
+      .references(() => contact.id, { onDelete: "cascade" }),
+    propertyId: text("property_id").references(() => property.id, { onDelete: "set null" }),
+    title: text("title").notNull(),
+    type: text("type", { enum: TASK_TYPES }).notNull().default("llamada"),
+    dueAt: timestamp("due_at").notNull(),
+    /** «Hoy, sin hora». `due_at` queda en el mediodía del día en la zona del negocio. */
+    allDay: boolean("all_day").notNull().default(false),
+    /** NULL = pendiente. */
+    doneAt: timestamp("done_at"),
+    assignedUserId: text("assigned_user_id").references(() => user.id, { onDelete: "set null" }),
+    createdBy: text("created_by").references(() => user.id, { onDelete: "set null" }),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (t) => [
+    index("task_org_done_due_idx").on(t.organizationId, t.doneAt, t.dueAt),
+    index("task_org_contact_idx").on(t.organizationId, t.contactId),
+    index("task_org_assigned_idx").on(t.organizationId, t.assignedUserId, t.doneAt, t.dueAt),
   ]
 );

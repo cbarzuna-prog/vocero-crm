@@ -33,6 +33,13 @@ export const envSchema = z.object({
   // 015: motor de agenda. Apagado por defecto — sin el, toda la superficie de
   // agenda responde 404 y la UI no la menciona. Ej.: AGENDA=on
   AGENDA: z.string().optional(),
+  // 046 (fork Knock Knock): inventario de propiedades e interes por
+  // propiedad. Apagado por defecto; sin el, su superficie responde 404.
+  // Ej.: PROPIEDADES=on
+  PROPIEDADES: z.string().optional(),
+  // 046: tareas de seguimiento y pantalla «Hoy». Apagado por defecto.
+  // Ej.: TAREAS=on
+  TAREAS: z.string().optional(),
   // 016: atribucion de anuncios y reporte a la Conversions API de Meta.
   // Apagada por defecto: sin ella no se captura de que anuncio vino una
   // conversacion, no se le reporta nada a Meta y la superficie da 404.
