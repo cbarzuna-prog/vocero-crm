@@ -116,11 +116,20 @@ automáticos ni notificaciones push en v1; el contador del menú es el aviso.
 solo operación, tipo, precio, moneda y zona para guardar; el resto se llena
 después. Una tarea se crea con título + fecha (tipo default «llamada»).
 
+**D9 — Cada propiedad separa lo público de lo interno, desde el día uno.**
+El dueño decidió (chat 2026-10-23) que HouseMatch Studio será la app para
+compradores y leerá el inventario del CRM (spec 047). Para que esa conexión no
+obligue a migrar después, la propiedad guarda ya: `publicable` (booleano,
+default `false`), `descripcion_publica` y `notas_internas`. Vendedor, comisión,
+exclusiva y notas internas son **siempre internos** y ninguna superficie
+pública futura los expone. En esta spec el campo solo se edita y se ve en la
+ficha; no existe aún ninguna API pública.
+
 ## Datos (resumen; el detalle va en `data-model.md` del plan)
 
 | Tabla | Para qué | Campos clave |
 |---|---|---|
-| `property` | Inventario | código interno, título, operación (venta/alquiler), tipo (casa, apartamento, lote, local, oficina, bodega, finca), estado (disponible, reservada, vendida, alquilada, retirada), precio + moneda, provincia/cantón/distrito, zona libre, m² construcción, m² terreno, habitaciones, baños, parqueos, descripción, `seller_contact_id`, comisión %, exclusiva (sí/no), fecha de captación, URL externa (anuncio en portal) |
+| `property` | Inventario | código interno, título, `publicable`, `descripcion_publica`, `notas_internas`, operación (venta/alquiler), tipo (casa, apartamento, lote, local, oficina, bodega, finca), estado (disponible, reservada, vendida, alquilada, retirada), precio + moneda, provincia/cantón/distrito, zona libre, m² construcción, m² terreno, habitaciones, baños, parqueos, descripción, `seller_contact_id`, comisión %, exclusiva (sí/no), fecha de captación, URL externa (anuncio en portal) |
 | `property_photo` | Galería | `property_id`, `media_asset_id`, posición |
 | `property_interest` | Comprador↔propiedad | `contact_id`, `property_id`, estado actual, nota; único por par |
 | `property_interest_event` | Historial append-only | de/a estado, motivo de descarte, actor, fecha |
@@ -142,8 +151,11 @@ Todas con `organization_id NOT NULL` y consultas por `scoped()` (constitución I
   preferencias del comprador; van en una spec posterior.
 - **Exponer propiedades al cerebro de IA** (`/api/bot/properties`). Es un
   contrato publicado nuevo; se especifica aparte cuando haya agente conectado.
-- **Portal público de propiedades** para compradores. Es otro producto; podrá
-  leer de este CRM más adelante.
+- **Conexión con HouseMatch Studio** (app para compradores). Spec 047:
+  API de solo lectura de propiedades `publicable` + disponibles, y entrada de
+  leads (contacto + preferencias + propiedades de interés) desde el asistente
+  de HouseMatch, con una llave propia y de alcance mínimo. El scraper de
+  HouseMatch se retira: su inventario pasa a ser el del CRM.
 - **Notificaciones push / email de tareas.** Sin terceros en el núcleo.
 
 ## Riesgos y supuestos (Principio VII)
