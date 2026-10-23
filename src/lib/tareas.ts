@@ -78,7 +78,7 @@ export const editarTareaSchema = z
   })
   .partial()
   .refine((v) => (v.time === undefined ? true : v.day !== undefined), {
-    message: "para cambiar la hora manda también el día",
+    message: "para cambiar la hora envíe también el día",
     path: ["time"],
   });
 export type EditarTareaInput = z.infer<typeof editarTareaSchema>;

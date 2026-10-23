@@ -128,6 +128,10 @@ pensada para enseñarse al comprador los muestra. HouseMatch Studio es de uso
 interno (dueño, chat 2026-10-23); sus funciones entran al CRM en la spec 047,
 no como una app aparte conectada por API.
 
+**D10 — Los textos de estos módulos van en usted** (dueño, 2026-10-23). El
+resto de la interfaz heredada de upstream sigue en tú; pasarla a usted es una
+spec aparte que centralice los textos, para no chocar con cada actualización.
+
 ## Datos (resumen; el detalle va en `data-model.md` del plan)
 
 | Tabla | Para qué | Campos clave |

@@ -75,7 +75,7 @@ export function NuevaPropiedadDialog({ onCancel }: { onCancel: () => void }) {
     if (!res?.ok) {
       setSaving(false);
       const body = (await res?.json().catch(() => null)) as { error?: { message?: string } } | null;
-      setError(body?.error?.message ?? "No se pudo guardar. Intenta de nuevo.");
+      setError(body?.error?.message ?? "No se pudo guardar. Intente de nuevo.");
       return;
     }
     const { id } = (await res.json()) as { id: string };
@@ -100,7 +100,7 @@ export function NuevaPropiedadDialog({ onCancel }: { onCancel: () => void }) {
         }}
       >
         <h3 className="font-semibold">Nueva propiedad</h3>
-        <p className="mt-0.5 text-xs text-text-3">Lo mínimo para darla de alta; el resto lo completas en su ficha.</p>
+        <p className="mt-0.5 text-xs text-text-3">Lo mínimo para darla de alta; el resto lo completa en su ficha.</p>
 
         <div className="mt-3 flex gap-1.5" role="radiogroup" aria-label="Operación">
           {PROPERTY_OPERATIONS.map((o) => (
@@ -149,10 +149,10 @@ export function NuevaPropiedadDialog({ onCancel }: { onCancel: () => void }) {
         </div>
         <p className={cn("mt-1 text-xs", precioInvalido ? "text-danger-text" : "text-text-3")}>
           {precioInvalido
-            ? "No reconozco ese número. Escríbelo como 450000 o 450,000"
+            ? "No reconozco ese número. Escríbalo como 450000 o 450,000"
             : cents !== null
               ? formatPrecio(cents, currency)
-              : "Puedes dejarlo vacío si aún no hay precio."}
+              : "Puede dejarlo vacío si aún no hay precio."}
         </p>
 
         <div className="mt-3">

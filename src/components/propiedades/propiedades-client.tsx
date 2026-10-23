@@ -204,7 +204,7 @@ export function PropiedadesClient() {
             <Input
               aria-label="Precio mínimo"
               inputMode="numeric"
-              placeholder={f.currency ? "Mínimo" : "Mínimo (elige moneda)"}
+              placeholder={f.currency ? "Mínimo" : "Mínimo (elija moneda)"}
               disabled={!f.currency}
               value={f.min}
               onChange={(e) => set({ min: e.target.value.replace(/[^\d]/g, "") })}
@@ -212,7 +212,7 @@ export function PropiedadesClient() {
             <Input
               aria-label="Precio máximo"
               inputMode="numeric"
-              placeholder={f.currency ? "Máximo" : "Máximo (elige moneda)"}
+              placeholder={f.currency ? "Máximo" : "Máximo (elija moneda)"}
               disabled={!f.currency}
               value={f.max}
               onChange={(e) => set({ max: e.target.value.replace(/[^\d]/g, "") })}
@@ -233,7 +233,7 @@ export function PropiedadesClient() {
               icon={Building2}
               className="h-full"
               title="Sin propiedades todavía"
-              description="Da de alta tu primera propiedad: con operación, tipo, precio y zona basta para empezar."
+              description="Dé de alta su primera propiedad: con operación, tipo, precio y zona basta para empezar."
             />
           )
         ) : (

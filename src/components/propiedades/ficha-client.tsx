@@ -262,7 +262,7 @@ function Interesados({ p, onChanged }: { p: PropertyDetail; onChanged: () => Pro
   }
 
   async function quitar(interestId: string, name: string) {
-    if (!window.confirm(`¿Quitar a ${name} de esta propiedad? Si ya no le interesa, mejor márcala como descartada: así queda la historia.`)) return;
+    if (!window.confirm(`¿Quitar a ${name} de esta propiedad? Si ya no le interesa, mejor márquela como descartada: así queda la historia.`)) return;
     await fetch(`/api/interes/${interestId}`, { method: "DELETE" }).catch(() => null);
     await onChanged();
   }
@@ -374,7 +374,7 @@ export function FichaClient({ initial }: { initial: PropertyDetail }) {
   }
 
   async function archivar() {
-    if (!p.archived && !window.confirm("¿Archivar esta propiedad? Deja de verse en la lista; puedes restaurarla.")) return;
+    if (!p.archived && !window.confirm("¿Archivar esta propiedad? Deja de verse en la lista; puede restaurarla.")) return;
     await patch({ archived: !p.archived }).catch(() => {});
     await refetch();
   }
@@ -502,7 +502,7 @@ export function FichaClient({ initial }: { initial: PropertyDetail }) {
 
             <section className="rounded-lg border bg-card p-4">
               <p className="kicker mb-1">Descripción para el comprador</p>
-              <p className="mb-2 text-xs text-text-3">Lo que le puedes mandar o enseñar tal cual.</p>
+              <p className="mb-2 text-xs text-text-3">Lo que le puede mandar o enseñar tal cual.</p>
               <Textarea
                 rows={5}
                 maxLength={5000}

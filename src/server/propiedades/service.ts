@@ -103,7 +103,7 @@ export async function crearPropiedad(
       if (!isUniqueViolation(err)) throw err;
     }
   }
-  throw new PropiedadError("codigo_repetido", "No se pudo asignar un código; intenta de nuevo");
+  throw new PropiedadError("codigo_repetido", "No se pudo asignar un código; intente de nuevo");
 }
 
 export async function editarPropiedad(

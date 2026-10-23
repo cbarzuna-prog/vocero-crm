@@ -71,7 +71,7 @@ export function TareasContacto({ contact }: { contact: { id: string; name: strin
             className="font-semibold text-brand-text hover:underline"
             onClick={() => setCreating(true)}
           >
-            Agenda uno
+            Agende uno
           </button>
         </p>
       ) : (

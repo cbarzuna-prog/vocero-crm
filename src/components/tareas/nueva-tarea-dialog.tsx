@@ -89,7 +89,7 @@ export function NuevaTareaDialog({
     setSaving(false);
     if (!res?.ok) {
       const body = (await res?.json().catch(() => null)) as { error?: { message?: string } } | null;
-      setError(body?.error?.message ?? "No se pudo guardar. Intenta de nuevo.");
+      setError(body?.error?.message ?? "No se pudo guardar. Intente de nuevo.");
       return;
     }
     onCreated();
@@ -130,7 +130,7 @@ export function NuevaTareaDialog({
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               autoFocus
-              placeholder="¿Con quién? Busca un contacto…"
+              placeholder="¿Con quién? Busque un contacto…"
               aria-label="Buscar contacto"
               value={query}
               onChange={(e) => setQuery(e.target.value)}

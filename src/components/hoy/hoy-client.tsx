@@ -127,7 +127,7 @@ export function HoyClient({ initial }: { initial: HoyDto }) {
               icon={CalendarCheck}
               className="h-full py-16"
               title="Todo al día"
-              description="No hay tareas vencidas ni para hoy, y todos tus tratos abiertos tienen un siguiente paso."
+              description="No hay tareas vencidas ni para hoy, y todos sus tratos abiertos tienen un siguiente paso."
             />
           ) : (
             <>
