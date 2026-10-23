@@ -79,19 +79,21 @@ export function HoyClient({ initial }: { initial: HoyDto }) {
   const { toggle, ui } = useCompletarTarea({ today: data.today, onChanged: () => void refetch() });
 
   const total = data.vencidas.length + data.hoy.length + data.sinSiguientePaso.length;
-  const fecha = new Intl.DateTimeFormat("es", {
+  const fechaRaw = new Intl.DateTimeFormat("es", {
     timeZone: data.timezone,
     weekday: "long",
     day: "numeric",
     month: "long",
   }).format(new Date(`${data.today}T12:00:00Z`));
+  // «Viernes, 23 de octubre»: mayúscula solo al inicio, como se escribe en español.
+  const fecha = fechaRaw.charAt(0).toUpperCase() + fechaRaw.slice(1);
 
   return (
     <div className="flex h-full flex-col">
       <header className="flex flex-wrap items-center justify-between gap-3 border-b px-4 py-3 sm:px-6 sm:py-4">
         <div>
           <h2 className="text-[17px] font-bold tracking-tight">Hoy</h2>
-          <p className="text-xs capitalize text-text-3">{fecha}</p>
+          <p className="text-xs text-text-3">{fecha}</p>
         </div>
         <div className="flex items-center gap-2">
           <div className="flex rounded-full border p-0.5" role="radiogroup" aria-label="Qué tareas ver">

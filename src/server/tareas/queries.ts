@@ -156,7 +156,10 @@ export async function contador(
   opts: { soloDe?: string | null; now?: Date } = {}
 ): Promise<{ vencidas: number; hoy: number }> {
   const timezone = await businessTimezone(organizationId);
-  const { start, end } = todayBounds(opts.now ?? new Date(), timezone);
+  const bounds = todayBounds(opts.now ?? new Date(), timezone);
+  // En SQL crudo postgres-js no serializa Date: va como ISO (columna en UTC).
+  const start = bounds.start.toISOString();
+  const end = bounds.end.toISOString();
   const mine = opts.soloDe ? eq(schema.task.assignedUserId, opts.soloDe) : undefined;
   const rows = await getDb()
     .select({
