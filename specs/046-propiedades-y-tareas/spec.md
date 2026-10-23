@@ -4,8 +4,8 @@
 
 **Created**: 2026-10-23
 
-**Status**: Especificada antes de escribir código. Pendiente de aprobación del
-dueño (Carlos) antes del plan.
+**Status**: Especificada antes de escribir código. Aprobada por el dueño
+(Carlos) el 2026-10-23; plan en [plan.md](plan.md), tareas en [tasks.md](tasks.md).
 
 **Input**: primera feature del fork `cbarzuna-prog/vocero-crm` para Knock Knock
 (corretaje inmobiliario en Costa Rica, dos personas a medio tiempo). Decisión
@@ -143,7 +143,7 @@ Todas con `organization_id NOT NULL` y consultas por `scoped()` (constitución I
   lo prohíben en sus términos. **Alternativa**: importación por CSV de
   propiedades, siguiendo el patrón de la 027. Spec siguiente.
 - **Dos pipelines (compradores y vendedores).** Requiere una tabla `pipeline`
-  por encima de `pipeline_stage` y toca analytics; merece su propia spec.
+  por encima de `pipeline_stage` y toca analytics; merece su propia spec (048).
   Mientras tanto se usa el campo `source`/ficha del contacto para distinguir.
 - **Exponer propiedades al cerebro de IA** (`/api/bot/properties`). Es un
   contrato publicado nuevo; se especifica aparte cuando haya agente conectado.
@@ -156,10 +156,14 @@ Todas con `organization_id NOT NULL` y consultas por `scoped()` (constitución I
 
 ## Riesgos y supuestos (Principio VII)
 
-- **Supuesto**: los dos usuarios trabajan desde el teléfono buena parte del
-  tiempo. Todas las pantallas nuevas MUST funcionar a 380px de ancho; «Hoy» se
-  diseña móvil primero. *Confirmar con Carlos.*
-- **Supuesto**: USD y CRC bastan como monedas. *Confirmar.*
+- **Confirmado (dueño, 2026-10-23)**: se usa en PC y en el celular. Todas
+  las pantallas nuevas MUST funcionar a 380px de ancho y aprovechar escritorio;
+  «Hoy» y la ficha de propiedad se diseñan móvil primero.
+- **Confirmado (dueño, 2026-10-23)**: USD y CRC bastan como monedas.
+- **Confirmado (dueño, 2026-10-23)**: los dos pipelines van en la spec 048,
+  inmediatamente después de esta. Esa spec MUST resolver el caso «vende para
+  comprar» (una persona con un trato por pipeline), que hoy impide
+  `lead_contact_uq`.
 - **Riesgo**: divergencia con `upstream`. Mitigación: código nuevo en carpetas
   propias (`src/server/propiedades/`, `src/server/tareas/`,
   `src/components/propiedades/`, `src/components/hoy/`); los archivos de
