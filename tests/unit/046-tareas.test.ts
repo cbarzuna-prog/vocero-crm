@@ -123,3 +123,12 @@ describe("contratos de entrada", () => {
     expect(editarTareaSchema.safeParse({ done: true }).success).toBe(true);
   });
 });
+
+describe("049 — Ajustes → Mi cuenta → Seguridad", () => {
+  it("solo aparece cuando el layout lo pide, y en su propia sección", async () => {
+    const { settingsSections } = await import("@/lib/nav");
+    expect(settingsSections({}).map((s) => s.title)).toEqual(["Canales", "Agente", "Negocio"]);
+    const con = settingsSections({ seguridad: true });
+    expect(con.at(-1)).toEqual({ title: "Mi cuenta", links: [{ href: "/settings/seguridad", label: "Seguridad" }] });
+  });
+});

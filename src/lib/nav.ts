@@ -117,6 +117,7 @@ export function settingsSections({
   instagram = false,
   messenger = false,
   tiktok = false,
+  seguridad = false,
 }: {
   agenda?: boolean;
   /** 016 — "Anuncios" existe solo con la bandera ATRIBUCION. */
@@ -127,6 +128,8 @@ export function settingsSections({
   messenger?: boolean;
   /** 022 — "TikTok", igual: solo con el canal en CHANNELS. */
   tiktok?: boolean;
+  /** 049 (fork) — «Mi cuenta → Seguridad» (verificación en dos pasos). */
+  seguridad?: boolean;
 }): SettingsSection[] {
   const canales: SettingsLink[] = [];
   // 023 — "Estado" reúne todos los canales; con WhatsApp solo no aporta nada
@@ -154,6 +157,7 @@ export function settingsSections({
     { title: "Canales", links: canales },
     { title: "Agente", links: agente },
     { title: "Negocio", links: negocio },
+    ...(seguridad ? [{ title: "Mi cuenta", links: [{ href: "/settings/seguridad", label: "Seguridad" }] }] : []),
   ];
 }
 

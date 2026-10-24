@@ -169,6 +169,13 @@
       "when": 1792771577984,
       "tag": "0023_propiedades_y_tareas",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1792858677884,
+      "tag": "0024_dos_pasos",
+      "breakpoints": true
     }
   ]
 }

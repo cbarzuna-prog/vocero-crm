@@ -2,7 +2,7 @@ import { AsyncLocalStorage } from "node:async_hooks";
 import { betterAuth } from "better-auth";
 import { APIError, createAuthMiddleware } from "better-auth/api";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { organization } from "better-auth/plugins";
+import { organization, twoFactor } from "better-auth/plugins";
 import { getDb, schema } from "@/lib/db";
 import { getEnv } from "@/lib/env";
 import { AUTH_RATE_LIMIT, checkRateLimit, clientIp } from "@/lib/rate-limit";
@@ -38,7 +38,13 @@ function isInternalSignup(): boolean {
   return internalSignupContext().getStore() === true;
 }
 
-const RATE_LIMITED_PATHS = new Set(["/sign-in/email", "/sign-up/email"]);
+const RATE_LIMITED_PATHS = new Set([
+  "/sign-in/email",
+  "/sign-up/email",
+  // 049 (fork) — el código de 6 dígitos se adivina igual que una contraseña.
+  "/two-factor/verify-totp",
+  "/two-factor/verify-backup-code",
+]);
 
 function createAuth() {
   const env = getEnv();
@@ -55,6 +61,8 @@ function createAuth() {
         organization: schema.organization,
         member: schema.member,
         invitation: schema.invitation,
+        // 049 (fork) — verificación en dos pasos.
+        twoFactor: schema.twoFactor,
       },
     }),
     emailAndPassword: {
@@ -62,7 +70,12 @@ function createAuth() {
       requireEmailVerification: false,
       minPasswordLength: 8,
     },
-    plugins: [organization({ creatorRole: "owner" })],
+    plugins: [
+      organization({ creatorRole: "owner" }),
+      // 049 (fork) — TOTP con app autenticadora + códigos de respaldo. Opcional
+      // por usuario (Ajustes → Seguridad). El emisor es lo que se lee en la app.
+      twoFactor({ issuer: "Knock Knock CRM" }),
+    ],
     hooks: {
       before: createAuthMiddleware(async (ctx) => {
         // Rate limit por IP en login/registro (FR-062): 10 / 10 min → 429.

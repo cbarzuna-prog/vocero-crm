@@ -45,7 +45,30 @@ export const user = pgTable("user", {
   image: text("image"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  /** 049 (fork) — verificación en dos pasos encendida (plugin twoFactor de Better Auth). */
+  twoFactorEnabled: boolean("two_factor_enabled").default(false),
 });
+
+/**
+ * 049 (fork) — Secreto TOTP y códigos de respaldo de cada usuario con 2FA.
+ * Better Auth guarda ambos CIFRADOS con BETTER_AUTH_SECRET; nunca salen al
+ * cliente (`returned: false` en el plugin).
+ */
+export const twoFactor = pgTable(
+  "two_factor",
+  {
+    id: text("id").primaryKey(),
+    secret: text("secret").notNull(),
+    backupCodes: text("backup_codes").notNull(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    verified: boolean("verified").default(true),
+    failedVerificationCount: integer("failed_verification_count").default(0),
+    lockedUntil: timestamp("locked_until"),
+  },
+  (t) => [index("two_factor_user_idx").on(t.userId), index("two_factor_secret_idx").on(t.secret)]
+);
 
 export const session = pgTable("session", {
   id: text("id").primaryKey(),
