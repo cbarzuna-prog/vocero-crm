@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { BarraMovil } from "@/components/fork/barra-movil";
 import { usePathname } from "next/navigation";
 import { Menu } from "lucide-react";
 import type { Branding } from "@/lib/branding";
@@ -119,6 +120,10 @@ export function AppShell({
         {aviso}
 
         <main className="min-h-0 min-w-0 flex-1 overflow-hidden">{children}</main>
+        {/* 050 (fork) — barra inferior y «+» en el celular, solo con los módulos del fork. */}
+        {(tareas || propiedades) && (
+          <BarraMovil tareas={tareas} propiedades={propiedades} onMas={() => setNavOpen(true)} />
+        )}
       </div>
     </div>
   );

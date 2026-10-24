@@ -21,7 +21,7 @@ import { Input } from "@/components/ui/input";
 
 /** Estilo de los <select> nativos: en el teléfono abren el selector del sistema. */
 export const selectClass =
-  "h-9 rounded-md border border-input bg-card px-2 text-sm focus-visible:border-brand focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-brand-soft";
+  "h-9 rounded-md border border-input bg-card px-2 text-sm [@media(pointer:coarse)]:h-11 [@media(pointer:coarse)]:text-base focus-visible:border-brand focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-brand-soft";
 
 export function StatusBadge({ status }: { status: PropertyStatus }) {
   const variant =
@@ -60,7 +60,7 @@ export function UbicacionFields({
   return (
     <div className="grid grid-cols-2 gap-2">
       <div>
-        <label className="block text-xs font-medium" htmlFor={`${idPrefix}-prov`}>
+        <label className="block text-[13px] font-medium" htmlFor={`${idPrefix}-prov`}>
           Provincia
         </label>
         <select
@@ -77,7 +77,7 @@ export function UbicacionFields({
         </select>
       </div>
       <div>
-        <label className="block text-xs font-medium" htmlFor={`${idPrefix}-canton`}>
+        <label className="block text-[13px] font-medium" htmlFor={`${idPrefix}-canton`}>
           Cantón
         </label>
         <select
@@ -120,7 +120,7 @@ export function InteresEstado({
         aria-label={label}
         className={cn(
           selectClass,
-          "h-8 text-xs font-semibold",
+          "h-8 text-[13px] font-semibold",
           status === "descartada" && "text-text-3",
           (status === "oferto" || status === "ganada") && "text-success-text"
         )}
@@ -144,7 +144,7 @@ export function InteresEstado({
         <div className="mt-2 flex flex-wrap items-center gap-2">
           <select
             aria-label="Motivo del descarte"
-            className={cn(selectClass, "h-8 text-xs")}
+            className={cn(selectClass, "h-8 text-[13px]")}
             value={reason}
             onChange={(e) => setReason(e.target.value as DiscardReason | "")}
           >
@@ -165,7 +165,7 @@ export function InteresEstado({
           >
             Descartar
           </Button>
-          <button type="button" className="text-xs text-text-3 hover:text-foreground" onClick={() => setDescartando(false)}>
+          <button type="button" className="text-[13px] text-text-3 hover:text-foreground" onClick={() => setDescartando(false)}>
             Cancelar
           </button>
         </div>
@@ -233,7 +233,7 @@ export function Buscador({
                 }}
               >
                 <span className="block text-sm">{o.label}</span>
-                {o.sub && <span className="block text-xs text-text-3">{o.sub}</span>}
+                {o.sub && <span className="block text-[13px] text-text-3">{o.sub}</span>}
               </button>
             </li>
           ))}

@@ -9,6 +9,7 @@ import {
   type PropiedadesDeContactoDto,
 } from "@/lib/propiedades";
 import { cn } from "@/lib/utils";
+import { EnviarFicha } from "./enviar-ficha";
 import { Buscador, buscarPropiedades, Cover, InteresEstado } from "./shared";
 
 /**
@@ -56,7 +57,7 @@ export function PropiedadesContacto({ contact }: { contact: { id: string; name: 
 
       {data.vende.length > 0 && (
         <div className="mb-3">
-          <p className="mb-1.5 text-xs font-semibold text-text-2">Vende</p>
+          <p className="mb-1.5 text-[13px] font-semibold text-text-2">Vende</p>
           <ul className="space-y-1.5">
             {data.vende.map((p) => (
               <li key={p.id}>
@@ -66,7 +67,7 @@ export function PropiedadesContacto({ contact }: { contact: { id: string; name: 
                   </span>
                   <span className="min-w-0">
                     <span className="block truncate text-[13px] font-[620]">{p.title}</span>
-                    <span className="block truncate text-xs text-text-3">
+                    <span className="block truncate text-[13px] text-text-3">
                       {p.code} · {formatPrecio(p.priceCents, p.currency) ?? "sin precio"}
                     </span>
                   </span>
@@ -77,7 +78,7 @@ export function PropiedadesContacto({ contact }: { contact: { id: string; name: 
         </div>
       )}
 
-      <p className="mb-1.5 text-xs font-semibold text-text-2">Le interesan</p>
+      <p className="mb-1.5 text-[13px] font-semibold text-text-2">Le interesan</p>
       {data.interes.length > 0 && (
         <ul className="mb-2 space-y-1.5">
           {data.interes.map((i) => (
@@ -88,17 +89,20 @@ export function PropiedadesContacto({ contact }: { contact: { id: string; name: 
                 </span>
                 <span className="min-w-0">
                   <span className="block truncate text-[13px] font-[620]">{i.property.title}</span>
-                  <span className="block truncate text-xs text-text-3">
+                  <span className="block truncate text-[13px] text-text-3">
                     {i.property.code} · {formatPrecio(i.property.priceCents, i.property.currency) ?? "sin precio"}
                   </span>
                 </span>
               </Link>
-              <div className="mt-1.5 pl-1">
+              <div className="mt-1.5 flex flex-wrap items-center gap-x-2 pl-1">
                 <InteresEstado
                   status={i.status}
                   label={`Estado con ${i.property.code}`}
                   onChange={(s, r) => void cambiar(i.interestId, s, r)}
                 />
+                {i.status !== "descartada" && i.status !== "ganada" && (
+                  <EnviarFicha compacto propertyId={i.property.id} contact={contact} onSent={() => void refetch()} />
+                )}
               </div>
             </li>
           ))}

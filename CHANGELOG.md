@@ -22,6 +22,11 @@ apagadas la instancia es exactamente la de upstream. Migración aditiva `0023`
   ligado a un contacto; compradores vinculados a varias propiedades con su
   estado e historial; lo interno (vendedor, comisión, notas) separado de lo que
   se comparte.
+- **Verificación en dos pasos** (049): app autenticadora + códigos de
+  respaldo, en Ajustes → Mi cuenta → Seguridad. Migración aditiva `0024`.
+- **Atajos** (050): reprogramar con un toque y deshacer, «Llamar» en la tarea,
+  enviar la ficha de una propiedad por WhatsApp, «Crear» rápido y barra
+  inferior en el celular. Contraste y toques de 44 px en pantallas táctiles.
 
 ## 2.1.0 — 2026-10-22
 

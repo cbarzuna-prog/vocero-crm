@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 import type { TaskDto } from "@/lib/tareas";
 import { dayIsoInTz } from "@/lib/time/slots";
+import { authClient } from "@/lib/auth/client";
 import { useEvents } from "@/components/use-events";
 import { NuevaTareaDialog } from "./nueva-tarea-dialog";
 import { TareaRow } from "./tarea-row";
@@ -42,10 +43,19 @@ export function TareasContacto({ contact }: { contact: { id: string; name: strin
     },
   });
 
-  const { toggle, remove, ui } = useCompletarTarea({
+  const { data: session } = authClient.useSession();
+  const { toggle, remove, posponer, editar, ui } = useCompletarTarea({
     today: data?.today ?? new Date().toISOString().slice(0, 10),
+    timezone: data?.timezone ?? "America/Costa_Rica",
     onChanged: () => void refetch(),
   });
+  const acciones = {
+    meId: session?.user.id ?? null,
+    onToggle: toggle,
+    onPosponer: posponer,
+    onEditar: editar,
+    onDelete: remove,
+  };
 
   if (!data) return null;
 
@@ -56,7 +66,7 @@ export function TareasContacto({ contact }: { contact: { id: string; name: strin
         <button
           type="button"
           onClick={() => setCreating(true)}
-          className="flex items-center gap-1 rounded text-xs font-semibold text-brand-text hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="flex items-center gap-1 rounded text-[13px] font-semibold text-brand-text hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           <Plus className="h-3.5 w-3.5" strokeWidth={2} />
           Nueva
@@ -84,8 +94,7 @@ export function TareasContacto({ contact }: { contact: { id: string; name: strin
               withDay
               overdue={dayIsoInTz(new Date(t.dueAt), data.timezone) < data.today}
               showContact={false}
-              onToggle={toggle}
-              onDelete={remove}
+              {...acciones}
             />
           ))}
         </ul>
@@ -96,7 +105,7 @@ export function TareasContacto({ contact }: { contact: { id: string; name: strin
           <button
             type="button"
             onClick={() => setShowDone((v) => !v)}
-            className="text-xs text-text-3 hover:text-foreground"
+            className="text-[13px] text-text-3 hover:text-foreground"
           >
             {showDone ? "Ocultar hechas" : `Ver hechas (${data.hechas.length})`}
           </button>
@@ -109,7 +118,7 @@ export function TareasContacto({ contact }: { contact: { id: string; name: strin
                   timezone={data.timezone}
                   withDay
                   showContact={false}
-                  onToggle={toggle}
+                  {...acciones}
                 />
               ))}
             </ul>

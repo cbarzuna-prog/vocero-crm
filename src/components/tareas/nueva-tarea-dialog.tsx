@@ -5,6 +5,8 @@ import { MessageCircle, MoreHorizontal, Phone, Search, MapPin } from "lucide-rea
 import { TASK_TYPE_LABELS, type TaskType } from "@/lib/tareas";
 import { TASK_TYPES } from "@/lib/tareas-enums";
 import { cn } from "@/lib/utils";
+import { diaYHora, type TaskDto } from "@/lib/tareas";
+import { Buscador, buscarPropiedades } from "@/components/propiedades/shared";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -22,15 +24,37 @@ type ContactOption = { id: string; name: string };
  * hora DEL NEGOCIO; sin hora es «todo el día». Con `contact` fijo (desde una
  * conversación o un trato) no se pregunta a quién; desde «Hoy» se busca.
  */
+/** 050 — ¿Existe el módulo de propiedades en esta instancia? Se pregunta una vez. */
+let propiedadesCache: Promise<boolean> | null = null;
+function usePropiedadesDisponibles(): boolean {
+  const [ok, setOk] = useState(false);
+  useEffect(() => {
+    propiedadesCache ??= fetch("/api/propiedades?status=todas&q=__sondeo__")
+      .then((r) => r.ok)
+      .catch(() => false);
+    void propiedadesCache.then(setOk);
+  }, []);
+  return ok;
+}
+
 export function NuevaTareaDialog({
   contact,
   defaultDay,
   defaultType = "llamada",
   defaultTitle = "",
+  defaultProperty = null,
+  editing = null,
+  timezone = "America/Costa_Rica",
   onCancel,
   onCreated,
 }: {
   contact?: ContactOption | null;
+  /** 050 — Propiedad ya elegida (desde su ficha). */
+  defaultProperty?: { id: string; label: string } | null;
+  /** 050 — Con una tarea, el diálogo la edita en vez de crear otra. */
+  editing?: TaskDto | null;
+  /** Zona del negocio: para leer día y hora de la tarea que se edita. */
+  timezone?: string;
   /** `AAAA-MM-DD` en la zona del negocio. */
   defaultDay: string;
   defaultType?: TaskType;
@@ -38,10 +62,15 @@ export function NuevaTareaDialog({
   onCancel: () => void;
   onCreated: () => void;
 }) {
-  const [title, setTitle] = useState(defaultTitle);
-  const [type, setType] = useState<TaskType>(defaultType);
-  const [day, setDay] = useState(defaultDay);
-  const [time, setTime] = useState("");
+  const inicial = editing ? diaYHora(editing, timezone) : null;
+  const [title, setTitle] = useState(editing?.title ?? defaultTitle);
+  const [type, setType] = useState<TaskType>(editing?.type ?? defaultType);
+  const [day, setDay] = useState(inicial?.day ?? defaultDay);
+  const [time, setTime] = useState(inicial?.time ?? "");
+  const [propiedad, setPropiedad] = useState<{ id: string; label: string } | null>(
+    editing?.property ? { id: editing.property.id, label: `${editing.property.code} · ${editing.property.title}` } : defaultProperty
+  );
+  const conPropiedades = usePropiedadesDisponibles();
   const [picked, setPicked] = useState<ContactOption | null>(contact ?? null);
   const [query, setQuery] = useState("");
   const [options, setOptions] = useState<ContactOption[]>([]);
@@ -75,15 +104,16 @@ export function NuevaTareaDialog({
     if (!picked || !title.trim() || !day) return;
     setSaving(true);
     setError(null);
-    const res = await fetch("/api/tareas", {
-      method: "POST",
+    const res = await fetch(editing ? `/api/tareas/${editing.id}` : "/api/tareas", {
+      method: editing ? "PATCH" : "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
-        contactId: picked.id,
+        ...(editing ? {} : { contactId: picked.id }),
         title: title.trim(),
         type,
         day,
         time: time || null,
+        propertyId: propiedad?.id ?? null,
       }),
     }).catch(() => null);
     setSaving(false);
@@ -100,7 +130,7 @@ export function NuevaTareaDialog({
       className="fixed inset-0 z-50 flex items-end justify-center bg-overlay sm:items-center sm:p-4"
       role="dialog"
       aria-modal="true"
-      aria-label="Nueva tarea"
+      aria-label={editing ? "Editar tarea" : "Nueva tarea"}
       onKeyDown={(e) => {
         if (e.key === "Escape") onCancel();
       }}
@@ -113,15 +143,15 @@ export function NuevaTareaDialog({
           void save();
         }}
       >
-        <h3 className="font-semibold">Nueva tarea</h3>
+        <h3 className="font-semibold">{editing ? "Editar tarea" : "Nueva tarea"}</h3>
 
         {contact ? (
-          <p className="mt-0.5 text-xs text-text-3">{contact.name}</p>
+          <p className="mt-0.5 text-[13px] text-text-3">{contact.name}</p>
         ) : picked ? (
           <button
             type="button"
             onClick={() => setPicked(null)}
-            className="mt-2 rounded-full bg-brand-tint px-3 py-1 text-xs font-semibold text-brand-text"
+            className="mt-2 rounded-full bg-brand-tint px-3 py-1 text-[13px] font-semibold text-brand-text"
           >
             {picked.name} · cambiar
           </button>
@@ -154,7 +184,7 @@ export function NuevaTareaDialog({
           </div>
         )}
 
-        <label className="mt-3 block text-xs font-medium" htmlFor="tarea-titulo">
+        <label className="mt-3 block text-[13px] font-medium" htmlFor="tarea-titulo">
           Qué hay que hacer
         </label>
         <Input
@@ -179,7 +209,7 @@ export function NuevaTareaDialog({
                 aria-checked={active}
                 onClick={() => setType(t)}
                 className={cn(
-                  "flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors",
+                  "flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[13px] font-semibold transition-colors",
                   active
                     ? "border-brand bg-brand-tint text-brand-text"
                     : "border-border-strong text-text-2 hover:border-foreground"
@@ -194,7 +224,7 @@ export function NuevaTareaDialog({
 
         <div className="mt-3 grid grid-cols-2 gap-2">
           <div>
-            <label className="block text-xs font-medium" htmlFor="tarea-dia">
+            <label className="block text-[13px] font-medium" htmlFor="tarea-dia">
               Día
             </label>
             <Input
@@ -207,7 +237,7 @@ export function NuevaTareaDialog({
             />
           </div>
           <div>
-            <label className="block text-xs font-medium" htmlFor="tarea-hora">
+            <label className="block text-[13px] font-medium" htmlFor="tarea-hora">
               Hora <span className="font-normal text-text-3">(opcional)</span>
             </label>
             <Input
@@ -220,14 +250,39 @@ export function NuevaTareaDialog({
           </div>
         </div>
 
-        {error && <p className="mt-2 text-xs text-danger-text">{error}</p>}
+        {conPropiedades && (
+          <div className="mt-3">
+            <p className="text-[13px] font-medium">
+              Propiedad <span className="font-normal text-text-3">(opcional)</span>
+            </p>
+            <div className="mt-1">
+              {propiedad ? (
+                <button
+                  type="button"
+                  onClick={() => setPropiedad(null)}
+                  className="min-h-9 rounded-full bg-brand-tint px-3 py-1 text-[13px] font-semibold text-brand-text"
+                >
+                  {propiedad.label} · quitar
+                </button>
+              ) : (
+                <Buscador
+                  placeholder="Código, título o zona…"
+                  fetchOptions={buscarPropiedades}
+                  onPick={(o) => setPropiedad({ id: o.id, label: o.label })}
+                />
+              )}
+            </div>
+          </div>
+        )}
+
+        {error && <p className="mt-2 text-[13px] text-danger-text">{error}</p>}
 
         <div className="mt-4 flex justify-end gap-2">
           <Button type="button" variant="ghost" onClick={onCancel}>
             Cancelar
           </Button>
           <Button type="submit" disabled={saving || !picked || !title.trim() || !day}>
-            {saving ? "Guardando…" : "Guardar tarea"}
+            {saving ? "Guardando…" : editing ? "Guardar cambios" : "Guardar tarea"}
           </Button>
         </div>
       </form>

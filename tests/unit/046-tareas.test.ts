@@ -22,7 +22,7 @@ const task = (over: Partial<TaskDto>): TaskDto => ({
   dueAt: "2026-10-23T16:00:00.000Z",
   allDay: false,
   doneAt: null,
-  contact: { id: "ct_1", name: "Pedro" },
+  contact: { id: "ct_1", name: "Pedro", phone: "50688887777" },
   property: null,
   assignedUserId: null,
   assignedUserName: null,
@@ -130,5 +130,21 @@ describe("049 — Ajustes → Mi cuenta → Seguridad", () => {
     expect(settingsSections({}).map((s) => s.title)).toEqual(["Canales", "Agente", "Negocio"]);
     const con = settingsSections({ seguridad: true });
     expect(con.at(-1)).toEqual({ title: "Mi cuenta", links: [{ href: "/settings/seguridad", label: "Seguridad" }] });
+  });
+});
+
+describe("050 — reprogramar y llamar", () => {
+  it("sumarDias cruza meses; telHref arma el tel: con +", async () => {
+    const { sumarDias, telHref } = await import("@/lib/tareas");
+    expect(sumarDias("2026-10-30", 3)).toBe("2026-11-02");
+    expect(telHref("50688887777")).toBe("tel:+50688887777");
+    expect(telHref("+506 8888 7777")).toBe("tel:+50688887777");
+    expect(telHref(null)).toBeNull();
+  });
+  it("diaYHora devuelve día y hora de pared del negocio; todo el día sin hora", async () => {
+    const { diaYHora } = await import("@/lib/tareas");
+    const t = { dueAt: "2026-10-24T16:00:00.000Z", allDay: false } as Parameters<typeof diaYHora>[0];
+    expect(diaYHora(t, "America/Costa_Rica")).toEqual({ day: "2026-10-24", time: "10:00" });
+    expect(diaYHora({ ...t, allDay: true }, "America/Costa_Rica")).toEqual({ day: "2026-10-24", time: null });
   });
 });

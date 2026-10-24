@@ -36,7 +36,7 @@ con el gate `pnpm typecheck && pnpm lint && pnpm build && pnpm test`.
 - [x] T030 `src/server/propiedades/interes.ts`: PUERTA ÚNICA (crear vínculo, cambiar estado, descartar con motivo) escribiendo `property_interest` + `property_interest_event` en una transacción
 - [x] T031 Test de vigilancia: falla si otro archivo escribe en esas dos tablas (mismo enfoque que el de `stage-history.ts`)
 - [x] T032 UI: vincular desde contacto/lead (buscador por código, título, zona), selector de pasos, interesados en la ficha de la propiedad
-- [ ] T033 Tareas ligadas a propiedad: selector opcional en el diálogo
+- [x] T033 Tareas ligadas a propiedad: selector opcional en el diálogo
 
 ## Fase 4 — Verificación de comportamiento (Principios V y IX)
 

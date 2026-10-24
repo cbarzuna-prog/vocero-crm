@@ -227,7 +227,7 @@ export function SeguridadClient() {
               <div className="flex flex-col items-center gap-2 sm:flex-row sm:items-start">
                 {/* eslint-disable-next-line @next/next/no-img-element -- data URL generado aquí */}
                 <img src={paso.qr} alt="Código QR para la app autenticadora" width={220} height={220} className="rounded-md border bg-white p-1" />
-                <div className="text-xs text-text-3">
+                <div className="text-[13px] text-text-3">
                   <p className="font-semibold text-text-2">Clave manual</p>
                   <p className="mt-1 break-all font-mono text-sm text-foreground">{agrupar(paso.secreto)}</p>
                 </div>

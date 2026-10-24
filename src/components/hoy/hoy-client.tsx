@@ -5,6 +5,7 @@ import Link from "next/link";
 import { AlertCircle, CalendarCheck, CircleDashed, Plus, Sun } from "lucide-react";
 import type { HoyDto } from "@/lib/tareas";
 import { cn } from "@/lib/utils";
+import { authClient } from "@/lib/auth/client";
 import { useEvents } from "@/components/use-events";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -38,16 +39,16 @@ function Section({
 }) {
   return (
     <section className="mb-6">
-      <h3
+      <h2
         className={cn(
-          "mb-2 flex items-center gap-2 text-[13px] font-bold uppercase tracking-wide",
-          tone === "danger" ? "text-danger-text" : "text-text-2"
+          "mb-2 flex items-center gap-2 text-[15px] font-bold",
+          tone === "danger" ? "text-danger-text" : "text-foreground"
         )}
       >
         <Icon className="h-4 w-4" strokeWidth={2} aria-hidden />
         {title}
-        <span className="font-semibold text-text-3">· {count}</span>
-      </h3>
+        <span className="font-semibold text-text-2 tabular-nums">{count}</span>
+      </h2>
       {children}
     </section>
   );
@@ -63,6 +64,8 @@ function Section({
 export function HoyClient({ initial }: { initial: HoyDto }) {
   const [data, setData] = useState<HoyDto>(initial);
   const [filtro, setFiltro] = useState<Filtro>("todas");
+  // Los tratos sin siguiente paso pueden ser muchos: se ven 6 y el resto a pedido.
+  const [verTodos, setVerTodos] = useState(false);
   const [creating, setCreating] = useState<{ id: string; name: string } | null | "nuevo">(null);
 
   const refetch = useCallback(async () => {
@@ -76,7 +79,28 @@ export function HoyClient({ initial }: { initial: HoyDto }) {
 
   useEvents({ onTaskChanged: () => void refetch(), onReconnect: () => void refetch() });
 
-  const { toggle, ui } = useCompletarTarea({ today: data.today, onChanged: () => void refetch() });
+  const { data: session } = authClient.useSession();
+  const meId = session?.user.id ?? null;
+  const { toggle, remove, posponer, editar, ui } = useCompletarTarea({
+    today: data.today,
+    timezone: data.timezone,
+    onChanged: () => void refetch(),
+  });
+  const acciones = { meId, onToggle: toggle, onPosponer: posponer, onEditar: editar, onDelete: remove };
+
+  // El hallazgo del día, debajo del título: lo primero que hay que saber.
+  const masVieja = data.vencidas[0];
+  const diasVieja = masVieja
+    ? Math.max(1, Math.round((Date.parse(`${data.today}T12:00:00Z`) - Date.parse(masVieja.dueAt)) / 86_400_000))
+    : 0;
+  const hallazgo =
+    data.vencidas.length > 0
+      ? `${data.vencidas.length} ${data.vencidas.length === 1 ? "vencida" : "vencidas"}, la más antigua de hace ${diasVieja} ${diasVieja === 1 ? "día" : "días"}`
+      : data.hoy.length > 0
+        ? `${data.hoy.length} ${data.hoy.length === 1 ? "tarea" : "tareas"} para hoy, nada vencido`
+        : data.sinSiguientePaso.length > 0
+          ? `${data.sinSiguientePaso.length} ${data.sinSiguientePaso.length === 1 ? "trato" : "tratos"} sin siguiente paso`
+          : "Todo al día";
 
   const total = data.vencidas.length + data.hoy.length + data.sinSiguientePaso.length;
   const fechaRaw = new Intl.DateTimeFormat("es", {
@@ -92,8 +116,10 @@ export function HoyClient({ initial }: { initial: HoyDto }) {
     <div className="flex h-full flex-col">
       <header className="flex flex-wrap items-center justify-between gap-3 border-b px-4 py-3 sm:px-6 sm:py-4">
         <div>
-          <h2 className="text-[17px] font-bold tracking-tight">Hoy</h2>
-          <p className="text-xs text-text-3">{fecha}</p>
+          <h1 className="text-[22px] font-bold tracking-tight">Hoy</h1>
+          <p className="text-[13px] text-text-2">
+            {fecha} · <span className={cn(data.vencidas.length > 0 && "font-semibold text-danger-text")}>{hallazgo}</span>
+          </p>
         </div>
         <div className="flex items-center gap-2">
           <div className="flex rounded-full border p-0.5" role="radiogroup" aria-label="Qué tareas ver">
@@ -105,7 +131,7 @@ export function HoyClient({ initial }: { initial: HoyDto }) {
                 aria-checked={filtro === f}
                 onClick={() => setFiltro(f)}
                 className={cn(
-                  "rounded-full px-3 py-1 text-xs font-semibold transition-colors",
+                  "min-h-9 rounded-full px-3 py-1 text-[13px] font-semibold transition-colors",
                   filtro === f ? "bg-brand-tint text-brand-text" : "text-text-2 hover:text-foreground"
                 )}
               >
@@ -121,7 +147,9 @@ export function HoyClient({ initial }: { initial: HoyDto }) {
       </header>
 
       <div className="flex-1 overflow-y-auto p-4 sm:p-6">
-        <div className="mx-auto max-w-2xl">
+        {/* Escritorio: tareas a la izquierda, tratos sin siguiente paso a la
+            derecha (dos preguntas, dos columnas, sin hueco). Celular: una columna. */}
+        <div className="mx-auto max-w-6xl">
           {total === 0 ? (
             <EmptyState
               icon={CalendarCheck}
@@ -130,12 +158,13 @@ export function HoyClient({ initial }: { initial: HoyDto }) {
               description="No hay tareas vencidas ni para hoy, y todos sus tratos abiertos tienen un siguiente paso."
             />
           ) : (
-            <>
+            <div className="grid gap-x-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)]">
+              <div>
               {data.vencidas.length > 0 && (
                 <Section icon={AlertCircle} title="Vencidas" count={data.vencidas.length} tone="danger">
                   <ul className="space-y-1.5">
                     {data.vencidas.map((t) => (
-                      <TareaRow key={t.id} task={t} timezone={data.timezone} withDay overdue onToggle={toggle} />
+                      <TareaRow key={t.id} task={t} timezone={data.timezone} withDay overdue {...acciones} />
                     ))}
                   </ul>
                 </Section>
@@ -143,27 +172,29 @@ export function HoyClient({ initial }: { initial: HoyDto }) {
 
               <Section icon={Sun} title="Para hoy" count={data.hoy.length}>
                 {data.hoy.length === 0 ? (
-                  <p className="text-[13px] text-text-3">Nada agendado para hoy.</p>
+                  <p className="rounded-lg border border-dashed px-3 py-3 text-[13px] text-text-2">Nada agendado para hoy.</p>
                 ) : (
                   <ul className="space-y-1.5">
                     {data.hoy.map((t) => (
-                      <TareaRow key={t.id} task={t} timezone={data.timezone} onToggle={toggle} />
+                      <TareaRow key={t.id} task={t} timezone={data.timezone} {...acciones} />
                     ))}
                   </ul>
                 )}
               </Section>
+              </div>
 
+              <div>
               {data.sinSiguientePaso.length > 0 && (
                 <Section icon={CircleDashed} title="Sin siguiente paso" count={data.sinSiguientePaso.length}>
                   <ul className="space-y-1.5">
-                    {data.sinSiguientePaso.map((l) => (
+                    {(verTodos ? data.sinSiguientePaso : data.sinSiguientePaso.slice(0, 6)).map((l) => (
                       <li key={l.leadId} className="flex items-center gap-3 rounded-lg border border-dashed bg-card px-3 py-2.5">
                         <Link
                           href={`/inbox?contact=${l.contact.id}`}
                           className="min-w-0 flex-1 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                         >
-                          <p className="truncate text-[14px] font-[620]">{l.contact.name}</p>
-                          <p className="text-xs text-text-3">
+                          <p className="truncate text-[15px] font-[620]">{l.contact.name}</p>
+                          <p className="text-[13px] text-text-2">
                             {l.stageName} · {hace(l.lastActivityAt)}
                           </p>
                         </Link>
@@ -173,9 +204,19 @@ export function HoyClient({ initial }: { initial: HoyDto }) {
                       </li>
                     ))}
                   </ul>
+                  {data.sinSiguientePaso.length > 6 && (
+                    <button
+                      type="button"
+                      onClick={() => setVerTodos((v) => !v)}
+                      className="mt-2 min-h-11 text-[13px] font-semibold text-brand-text hover:underline sm:min-h-8"
+                    >
+                      {verTodos ? "Ver menos" : `Ver los ${data.sinSiguientePaso.length}`}
+                    </button>
+                  )}
                 </Section>
               )}
-            </>
+              </div>
+            </div>
           )}
         </div>
       </div>

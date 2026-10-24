@@ -24,6 +24,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { EnviarFicha } from "./enviar-ficha";
 import { Buscador, buscarContactos, Cover, InteresEstado, selectClass, StatusBadge, UbicacionFields } from "./shared";
 
 /** Lo editable de la ficha, como lo maneja el formulario (precio y comisión como texto). */
@@ -123,7 +124,7 @@ function toPatch(d: Draft): { body: Record<string, unknown> } | { error: string 
 function Field({ label, htmlFor, children, className }: { label: string; htmlFor?: string; children: React.ReactNode; className?: string }) {
   return (
     <div className={className}>
-      <label className="block text-xs font-medium" htmlFor={htmlFor}>
+      <label className="block text-[13px] font-medium" htmlFor={htmlFor}>
         {label}
       </label>
       <div className="mt-1">{children}</div>
@@ -173,8 +174,15 @@ function Galeria({ p, onChanged }: { p: PropertyDetail; onChanged: () => Promise
     await onChanged();
   }
 
+  const [confirmaBorrar, setConfirmaBorrar] = useState(false);
   async function borrar() {
-    if (!photo || !window.confirm("¿Borrar esta foto?")) return;
+    if (!photo) return;
+    if (!confirmaBorrar) {
+      setConfirmaBorrar(true);
+      setTimeout(() => setConfirmaBorrar(false), 4000);
+      return;
+    }
+    setConfirmaBorrar(false);
     await fetch(`/api/propiedades/${p.id}/fotos/${photo.id}`, { method: "DELETE" }).catch(() => null);
     await onChanged();
   }
@@ -190,8 +198,9 @@ function Galeria({ p, onChanged }: { p: PropertyDetail; onChanged: () => Promise
                 <Star className="mr-1 h-3.5 w-3.5" strokeWidth={1.8} /> Portada
               </Button>
             )}
-            <Button size="sm" variant="secondary" onClick={() => void borrar()} aria-label="Borrar foto">
+            <Button size="sm" variant="secondary" onClick={() => void borrar()} aria-label={confirmaBorrar ? "Confirmar: borrar foto" : "Borrar foto"}>
               <Trash2 className="h-3.5 w-3.5" strokeWidth={1.8} />
+              {confirmaBorrar && <span className="ml-1 text-danger-text">¿Borrar?</span>}
             </Button>
           </div>
         )}
@@ -217,7 +226,7 @@ function Galeria({ p, onChanged }: { p: PropertyDetail; onChanged: () => Promise
             type="button"
             onClick={() => inputRef.current?.click()}
             disabled={subiendo > 0}
-            className="flex h-14 w-20 shrink-0 flex-col items-center justify-center rounded-md border-2 border-dashed text-[11px] font-semibold text-text-2 hover:border-brand hover:text-brand-text"
+            className="flex h-14 w-20 shrink-0 flex-col items-center justify-center rounded-md border-2 border-dashed text-[12px] font-semibold text-text-2 hover:border-brand hover:text-brand-text"
           >
             <ImagePlus className="h-4 w-4" strokeWidth={1.8} />
             {subiendo > 0 ? `Subiendo ${subiendo}…` : "Fotos"}
@@ -233,7 +242,7 @@ function Galeria({ p, onChanged }: { p: PropertyDetail; onChanged: () => Promise
           onChange={(e) => void subir(e.target.files)}
         />
       </div>
-      {error && <p className="mt-1 text-xs text-danger-text">{error}</p>}
+      {error && <p className="mt-1 text-[13px] text-danger-text">{error}</p>}
     </section>
   );
 }
@@ -261,8 +270,10 @@ function Interesados({ p, onChanged }: { p: PropertyDetail; onChanged: () => Pro
     await onChanged();
   }
 
-  async function quitar(interestId: string, name: string) {
-    if (!window.confirm(`¿Quitar a ${name} de esta propiedad? Si ya no le interesa, mejor márquela como descartada: así queda la historia.`)) return;
+  const [quitando, setQuitando] = useState<string | null>(null);
+
+  async function quitar(interestId: string) {
+    setQuitando(null);
     await fetch(`/api/interes/${interestId}`, { method: "DELETE" }).catch(() => null);
     await onChanged();
   }
@@ -275,33 +286,50 @@ function Interesados({ p, onChanged }: { p: PropertyDetail; onChanged: () => Pro
         Compradores interesados · {vigentes}
       </p>
       <Buscador placeholder="Vincular un comprador…" fetchOptions={buscarContactos} onPick={(o) => void vincular(o.id)} />
-      {error && <p className="mt-1 text-xs text-danger-text">{error}</p>}
+      {error && <p className="mt-1 text-[13px] text-danger-text">{error}</p>}
       {p.interesadosDetalle.length === 0 ? (
         <p className="mt-3 text-[13px] text-text-3">Nadie vinculado todavía.</p>
       ) : (
         <ul className="mt-3 divide-y">
           {p.interesadosDetalle.map((i) => (
-            <li key={i.interestId} className={cn("flex items-start gap-2 py-2.5", i.status === "descartada" && "opacity-60")}>
-              <div className="min-w-0 flex-1">
-                <Link href={`/inbox?contact=${i.contact.id}`} className="block truncate text-sm font-[620] hover:underline">
-                  {i.contact.name}
-                </Link>
-                <div className="mt-1">
-                  <InteresEstado
-                    status={i.status}
-                    label={`Estado de ${i.contact.name}`}
-                    onChange={(s, r) => void cambiar(i.interestId, s, r)}
-                  />
+            <li key={i.interestId} className={cn("py-2.5", i.status === "descartada" && "opacity-60")}>
+              <div className="flex items-start gap-2">
+                <div className="min-w-0 flex-1">
+                  <Link href={`/inbox?contact=${i.contact.id}`} className="block truncate text-[15px] font-[620] hover:underline">
+                    {i.contact.name}
+                  </Link>
+                  <div className="mt-1">
+                    <InteresEstado
+                      status={i.status}
+                      label={`Estado de ${i.contact.name}`}
+                      onChange={(s, r) => void cambiar(i.interestId, s, r)}
+                    />
+                  </div>
                 </div>
+                {quitando === i.interestId ? (
+                  <div className="flex items-center gap-1 text-[13px]">
+                    <button type="button" className="min-h-11 px-2 font-semibold text-danger-text sm:min-h-8" onClick={() => void quitar(i.interestId)}>
+                      Quitar
+                    </button>
+                    <button type="button" className="min-h-11 px-2 text-text-2 sm:min-h-8" onClick={() => setQuitando(null)}>
+                      No
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setQuitando(i.interestId)}
+                    aria-label={`Quitar a ${i.contact.name}`}
+                    title="Quitar (si ya no le interesa, mejor márquela como descartada)"
+                    className="flex h-11 w-11 items-center justify-center rounded-full text-text-2 hover:text-danger-text sm:h-8 sm:w-8"
+                  >
+                    <X className="h-4 w-4" strokeWidth={1.8} />
+                  </button>
+                )}
               </div>
-              <button
-                type="button"
-                onClick={() => void quitar(i.interestId, i.contact.name)}
-                aria-label={`Quitar a ${i.contact.name}`}
-                className="mt-0.5 rounded p-1 text-text-3 hover:text-danger-text"
-              >
-                <X className="h-3.5 w-3.5" strokeWidth={1.8} />
-              </button>
+              {i.status !== "descartada" && i.status !== "ganada" && (
+                <EnviarFicha propertyId={p.id} contact={i.contact} onSent={() => void onChanged()} />
+              )}
             </li>
           ))}
         </ul>
@@ -374,7 +402,6 @@ export function FichaClient({ initial }: { initial: PropertyDetail }) {
   }
 
   async function archivar() {
-    if (!p.archived && !window.confirm("¿Archivar esta propiedad? Deja de verse en la lista; puede restaurarla.")) return;
     await patch({ archived: !p.archived }).catch(() => {});
     await refetch();
   }
@@ -389,15 +416,15 @@ export function FichaClient({ initial }: { initial: PropertyDetail }) {
         </Link>
         {/* En el teléfono el título se queda con la fila y las acciones bajan. */}
         <div className="min-w-[70%] flex-1 sm:min-w-0">
-          <p className="truncate text-xs font-semibold text-text-3">
+          <p className="truncate text-[13px] font-semibold text-text-3">
             {p.code} · {OPERATION_LABELS[p.operation]} · {TYPE_LABELS[p.type]}
           </p>
-          <h2 className="truncate text-[17px] font-bold tracking-tight">{p.title}</h2>
+          <h1 className="truncate text-[20px] font-bold tracking-tight">{p.title}</h1>
         </div>
         <div className="ml-auto flex items-center gap-2">
           <select
             aria-label="Estado de la propiedad"
-            className={cn(selectClass, "h-8 text-xs font-semibold")}
+            className={cn(selectClass, "h-8 text-[13px] font-semibold")}
             value={p.status}
             onChange={(e) => void cambiarEstado(e.target.value as PropertyStatus)}
           >
@@ -425,7 +452,7 @@ export function FichaClient({ initial }: { initial: PropertyDetail }) {
             <Galeria p={p} onChanged={refetch} />
 
             <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-              <p className="text-2xl font-bold tracking-tight">
+              <p className="text-2xl font-bold tracking-tight tabular-nums">
                 {precio ?? <span className="text-text-3">Sin precio</span>}
                 {precio && p.operation === "alquiler" && <span className="text-sm font-semibold text-text-3"> /mes</span>}
               </p>
@@ -502,7 +529,7 @@ export function FichaClient({ initial }: { initial: PropertyDetail }) {
 
             <section className="rounded-lg border bg-card p-4">
               <p className="kicker mb-1">Descripción para el comprador</p>
-              <p className="mb-2 text-xs text-text-3">Lo que le puede mandar o enseñar tal cual.</p>
+              <p className="mb-2 text-[13px] text-text-3">Lo que le puede mandar o enseñar tal cual.</p>
               <Textarea
                 rows={5}
                 maxLength={5000}
@@ -518,7 +545,7 @@ export function FichaClient({ initial }: { initial: PropertyDetail }) {
               <p className="kicker mb-1 flex items-center gap-1.5">
                 <Lock className="h-3.5 w-3.5" strokeWidth={2} aria-hidden /> Interno · no compartir
               </p>
-              <p className="mb-3 text-xs text-text-3">Vendedor, comisión y notas: nunca se muestran al comprador.</p>
+              <p className="mb-3 text-[13px] text-text-3">Vendedor, comisión y notas: nunca se muestran al comprador.</p>
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                 <Field label="Vendedor" className="col-span-2">
                   {draft.seller ? (
@@ -526,7 +553,7 @@ export function FichaClient({ initial }: { initial: PropertyDetail }) {
                       <Link href={`/inbox?contact=${draft.seller.id}`} className="truncate text-sm font-[620] hover:underline">
                         {draft.seller.name}
                       </Link>
-                      <button type="button" className="text-xs text-text-3 hover:text-foreground" onClick={() => set({ seller: null })}>
+                      <button type="button" className="text-[13px] text-text-3 hover:text-foreground" onClick={() => set({ seller: null })}>
                         Cambiar
                       </button>
                     </div>
@@ -561,7 +588,7 @@ export function FichaClient({ initial }: { initial: PropertyDetail }) {
 
           <aside className="space-y-4 lg:sticky lg:top-0 lg:self-start">
             <Interesados p={p} onChanged={refetch} />
-            <p className="px-1 text-xs text-text-3">
+            <p className="px-1 text-[13px] text-text-3">
               Pasos: {(["interesado", "enviada", "visitada", "oferto", "ganada"] as const).map((s) => INTEREST_LABELS[s]).join(" → ")}
             </p>
           </aside>
@@ -571,11 +598,11 @@ export function FichaClient({ initial }: { initial: PropertyDetail }) {
       {(dirty || error || guardado) && (
         <div className="sticky bottom-0 z-10 flex items-center justify-end gap-3 border-t bg-popover px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:px-6">
           {error ? (
-            <p className="mr-auto text-xs text-danger-text">{error}</p>
+            <p className="mr-auto text-[13px] text-danger-text">{error}</p>
           ) : guardado && !dirty ? (
-            <p className="mr-auto text-xs text-success-text">Guardado</p>
+            <p className="mr-auto text-[13px] text-success-text">Guardado</p>
           ) : (
-            <p className="mr-auto text-xs text-text-3">Cambios sin guardar</p>
+            <p className="mr-auto text-[13px] text-text-3">Cambios sin guardar</p>
           )}
           {dirty && (
             <>

@@ -142,3 +142,43 @@ describe("guardarraíl: una sola puerta escribe el interés", () => {
     expect(code).toMatch(/insert\(schema\.propertyInterestEvent\)/);
   });
 });
+
+describe("050 — la ficha que se manda por WhatsApp", () => {
+  const base = {
+    code: "KK-0007",
+    title: "Casa en Valle del Sol",
+    operation: "venta" as const,
+    priceCents: 45_000_000,
+    currency: "USD" as const,
+    provincia: "San José",
+    canton: "Santa Ana",
+    zona: "Valle del Sol",
+    habitaciones: 3,
+    banos: 2.5,
+    m2Construccion: 280,
+    m2Terreno: null,
+    parqueos: 2,
+    descripcionPublica: "Jardín y piscina.",
+  };
+  it("lleva título, precio, lugar, datos, descripción y referencia", async () => {
+    const { textoFicha } = await import("@/lib/propiedades");
+    const t = textoFicha(base);
+    expect(t).toContain("*Casa en Valle del Sol*");
+    expect(t).toContain("$450,000 · Venta");
+    expect(t).toContain("Valle del Sol, Santa Ana");
+    expect(t).toContain("3 hab. · 2.5 baños · 280 m² de construcción · 2 parqueos");
+    expect(t).toContain("Jardín y piscina.");
+    expect(t).toContain("Ref. KK-0007");
+  });
+  it("en alquiler dice «al mes»; sin precio no inventa uno", async () => {
+    const { textoFicha } = await import("@/lib/propiedades");
+    expect(textoFicha({ ...base, operation: "alquiler", priceCents: 180_000 })).toContain("$1,800 al mes · Alquiler");
+    expect(textoFicha({ ...base, priceCents: null })).not.toContain("$");
+  });
+  it("jamás incluye lo interno (la función ni lo recibe)", async () => {
+    const { textoFicha } = await import("@/lib/propiedades");
+    const conInterno = { ...base, notasInternas: "acepta 400k", comisionBp: 500, seller: { name: "Laura" } };
+    const t = textoFicha(conInterno);
+    expect(t).not.toMatch(/400k|Laura|comisi/i);
+  });
+});

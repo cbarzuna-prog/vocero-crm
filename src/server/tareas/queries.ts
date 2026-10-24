@@ -18,7 +18,13 @@ async function selectTasks(organizationId: string, where: SQL | undefined, order
     .select({
       task: schema.task,
       contactName: schema.contact.name,
+      contactPhone: schema.contact.phone,
       propertyCode: schema.property.code,
+      propertyCover: sql<string | null>`(
+        select pph."media_asset_id" from "property_photo" pph
+        where pph."property_id" = "task"."property_id"
+        order by pph."position" asc limit 1
+      )`,
       propertyTitle: schema.property.title,
       userName: schema.user.name,
     })
@@ -38,10 +44,15 @@ async function selectTasks(organizationId: string, where: SQL | undefined, order
       dueAt: r.task.dueAt.toISOString(),
       allDay: r.task.allDay,
       doneAt: r.task.doneAt?.toISOString() ?? null,
-      contact: { id: r.task.contactId, name: r.contactName },
+      contact: { id: r.task.contactId, name: r.contactName, phone: r.contactPhone },
       property:
         r.task.propertyId && r.propertyCode
-          ? { id: r.task.propertyId, code: r.propertyCode, title: r.propertyTitle ?? "" }
+          ? {
+              id: r.task.propertyId,
+              code: r.propertyCode,
+              title: r.propertyTitle ?? "",
+              coverUrl: r.propertyCover ? `/api/media/${r.propertyCover}` : null,
+            }
           : null,
       assignedUserId: r.task.assignedUserId,
       assignedUserName: r.userName ?? null,

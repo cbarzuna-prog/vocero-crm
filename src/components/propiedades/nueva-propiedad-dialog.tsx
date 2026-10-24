@@ -26,7 +26,7 @@ function Chip({ active, onClick, children }: { active: boolean; onClick: () => v
       aria-checked={active}
       onClick={onClick}
       className={cn(
-        "rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors",
+        "rounded-full border px-3 py-1.5 text-[13px] font-semibold transition-colors",
         active ? "border-brand bg-brand-tint text-brand-text" : "border-border-strong text-text-2 hover:border-foreground"
       )}
     >
@@ -100,7 +100,7 @@ export function NuevaPropiedadDialog({ onCancel }: { onCancel: () => void }) {
         }}
       >
         <h3 className="font-semibold">Nueva propiedad</h3>
-        <p className="mt-0.5 text-xs text-text-3">Lo mínimo para darla de alta; el resto lo completa en su ficha.</p>
+        <p className="mt-0.5 text-[13px] text-text-3">Lo mínimo para darla de alta; el resto lo completa en su ficha.</p>
 
         <div className="mt-3 flex gap-1.5" role="radiogroup" aria-label="Operación">
           {PROPERTY_OPERATIONS.map((o) => (
@@ -118,7 +118,7 @@ export function NuevaPropiedadDialog({ onCancel }: { onCancel: () => void }) {
           ))}
         </div>
 
-        <label className="mt-3 block text-xs font-medium" htmlFor="prop-precio">
+        <label className="mt-3 block text-[13px] font-medium" htmlFor="prop-precio">
           Precio {operation === "alquiler" ? "mensual" : ""}
         </label>
         <div className="mt-1 flex gap-2">
@@ -138,7 +138,7 @@ export function NuevaPropiedadDialog({ onCancel }: { onCancel: () => void }) {
                 aria-checked={currency === c}
                 onClick={() => setCurrency(c)}
                 className={cn(
-                  "rounded px-2.5 text-xs font-semibold",
+                  "rounded px-2.5 text-[13px] font-semibold",
                   currency === c ? "bg-brand-tint text-brand-text" : "text-text-2"
                 )}
               >
@@ -147,7 +147,7 @@ export function NuevaPropiedadDialog({ onCancel }: { onCancel: () => void }) {
             ))}
           </div>
         </div>
-        <p className={cn("mt-1 text-xs", precioInvalido ? "text-danger-text" : "text-text-3")}>
+        <p className={cn("mt-1 text-[13px]", precioInvalido ? "text-danger-text" : "text-text-3")}>
           {precioInvalido
             ? "No reconozco ese número. Escríbalo como 450000 o 450,000"
             : cents !== null
@@ -159,7 +159,7 @@ export function NuevaPropiedadDialog({ onCancel }: { onCancel: () => void }) {
           <UbicacionFields provincia={ubic.provincia} canton={ubic.canton} onChange={setUbic} idPrefix="nueva" />
         </div>
 
-        <label className="mt-3 block text-xs font-medium" htmlFor="prop-zona">
+        <label className="mt-3 block text-[13px] font-medium" htmlFor="prop-zona">
           Zona o condominio <span className="font-normal text-text-3">(opcional)</span>
         </label>
         <Input
@@ -171,7 +171,7 @@ export function NuevaPropiedadDialog({ onCancel }: { onCancel: () => void }) {
           className="mt-1"
         />
 
-        {error && <p className="mt-2 text-xs text-danger-text">{error}</p>}
+        {error && <p className="mt-2 text-[13px] text-danger-text">{error}</p>}
 
         <div className="mt-4 flex justify-end gap-2">
           <Button type="button" variant="ghost" onClick={onCancel}>

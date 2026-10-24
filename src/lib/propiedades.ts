@@ -263,3 +263,51 @@ export const cambiarInteresSchema = z
     message: "el motivo solo aplica al descartar",
     path: ["discardReason"],
   });
+
+/**
+ * 050 — El mensaje de WhatsApp con la ficha de una propiedad. SOLO lo
+ * compartible (D9): nunca vendedor, comisión, exclusiva ni notas internas.
+ * Usa el formato de WhatsApp (*negrita*).
+ */
+export function textoFicha(p: {
+  code: string;
+  title: string;
+  operation: PropertyOperation;
+  priceCents: number | null;
+  currency: PropertyCurrency;
+  provincia: string;
+  canton: string | null;
+  zona: string | null;
+  habitaciones: number | null;
+  banos: number | null;
+  m2Construccion: number | null;
+  m2Terreno: number | null;
+  parqueos: number | null;
+  descripcionPublica: string | null;
+}): string {
+  const precio = formatPrecio(p.priceCents, p.currency);
+  const lugar = [p.zona, p.canton ?? p.provincia].filter(Boolean).join(", ");
+  const datos = [
+    p.habitaciones !== null ? `${p.habitaciones} hab.` : null,
+    p.banos !== null ? `${p.banos} baños` : null,
+    p.m2Construccion !== null ? `${p.m2Construccion} m² de construcción` : null,
+    p.m2Terreno !== null ? `${p.m2Terreno} m² de terreno` : null,
+    p.parqueos !== null ? `${p.parqueos} parqueos` : null,
+  ].filter(Boolean);
+  return [
+    `*${p.title}*`,
+    precio ? `${precio}${p.operation === "alquiler" ? " al mes" : ""} · ${OPERATION_LABELS[p.operation]}` : OPERATION_LABELS[p.operation],
+    lugar || null,
+    datos.length ? datos.join(" · ") : null,
+    p.descripcionPublica?.trim() ? `\n${p.descripcionPublica.trim()}` : null,
+    `\nRef. ${p.code}`,
+  ]
+    .filter((l) => l !== null)
+    .join("\n");
+}
+
+export const enviarFichaSchema = z.object({
+  contactId: z.string().min(1),
+  /** Cuántas fotos mandar después del texto (0–5). */
+  fotos: z.number().int().min(0).max(5).default(3),
+});

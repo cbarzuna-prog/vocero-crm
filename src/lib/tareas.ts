@@ -24,8 +24,10 @@ export type TaskDto = {
   dueAt: string;
   allDay: boolean;
   doneAt: string | null;
-  contact: { id: string; name: string };
-  property: { id: string; code: string; title: string } | null;
+  /** 050: el teléfono para «Llamar» con un toque (null en contactos sin número). */
+  contact: { id: string; name: string; phone: string | null };
+  /** 050: la portada, para reconocer la propiedad de un vistazo. */
+  property: { id: string; code: string; title: string; coverUrl: string | null } | null;
   assignedUserId: string | null;
   assignedUserName: string | null;
 };
@@ -108,3 +110,35 @@ export function nextBusinessDays(dayIso: string, n = 2): string {
   }
   return d.toISOString().slice(0, 10);
 }
+
+/** 050 — Atajos para reprogramar: días desde hoy (el negocio). */
+export const POSPONER = [
+  { label: "Mañana", dias: 1 },
+  { label: "En 3 días", dias: 3 },
+  { label: "Próxima semana", dias: 7 },
+] as const;
+
+/** `AAAA-MM-DD` + n días (aritmética de calendario, sin zona). */
+export function sumarDias(dayIso: string, n: number): string {
+  const d = new Date(`${dayIso}T12:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + n);
+  return d.toISOString().slice(0, 10);
+}
+
+/** `tel:` con el número tal como lo guarda el CRM (con código de país). */
+export function telHref(phone: string | null): string | null {
+  const digits = (phone ?? "").replace(/[^\d+]/g, "");
+  if (!digits) return null;
+  return `tel:${digits.startsWith("+") ? digits : `+${digits}`}`;
+}
+
+/** Día y hora de pared de una tarea en la zona del negocio. */
+export function diaYHora(task: TaskDto, tz: string): { day: string; time: string | null } {
+  const d = new Date(task.dueAt);
+  const day = new Intl.DateTimeFormat("en-CA", { timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit" }).format(d);
+  const time = task.allDay
+    ? null
+    : new Intl.DateTimeFormat("en-GB", { timeZone: tz, hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(d);
+  return { day, time };
+}
+

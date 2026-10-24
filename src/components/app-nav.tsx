@@ -19,6 +19,7 @@ import {
   useTituloNoLeidos,
 } from "@/components/avisos-de-mensajes";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { CrearRapido } from "@/components/fork/barra-movil";
 import { BrandLogo } from "@/components/brand-mark";
 import {
   BUILD_COMMIT,
@@ -211,6 +212,9 @@ export function AppNav({
       {/* Grupos con encabezado pequeño, sin letras ni colapsables: se leen
           de arriba abajo como una lista de lo que hay. Un grupo sin título
           (Resultados) es una entrada suelta separada por el espacio. */}
+      {/* 050 (fork) — crear contacto, tarea o propiedad desde cualquier pantalla. */}
+      {(tareas || propiedades) && <CrearRapido propiedades={propiedades} variante="lateral" />}
+
       <nav className="flex flex-col gap-4" aria-label="Secciones">
         {groups.map((group, i) => (
           <div key={group.title ?? i} className="flex flex-col gap-0.5">

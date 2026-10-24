@@ -51,20 +51,20 @@ function Card({ p }: { p: PropertyListItem }) {
           <div className="absolute left-2 top-2 flex gap-1">
             <StatusBadge status={p.status} />
           </div>
-          <span className="absolute right-2 top-2 rounded-full border bg-background px-2 py-0.5 text-[11px] font-semibold">
+          <span className="absolute right-2 top-2 rounded-full border bg-background px-2 py-0.5 text-[12px] font-semibold">
             {OPERATION_LABELS[p.operation]}
           </span>
         </div>
         <div className="p-3">
-          <p className="text-[17px] font-bold tracking-tight">
+          <p className="text-[17px] font-bold tracking-tight tabular-nums">
             {precio ?? <span className="text-text-3">Sin precio</span>}
-            {precio && p.operation === "alquiler" && <span className="text-xs font-semibold text-text-3"> /mes</span>}
+            {precio && p.operation === "alquiler" && <span className="text-[13px] font-semibold text-text-3"> /mes</span>}
           </p>
           <p className="mt-0.5 truncate text-[14px] font-[620]">{p.title}</p>
-          <p className="truncate text-xs text-text-3">
+          <p className="truncate text-[13px] text-text-3">
             {p.code} · {[p.zona, p.canton ?? p.provincia].filter(Boolean).join(", ")}
           </p>
-          <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-text-2">
+          <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px] text-text-2">
             {p.habitaciones !== null && (
               <span className="inline-flex items-center gap-1">
                 <BedDouble className="h-3.5 w-3.5" strokeWidth={1.8} aria-hidden /> {p.habitaciones}
@@ -131,7 +131,7 @@ export function PropiedadesClient() {
     <div className="flex h-full flex-col">
       <header className="flex flex-wrap items-center justify-between gap-3 border-b px-4 py-3 sm:px-6 sm:py-4">
         <div className="flex items-center gap-2">
-          <h2 className="text-[17px] font-bold tracking-tight">Propiedades</h2>
+          <h1 className="text-[22px] font-bold tracking-tight">Propiedades</h1>
           <Button size="sm" onClick={() => setCreando(true)}>
             <Plus className="mr-1 h-4 w-4" strokeWidth={2} />
             Nueva
