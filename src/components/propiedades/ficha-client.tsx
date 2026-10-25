@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { Archive, ArchiveRestore, ArrowLeft, ImagePlus, Lock, Star, Trash2, X } from "lucide-react";
+import { Archive, ArchiveRestore, ArrowLeft, ChevronDown, ImagePlus, Lock, Star, Trash2, X } from "lucide-react";
 import { parseMoneyToCents } from "@/lib/money";
 import {
   formatPrecio,
@@ -187,9 +187,61 @@ function Galeria({ p, onChanged }: { p: PropertyDetail; onChanged: () => Promise
     await onChanged();
   }
 
+  const [encima, setEncima] = useState(false);
+  const soltar = {
+    onDragOver: (e: React.DragEvent) => {
+      e.preventDefault();
+      setEncima(true);
+    },
+    onDragLeave: () => setEncima(false),
+    onDrop: (e: React.DragEvent) => {
+      e.preventDefault();
+      setEncima(false);
+      void subir(e.dataTransfer.files);
+    },
+  };
+
+  const input = (
+    <input
+      ref={inputRef}
+      type="file"
+      accept="image/jpeg,image/png,image/webp"
+      multiple
+      className="hidden"
+      aria-label="Subir fotos"
+      onChange={(e) => void subir(e.target.files)}
+    />
+  );
+
+  // 051 — Sin fotos, el recuadro entero es la acción (y acepta arrastrar).
+  if (p.photos.length === 0) {
+    return (
+      <section>
+        <button
+          type="button"
+          onClick={() => inputRef.current?.click()}
+          disabled={subiendo > 0}
+          {...soltar}
+          className={cn(
+            "flex h-44 w-full flex-col items-center justify-center gap-1.5 rounded-lg border-2 border-dashed bg-subtle text-center transition-colors hover:border-brand sm:h-56",
+            encima && "border-brand bg-brand-tint"
+          )}
+        >
+          <ImagePlus className="h-7 w-7 text-text-3" strokeWidth={1.5} aria-hidden />
+          <span className="text-[15px] font-semibold">{subiendo > 0 ? `Subiendo ${subiendo}…` : "Agregar fotos"}</span>
+          <span className="text-[13px] text-text-3">
+            <span className="hidden sm:inline">Arrástrelas aquí o haga clic para elegirlas. </span>La primera será la portada.
+          </span>
+        </button>
+        {input}
+        {error && <p className="mt-1 text-[13px] text-danger-text">{error}</p>}
+      </section>
+    );
+  }
+
   return (
-    <section>
-      <div className="relative aspect-[16/10] overflow-hidden rounded-lg border">
+    <section {...soltar}>
+      <div className={cn("relative aspect-[16/10] overflow-hidden rounded-lg border", encima && "ring-2 ring-brand")}>
         <Cover url={photo?.url ?? null} alt={p.title} />
         {photo && (
           <div className="absolute bottom-2 right-2 flex gap-1.5">
@@ -232,15 +284,7 @@ function Galeria({ p, onChanged }: { p: PropertyDetail; onChanged: () => Promise
             {subiendo > 0 ? `Subiendo ${subiendo}…` : "Fotos"}
           </button>
         )}
-        <input
-          ref={inputRef}
-          type="file"
-          accept="image/jpeg,image/png,image/webp"
-          multiple
-          className="hidden"
-          aria-label="Subir fotos"
-          onChange={(e) => void subir(e.target.files)}
-        />
+        {input}
       </div>
       {error && <p className="mt-1 text-[13px] text-danger-text">{error}</p>}
     </section>
@@ -338,6 +382,50 @@ function Interesados({ p, onChanged }: { p: PropertyDetail; onChanged: () => Pro
   );
 }
 
+/**
+ * 051 — Sección de la ficha. En escritorio siempre abierta; en el celular se
+ * pliega a su título y un resumen, para que la página no sea un formulario
+ * de tres pantallas antes de llegar a lo que importa.
+ */
+function Seccion({
+  titulo,
+  icono,
+  resumen,
+  abiertaAlInicio = false,
+  className,
+  children,
+}: {
+  titulo: string;
+  icono?: React.ReactNode;
+  resumen?: string;
+  abiertaAlInicio?: boolean;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  const [abierta, setAbierta] = useState(abiertaAlInicio);
+  return (
+    <section className={cn("rounded-lg border p-4", className)}>
+      <button
+        type="button"
+        aria-expanded={abierta}
+        onClick={() => setAbierta((v) => !v)}
+        className="-m-1 flex min-h-11 w-[calc(100%+0.5rem)] items-center gap-2 rounded p-1 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring lg:pointer-events-none lg:min-h-0"
+      >
+        <span className="kicker flex shrink-0 items-center gap-1.5">
+          {icono}
+          {titulo}
+        </span>
+        {!abierta && resumen && <span className="min-w-0 flex-1 truncate text-[13px] text-text-2 lg:hidden">{resumen}</span>}
+        <ChevronDown
+          className={cn("ml-auto h-4 w-4 shrink-0 text-text-3 transition-transform lg:hidden", abierta && "rotate-180")}
+          aria-hidden
+        />
+      </button>
+      <div className={cn("mt-3", abierta ? "block" : "hidden lg:block")}>{children}</div>
+    </section>
+  );
+}
+
 /** 046 — Ficha de una propiedad: galería, datos, lo interno aparte e interesados (H1–H3). */
 export function FichaClient({ initial }: { initial: PropertyDetail }) {
   const [p, setP] = useState(initial);
@@ -407,6 +495,16 @@ export function FichaClient({ initial }: { initial: PropertyDetail }) {
   }
 
   const precio = formatPrecio(p.priceCents, p.currency);
+  const resumenDatos = [
+    TYPE_LABELS[p.type],
+    p.habitaciones !== null ? `${p.habitaciones} hab` : null,
+    p.banos !== null ? `${p.banos} ${p.banos === 1 ? "baño" : "baños"}` : null,
+    (p.m2Construccion ?? p.m2Terreno) !== null ? `${p.m2Construccion ?? p.m2Terreno} m²` : null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+  // Recién dada de alta (sin medidas): se abre para completarla.
+  const faltanDatos = p.habitaciones === null && p.m2Construccion === null && p.m2Terreno === null;
 
   return (
     <div className="flex h-full flex-col">
@@ -447,10 +545,15 @@ export function FichaClient({ initial }: { initial: PropertyDetail }) {
             Esta propiedad está archivada: no aparece en la lista.
           </p>
         )}
-        <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
-          <div className="space-y-6">
+        {/* Una sola rejilla: en el celular el orden es foto → precio →
+            interesados → datos; en escritorio los interesados van a la
+            derecha, fijos, como antes. */}
+        <div className="mx-auto grid max-w-6xl gap-4 sm:gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+          <div className="lg:col-start-1">
             <Galeria p={p} onChanged={refetch} />
+          </div>
 
+          <div className="lg:col-start-1">
             <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
               <p className="text-2xl font-bold tracking-tight tabular-nums">
                 {precio ?? <span className="text-text-3">Sin precio</span>}
@@ -461,9 +564,16 @@ export function FichaClient({ initial }: { initial: PropertyDetail }) {
                 {[p.zona, p.distrito, p.canton, p.provincia].filter(Boolean).join(", ")}
               </p>
             </div>
+          </div>
 
-            <section className="rounded-lg border bg-card p-4">
-              <p className="kicker mb-3">Datos</p>
+          <aside className="space-y-4 lg:sticky lg:top-0 lg:col-start-2 lg:row-span-5 lg:row-start-1 lg:self-start">
+            <Interesados p={p} onChanged={refetch} />
+            <p className="px-1 text-[13px] text-text-3">
+              Pasos: {(["interesado", "enviada", "visitada", "oferto", "ganada"] as const).map((s) => INTEREST_LABELS[s]).join(" → ")}
+            </p>
+          </aside>
+
+          <Seccion titulo="Datos" resumen={resumenDatos} abiertaAlInicio={faltanDatos} className="bg-card lg:col-start-1">
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                 <Field label="Título" htmlFor="f-title" className="col-span-2 sm:col-span-4">
                   <Input id="f-title" value={draft.title} maxLength={160} onChange={(e) => set({ title: e.target.value })} />
@@ -525,10 +635,14 @@ export function FichaClient({ initial }: { initial: PropertyDetail }) {
                   <Input id="f-parq" inputMode="numeric" value={draft.parqueos} onChange={(e) => set({ parqueos: e.target.value.replace(/[^\d]/g, "") })} />
                 </Field>
               </div>
-            </section>
+          </Seccion>
 
-            <section className="rounded-lg border bg-card p-4">
-              <p className="kicker mb-1">Descripción para el comprador</p>
+          <Seccion
+            titulo="Descripción para el comprador"
+            resumen={p.descripcionPublica?.trim() || "Sin descripción todavía"}
+            abiertaAlInicio={!p.descripcionPublica?.trim()}
+            className="bg-card lg:col-start-1"
+          >
               <p className="mb-2 text-[13px] text-text-3">Lo que le puede mandar o enseñar tal cual.</p>
               <Textarea
                 rows={5}
@@ -537,14 +651,17 @@ export function FichaClient({ initial }: { initial: PropertyDetail }) {
                 onChange={(e) => set({ descripcionPublica: e.target.value })}
                 placeholder="Casa de dos niveles en condominio con seguridad 24/7, a 5 minutos de Multiplaza…"
               />
-            </section>
+          </Seccion>
 
-            {/* D9 — lo interno, separado y marcado: quien comparte pantalla con
-                un comprador debe saber de un vistazo qué no enseñar. */}
-            <section className="rounded-lg border border-dashed bg-subtle p-4">
-              <p className="kicker mb-1 flex items-center gap-1.5">
-                <Lock className="h-3.5 w-3.5" strokeWidth={2} aria-hidden /> Interno · no compartir
-              </p>
+          {/* D9 — lo interno, separado y marcado: quien comparte pantalla con
+              un comprador debe saber de un vistazo qué no enseñar. En el
+              celular arranca plegado: se puede enseñar la ficha sin destaparlo. */}
+          <Seccion
+            titulo="Interno · no compartir"
+            icono={<Lock className="h-3.5 w-3.5" strokeWidth={2} aria-hidden />}
+            resumen="Vendedor, comisión y notas"
+            className="border-dashed bg-subtle lg:col-start-1"
+          >
               <p className="mb-3 text-[13px] text-text-3">Vendedor, comisión y notas: nunca se muestran al comprador.</p>
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                 <Field label="Vendedor" className="col-span-2">
@@ -553,7 +670,7 @@ export function FichaClient({ initial }: { initial: PropertyDetail }) {
                       <Link href={`/inbox?contact=${draft.seller.id}`} className="truncate text-sm font-[620] hover:underline">
                         {draft.seller.name}
                       </Link>
-                      <button type="button" className="text-[13px] text-text-3 hover:text-foreground" onClick={() => set({ seller: null })}>
+                      <button type="button" className="rounded px-1 text-[13px] text-text-3 hover:text-foreground [@media(pointer:coarse)]:min-h-11" onClick={() => set({ seller: null })}>
                         Cambiar
                       </button>
                     </div>
@@ -583,15 +700,7 @@ export function FichaClient({ initial }: { initial: PropertyDetail }) {
                   <Textarea id="f-notas" rows={3} maxLength={5000} value={draft.notasInternas} onChange={(e) => set({ notasInternas: e.target.value })} />
                 </Field>
               </div>
-            </section>
-          </div>
-
-          <aside className="space-y-4 lg:sticky lg:top-0 lg:self-start">
-            <Interesados p={p} onChanged={refetch} />
-            <p className="px-1 text-[13px] text-text-3">
-              Pasos: {(["interesado", "enviada", "visitada", "oferto", "ganada"] as const).map((s) => INTEREST_LABELS[s]).join(" → ")}
-            </p>
-          </aside>
+          </Seccion>
         </div>
       </div>
 

@@ -142,6 +142,29 @@ if (process.env.E2E_WA_MOCK === "1" && prop) {
   check("reenviar a quien ya visitó no lo regresa a «enviada»", ficha2.interesadosDetalle.find((i) => i.contact.id === comprador.id)?.status === "visitada");
 }
 
+// 051 — Lista densa, orden y ficha plegable en el celular.
+if (prop) {
+  await page.goto(`${BASE}/propiedades`);
+  await page.locator("h1", { hasText: "Propiedades" }).waitFor();
+  check("bajo el título va el resumen del inventario", /\d+ (disponible|en captación|reservada)/.test(await page.locator("h1 + p").innerText()));
+  await page.getByRole("radio", { name: "Lista" }).click();
+  check("la vista de lista muestra renglones con precio", (await page.locator("ul.divide-y > li").count()) > 0);
+  await page.reload();
+  await page.locator("ul.divide-y > li").first().waitFor({ timeout: 10_000 });
+  check("la vista elegida se recuerda al volver", (await page.getByRole("radio", { name: "Lista" }).getAttribute("aria-checked")) === "true");
+  await page.getByRole("radio", { name: "Cuadrícula" }).click();
+
+  await page.goto(`${BASE}/propiedades/${prop.id}`);
+  const interno = page.getByRole("button", { name: /Interno · no compartir/ });
+  await interno.waitFor();
+  check("en el celular lo interno arranca plegado", (await interno.getAttribute("aria-expanded")) === "false" && !(await page.getByText("nunca se muestran al comprador").isVisible()));
+  await interno.click();
+  check("…y se despliega con un toque", await page.getByText("nunca se muestran al comprador").isVisible());
+  const yInteresados = (await page.getByText(/Compradores interesados/).boundingBox())?.y ?? Infinity;
+  const yDatos = (await page.getByRole("button", { name: /^Datos/ }).boundingBox())?.y ?? Infinity;
+  check("en el celular los interesados van antes que los datos", yInteresados < yDatos, `${yInteresados} vs ${yDatos}`);
+}
+
 // Limpieza.
 for (const x of dePersona.pendientes) await api(`/api/tareas/${x.id}`, { method: "DELETE" });
 await browser.close();

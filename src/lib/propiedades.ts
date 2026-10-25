@@ -311,3 +311,61 @@ export const enviarFichaSchema = z.object({
   /** Cuántas fotos mandar después del texto (0–5). */
   fotos: z.number().int().min(0).max(5).default(3),
 });
+
+/* ── 051 (fork) — Orden y resumen de la lista ─────────────────────────── */
+
+export const ORDENES = ["recientes", "precio_desc", "precio_asc"] as const;
+export type OrdenPropiedades = (typeof ORDENES)[number];
+export const ORDEN_LABELS: Record<OrdenPropiedades, string> = {
+  recientes: "Más recientes",
+  precio_desc: "Precio: mayor a menor",
+  precio_asc: "Precio: menor a mayor",
+};
+
+/**
+ * Ordena en el cliente (la lista es corta). "recientes" respeta el orden del
+ * servidor. Por precio no se mezclan monedas sin un tipo de cambio: primero
+ * US$, luego ₡, cada grupo ordenado; las que no tienen precio van al final.
+ */
+export function ordenarPropiedades<T extends Pick<PropertyListItem, "priceCents" | "currency">>(
+  items: readonly T[],
+  orden: OrdenPropiedades
+): T[] {
+  if (orden === "recientes") return [...items];
+  const dir = orden === "precio_desc" ? -1 : 1;
+  const moneda = (c: PropertyCurrency) => (c === "USD" ? 0 : 1);
+  return items
+    .map((it, i) => ({ it, i }))
+    .sort((a, b) => {
+      const an = a.it.priceCents === null;
+      const bn = b.it.priceCents === null;
+      if (an !== bn) return an ? 1 : -1;
+      if (an && bn) return a.i - b.i;
+      const m = moneda(a.it.currency) - moneda(b.it.currency);
+      if (m !== 0) return m;
+      return dir * ((a.it.priceCents ?? 0) - (b.it.priceCents ?? 0)) || a.i - b.i;
+    })
+    .map((x) => x.it);
+}
+
+const PLURAL: Record<PropertyStatus, [string, string]> = {
+  captacion: ["en captación", "en captación"],
+  disponible: ["disponible", "disponibles"],
+  reservada: ["reservada", "reservadas"],
+  vendida: ["vendida", "vendidas"],
+  alquilada: ["alquilada", "alquiladas"],
+  retirada: ["retirada", "retiradas"],
+};
+
+/** La línea bajo el título: «8 disponibles · 2 reservadas · 3 con interesados». */
+export function resumenPropiedades(items: readonly Pick<PropertyListItem, "status" | "interesados">[]): string {
+  if (items.length === 0) return "";
+  const partes: string[] = [];
+  for (const s of PROPERTY_STATUSES) {
+    const n = items.filter((p) => p.status === s).length;
+    if (n > 0) partes.push(`${n} ${PLURAL[s][n === 1 ? 0 : 1]}`);
+  }
+  const con = items.filter((p) => p.interesados > 0).length;
+  if (con > 0) partes.push(`${con} con interesados`);
+  return partes.join(" · ");
+}
