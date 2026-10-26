@@ -1492,3 +1492,31 @@ export const task = pgTable(
     index("task_org_assigned_idx").on(t.organizationId, t.assignedUserId, t.doneAt, t.dueAt),
   ]
 );
+
+/**
+ * 054 (fork Knock Knock) — Solicitudes que llegan de los formularios de la web.
+ *
+ * Es la llave de idempotencia del webhook (constitución IV): la web puede
+ * reintentar el mismo envío y el UNIQUE hace que el segundo no cree otro
+ * trato, vínculo ni tarea. Guarda además la solicitud tal cual llegó, para
+ * poder revisar qué mandó la web si algo no cuadra.
+ */
+export const webLead = pgTable(
+  "web_lead",
+  {
+    id: text("id").primaryKey(),
+    organizationId: text("organization_id")
+      .notNull()
+      .references(() => organization.id, { onDelete: "cascade" }),
+    /** El id de la solicitud en la web o, si no viene, un hash del contenido. */
+    externalId: text("external_id").notNull(),
+    contactId: text("contact_id").references(() => contact.id, { onDelete: "set null" }),
+    propertyId: text("property_id").references(() => property.id, { onDelete: "set null" }),
+    payload: jsonb("payload").$type<Record<string, unknown>>().notNull(),
+    receivedAt: timestamp("received_at").notNull().defaultNow(),
+  },
+  (t) => [
+    uniqueIndex("web_lead_org_external_uq").on(t.organizationId, t.externalId),
+    index("web_lead_org_contact_idx").on(t.organizationId, t.contactId),
+  ]
+);

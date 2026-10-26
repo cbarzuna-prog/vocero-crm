@@ -23,6 +23,7 @@
     "test:e2e:propiedades": "node --env-file=.env scripts/e2e-046-propiedades.mjs",
     "test:e2e:dos-pasos": "node --env-file=.env scripts/e2e-049-dos-pasos.mjs",
     "test:e2e:atajos": "node --env-file=.env scripts/e2e-050-atajos.mjs",
+    "test:e2e:leads-web": "node --env-file=.env scripts/e2e-054-leads-web.mjs",
     "eval:silencios": "esbuild scripts/eval-silencios.ts --bundle --platform=node --format=esm --outfile=.tmp-eval-silencios.mjs --alias:@=./src --log-level=warning && node --env-file=.env .tmp-eval-silencios.mjs",
     "test:watch": "vitest",
     "db:generate": "drizzle-kit generate",

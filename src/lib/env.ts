@@ -40,6 +40,11 @@ export const envSchema = z.object({
   // 046: tareas de seguimiento y pantalla «Hoy». Apagado por defecto.
   // Ej.: TAREAS=on
   TAREAS: z.string().optional(),
+  // 054: leads desde los formularios de la web. Apagado por defecto; sin
+  // el, la ruta /api/webhooks/web/<token> responde 404. Ej.: LEADS_WEB=on
+  LEADS_WEB: z.string().optional(),
+  // 054: segmento secreto de esa ruta (minimo 32 caracteres).
+  WEB_LEADS_TOKEN: z.string().optional(),
   // 016: atribucion de anuncios y reporte a la Conversions API de Meta.
   // Apagada por defecto: sin ella no se captura de que anuncio vino una
   // conversacion, no se le reporta nada a Meta y la superficie da 404.

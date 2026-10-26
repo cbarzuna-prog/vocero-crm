@@ -41,6 +41,8 @@ const prefixes = {
   propertyInterest: "pint",
   propertyInterestEvent: "pie",
   task: "tsk",
+  // 054 — leads desde la web (fork Knock Knock)
+  webLead: "wlead",
 } as const;
 
 export type IdKind = keyof typeof prefixes;
