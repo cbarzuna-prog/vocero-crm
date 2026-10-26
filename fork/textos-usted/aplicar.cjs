@@ -8,6 +8,7 @@
  * una frase, la prueba `tests/unit/053-textos-usted.test.ts` avisa qué par
  * quedó huérfano.
  */
+/* eslint-disable @typescript-eslint/no-require-imports -- loader de webpack: CommonJS por contrato */
 const fs = require("node:fs");
 const path = require("node:path");
 

@@ -1,1 +1,1472 @@
-{"src/components/onboarding/onboarding-client.tsx": [["Deja listo tu CRM en {total} pasos", "Deje listo su CRM en {total} pasos"]]}
+{
+  "src/app/(auth)/layout.tsx": [
+    [
+      "que es tuyo.",
+      "que es suyo."
+    ]
+  ],
+  "src/app/(auth)/login/page.tsx": [
+    [
+      "Demasiados intentos. Espera unos minutos.",
+      "Demasiados intentos. Espere unos minutos."
+    ]
+  ],
+  "src/app/(auth)/register/page.tsx": [
+    [
+      "Pide acceso al propietario.",
+      "Pida acceso al propietario."
+    ],
+    [
+      "Demasiados intentos. Espera unos minutos.",
+      "Demasiados intentos. Espere unos minutos."
+    ],
+    [
+      ">Tu nombre</Label>",
+      ">Su nombre</Label>"
+    ],
+    [
+      "¿Ya tienes cuenta?",
+      "¿Ya tiene cuenta?"
+    ],
+    [
+      "              Inicia sesión",
+      "              Inicie sesión"
+    ]
+  ],
+  "src/app/api/agent/profile/route.ts": [
+    [
+      "el CRM no puede despacharle a tu agente.",
+      "el CRM no puede despacharle a su agente."
+    ],
+    [
+      "No hay un agente conectado. Conéctalo (BRAIN_DISPATCH_URL) y vuelve a encenderlo.",
+      "No hay un agente conectado. Conéctelo (BRAIN_DISPATCH_URL) y vuelva a encenderlo."
+    ],
+    [
+      "`Tu agente (${despacho.host}) no contesta. Revisa que esté corriendo y vuelve a intentar.`",
+      "`Su agente (${despacho.host}) no contesta. Revise que esté corriendo y vuelva a intentar.`"
+    ]
+  ],
+  "src/app/api/contacts/[id]/start-conversation/route.ts": [
+    [
+      "Esta persona te escribió hace menos de 24 h: puedes responderle directo",
+      "Esta persona le escribió hace menos de 24 h: puede responderle directo"
+    ]
+  ],
+  "src/app/api/conversations/[id]/messages/forward-image/route.ts": [
+    [
+      "no admite imágenes; elige una de WhatsApp",
+      "no admite imágenes; elija una de WhatsApp"
+    ]
+  ],
+  "src/app/api/conversations/[id]/route.ts": [
+    [
+      "Cancélala en Citas antes de eliminar.",
+      "Cancélela en Citas antes de eliminar."
+    ]
+  ],
+  "src/app/api/lab/runs/route.ts": [
+    [
+      "Conecta tu agente para correr el Laboratorio: prueba al cerebro que contesta a tus clientes",
+      "Conecte su agente para correr el Laboratorio: prueba al cerebro que contesta a sus clientes"
+    ],
+    [
+      "Configura tu proveedor de IA en Ajustes → IA para correr el Laboratorio",
+      "Configure su proveedor de IA en Ajustes → IA para correr el Laboratorio"
+    ],
+    [
+      "Ya hay una corrida en curso; espera a que termine",
+      "Ya hay una corrida en curso; espere a que termine"
+    ]
+  ],
+  "src/app/api/pipeline/stages/[id]/route.ts": [
+    [
+      "La etapa tiene tarjetas: indica ?moveTo=",
+      "La etapa tiene tarjetas: indique ?moveTo="
+    ]
+  ],
+  "src/app/api/settings/ai/models/route.ts": [
+    [
+      "Pega la llave del proveedor para traer sus modelos",
+      "Pegue la llave del proveedor para traer sus modelos"
+    ]
+  ],
+  "src/app/api/settings/ai/test/route.ts": [
+    [
+      "Pega la llave del proveedor para probar la conexión",
+      "Pegue la llave del proveedor para probar la conexión"
+    ]
+  ],
+  "src/app/api/settings/branding/favicon/route.ts": [
+    [
+      "Formato no reconocido. Usa PNG",
+      "Formato no reconocido. Use PNG"
+    ]
+  ],
+  "src/app/api/settings/capi/route.ts": [
+    [
+      "reusar el token: pega uno explícito",
+      "reusar el token: pegue uno explícito"
+    ]
+  ],
+  "src/app/api/settings/instagram/route.ts": [
+    [
+      "No se pudo contactar la plataforma; intenta de nuevo",
+      "No se pudo contactar la plataforma; intente de nuevo"
+    ]
+  ],
+  "src/app/api/settings/messenger/route.ts": [
+    [
+      "No se pudo contactar la plataforma; intenta de nuevo",
+      "No se pudo contactar la plataforma; intente de nuevo"
+    ]
+  ],
+  "src/app/api/settings/webhook/route.ts": [
+    [
+      "Primero guarda la conexión de WhatsApp.",
+      "Primero guarde la conexión de WhatsApp."
+    ]
+  ],
+  "src/components/agent/agent-client.tsx": [
+    [
+      "Se enciende cuando conectes tu agente.",
+      "Se enciende cuando conecte su agente."
+    ],
+    [
+      "\"Tu agente no puede pensar\"",
+      "\"Su agente no puede pensar\""
+    ],
+    [
+      "\"Tu agente no tiene con qué pensar\"",
+      "\"Su agente no tiene con qué pensar\""
+    ],
+    [
+      "elige el proveedor, el modelo y pega tu llave, sin reiniciar nada.",
+      "elija el proveedor, el modelo y pegue su llave, sin reiniciar nada."
+    ],
+    [
+      "(Si tu agente usa su propia llave, puedes ignorar este aviso.)",
+      "(Si su agente usa su propia llave, puede ignorar este aviso.)"
+    ],
+    [
+      "actúa el agente al responder a tus clientes.",
+      "actúa el agente al responder a sus clientes."
+    ],
+    [
+      "Considera depurar entradas.",
+      "Considere depurar entradas."
+    ],
+    [
+      "Sin entradas todavía: agrega lo que el agente debe saber.",
+      "Sin entradas todavía: agregue lo que el agente debe saber."
+    ]
+  ],
+  "src/components/agent/brain-status-card.tsx": [
+    [
+      "<CardTitle>Quién responde a tus clientes</CardTitle>",
+      "<CardTitle>Quién responde a sus clientes</CardTitle>"
+    ],
+    [
+      "Vocero no trae agente: contesta el que conectas al lado (Nea, o el\n          tuyo), y solo con el interruptor de arriba encendido. Sin agente,\n          contestas tú desde la bandeja.",
+      "Vocero no trae agente: contesta el que usted conecta al lado (Nea, o el\n          suyo), y solo con el interruptor de arriba encendido. Sin agente,\n          contesta usted desde la bandeja."
+    ],
+    [
+      "Vocero funciona como bandeja manual: tus clientes reciben lo que\n            contestes tú. Para que un agente conteste, levántalo al lado del CRM\n            y pon <Env>",
+      "Vocero funciona como bandeja manual: sus clientes reciben lo que\n            conteste usted. Para que un agente conteste, levántelo al lado del CRM\n            y ponga <Env>"
+    ],
+    [
+      "title=\"Tu agente está conectado pero apagado\"",
+      "title=\"Su agente está conectado pero apagado\""
+    ],
+    [
+      "Enciéndelo con el interruptor de arriba para que conteste.",
+      "Enciéndalo con el interruptor de arriba para que conteste."
+    ],
+    [
+      "label=\"Tu agente\"",
+      "label=\"Su agente\""
+    ],
+    [
+      "el CRM le despacha los mensajes a tu agente.",
+      "el CRM le despacha los mensajes a su agente."
+    ],
+    [
+      "La última llamada de tu agente se cuenta",
+      "La última llamada de su agente se cuenta"
+    ],
+    [
+      "se enciende cuando lo conectes.",
+      "se enciende cuando lo conecte."
+    ],
+    [
+      "El CRM no le pasa nada a tu agente:",
+      "El CRM no le pasa nada a su agente:"
+    ],
+    [
+      "Pero tu agente no está en línea",
+      "Pero su agente no está en línea"
+    ],
+    [
+      "El CRM le pasa cada mensaje a tu agente.",
+      "El CRM le pasa cada mensaje a su agente."
+    ],
+    [
+      "corrígela y vuelve a desplegar el CRM",
+      "corríjala y vuelva a desplegar el CRM"
+    ]
+  ],
+  "src/components/bookings/agenda-list.tsx": [
+    [
+      "citas que agenda la IA o tu equipo.",
+      "citas que agenda la IA o su equipo."
+    ]
+  ],
+  "src/components/bookings/booking-drawer.tsx": [
+    [
+      "La hora ya pasó: márcala como realizada",
+      "La hora ya pasó: márquela como realizada"
+    ],
+    [
+      "Mueve y cancela desde Vocero:",
+      "Mueva y cancele desde Vocero:"
+    ],
+    [
+      "No se pudo comprobar la disponibilidad. Intenta de nuevo.",
+      "No se pudo comprobar la disponibilidad. Intente de nuevo."
+    ]
+  ],
+  "src/components/bookings/bookings-client.tsx": [
+    [
+      "mostrarlas todas: acórtalo para verlas",
+      "mostrarlas todas: acórtelo para verlas"
+    ]
+  ],
+  "src/components/contacts/contacts-client.tsx": [
+    [
+      "Cada persona que escriba a tu WhatsApp",
+      "Cada persona que escriba a su WhatsApp"
+    ],
+    [
+      "a este contacto: lo atiendes tú",
+      "a este contacto: lo atiende usted"
+    ],
+    [
+      "llegan a la Bandeja y los atiendes tú.",
+      "llegan a la Bandeja y los atiende usted."
+    ]
+  ],
+  "src/components/contacts/import-contacts-dialog.tsx": [
+    [
+      "No se pudo importar. Revisa tu conexión.",
+      "No se pudo importar. Revise su conexión."
+    ],
+    [
+      "miembros que quieres atender tú. Sus",
+      "miembros que quiere atender usted. Sus"
+    ]
+  ],
+  "src/components/contacts/new-contact-dialog.tsx": [
+    [
+      "No se pudo guardar. Revisa tu conexión.",
+      "No se pudo guardar. Revise su conexión."
+    ],
+    [
+      "gente que te\n          escribió por otra red",
+      "gente que le\n          escribió por otra red"
+    ],
+    [
+      "Escríbelo con espacios si quieres, pero{\" \"}\n              <strong>incluye el código de país</strong>",
+      "Escríbalo con espacios si quiere, pero{\" \"}\n              <strong>incluya el código de país</strong>"
+    ],
+    [
+      "la misma persona que te escriba",
+      "la misma persona que le escriba"
+    ],
+    [
+      "Tu embudo no tiene etapas abiertas. Crea una en el Pipeline",
+      "Su embudo no tiene etapas abiertas. Cree una en el Pipeline"
+    ]
+  ],
+  "src/components/contacts/start-conversation.tsx": [
+    [
+      "Esta persona nunca te ha escrito",
+      "Esta persona nunca le ha escrito"
+    ],
+    [
+      "todavía no\n          tienes ninguna.",
+      "todavía no\n          tiene ninguna."
+    ],
+    [
+      "Nunca te ha escrito: para iniciar",
+      "Nunca le ha escrito: para iniciar"
+    ]
+  ],
+  "src/components/ficha-panel.tsx": [
+    [
+      "Aquí aparece lo que tu agente va averiguando",
+      "Aquí aparece lo que su agente va averiguando"
+    ],
+    [
+      "y puedes escribirlo tú.",
+      "y puede escribirlo usted."
+    ]
+  ],
+  "src/components/inbox/composer.tsx": [
+    [
+      "Suelta la imagen para adjuntarla",
+      "Suelte la imagen para adjuntarla"
+    ],
+    [
+      "Lo que ibas a mandar sigue aquí para reintentar.",
+      "Lo que iba a mandar sigue aquí para reintentar."
+    ],
+    [
+      "Podrás escribirle cuando vuelva a mandar un mensaje.",
+      "Podrá escribirle cuando vuelva a mandar un mensaje."
+    ],
+    [
+      "conversación, envía una plantilla aprobada.",
+      "conversación, envíe una plantilla aprobada."
+    ],
+    [
+      "te deja responder a ti hasta 7 días, al agente ya no.",
+      "le deja responder a usted hasta 7 días, al agente ya no."
+    ],
+    [
+      "\"Escribe una respuesta…\"",
+      "\"Escriba una respuesta…\""
+    ],
+    [
+      "imagen del portapapeles. Cópiala de nuevo.",
+      "imagen del portapapeles. Cópiela de nuevo."
+    ]
+  ],
+  "src/components/inbox/contact-panel.tsx": [
+    [
+      "\"Respondiste desde el teléfono — IA en pausa\"",
+      "\"Respondió desde el teléfono — IA en pausa\""
+    ],
+    [
+      "Tu agente no está en línea: nadie contesta",
+      "Su agente no está en línea: nadie contesta"
+    ],
+    [
+      "Tu agente está conectado pero apagado: contestas tú.",
+      "Su agente está conectado pero apagado: contesta usted."
+    ],
+    [
+      "sin agente conectado, contestas tú.",
+      "sin agente conectado, contesta usted."
+    ]
+  ],
+  "src/components/inbox/forward-image-dialog.tsx": [
+    [
+      "No se pudo reenviar la imagen. Intenta de nuevo.",
+      "No se pudo reenviar la imagen. Intente de nuevo."
+    ],
+    [
+      "Intenta reenviar de nuevo.",
+      "Intente reenviar de nuevo."
+    ],
+    [
+      "\"Elige a quién\"",
+      "\"Elija a quién\""
+    ]
+  ],
+  "src/components/inbox/helpers.ts": [
+    [
+      "Cuando alguien escriba a tu número de WhatsApp",
+      "Cuando alguien escriba a su número de WhatsApp"
+    ],
+    [
+      "Cuando alguien te escriba por",
+      "Cuando alguien le escriba por"
+    ]
+  ],
+  "src/components/inbox/inbox-client.tsx": [
+    [
+      "Elige una conversación para ver el hilo",
+      "Elija una conversación para ver el hilo"
+    ]
+  ],
+  "src/components/inbox/quote-block.tsx": [
+    [
+      "=== \"out\" ? \"Tú\" : null",
+      "=== \"out\" ? \"Usted\" : null"
+    ]
+  ],
+  "src/components/inbox/template-sender.tsx": [
+    [
+      "plantillas aprobadas. Créalas en",
+      "plantillas aprobadas. Créelas en"
+    ],
+    [
+      "y espera la aprobación de Meta.",
+      "y espere la aprobación de Meta."
+    ],
+    [
+      "Elige una plantilla…",
+      "Elija una plantilla…"
+    ]
+  ],
+  "src/components/inbox/voice-recorder.tsx": [
+    [
+      "Permite el micrófono en el navegador",
+      "Permita el micrófono en el navegador"
+    ],
+    [
+      "Ciérralo y vuelve a intentar.",
+      "Ciérrelo y vuelva a intentar."
+    ],
+    [
+      "No se pudo empezar a grabar. Vuelve a intentar.",
+      "No se pudo empezar a grabar. Vuelva a intentar."
+    ],
+    [
+      "Prueba con Chrome, Edge, Firefox o Safari",
+      "Pruebe con Chrome, Edge, Firefox o Safari"
+    ]
+  ],
+  "src/components/lab/lab-client.tsx": [
+    [
+      "Configura tu proveedor de IA para usar el Laboratorio",
+      "Configure su proveedor de IA para usar el Laboratorio"
+    ],
+    [
+      "Con esa llave piensan tu agente (a través del CRM) y el juez que\n            califica cada conversación: configúrala en",
+      "Con esa llave piensan su agente (a través del CRM) y el juez que\n            califica cada conversación: configúrela en"
+    ],
+    [
+      "            y vuelve aquí.",
+      "            y vuelva aquí."
+    ],
+    [
+      "El Laboratorio prueba al agente que contesta a tus clientes:",
+      "El Laboratorio prueba al agente que contesta a sus clientes:"
+    ],
+    [
+      "\"Elige una corrida\"",
+      "\"Elija una corrida\""
+    ],
+    [
+      "Corre tu primera evaluación: 6 clientes simulados conversarán con tu agente",
+      "Corra su primera evaluación: 6 clientes simulados conversarán con su agente"
+    ],
+    [
+      "Cuando conectes tu agente, aquí aparecerán sus evaluaciones.",
+      "Cuando conecte su agente, aquí aparecerán sus evaluaciones."
+    ],
+    [
+      "Abre una corrida del historial para ver su reporte.",
+      "Abra una corrida del historial para ver su reporte."
+    ],
+    [
+      "Vuelve a\n              intentarlo.",
+      "Vuelva a\n              intentarlo."
+    ]
+  ],
+  "src/components/onboarding/onboarding-client.tsx": [
+    [
+      "Deja listo tu CRM en {total} pasos",
+      "Deje listo su CRM en {total} pasos"
+    ],
+    [
+      "Hazlos en orden: cada botón te lleva a la pantalla que toca. Al\n            volver aquí verás tu avance.",
+      "Hágalos en orden: cada botón lo lleva a la pantalla que toca. Al\n            volver aquí verá su avance."
+    ],
+    [
+      "|| \"tu agente\"",
+      "|| \"su agente\""
+    ],
+    [
+      "No pudimos encender el agente. Inténtalo de nuevo.",
+      "No pudimos encender el agente. Inténtelo de nuevo."
+    ],
+    [
+      "\"Tu agente ya está contestando\"",
+      "\"Su agente ya está contestando\""
+    ],
+    [
+      "El agente está encendido y atiende a tus clientes. Puedes\n                apagarlo cuando quieras desde Agente.",
+      "El agente está encendido y atiende a sus clientes. Puede\n                apagarlo cuando quiera desde Agente."
+    ],
+    [
+      "¡Todo listo! Enciende a {agente}",
+      "¡Todo listo! Encienda a {agente}"
+    ],
+    [
+      "Desde ese momento contestará a tus clientes. Puedes apagarlo\n                cuando quieras desde Agente.",
+      "Desde ese momento contestará a sus clientes. Puede apagarlo\n                cuando quiera desde Agente."
+    ],
+    [
+      "Los mensajes llegan a la Bandeja y contestas tú. Para que un\n                agente conteste, conéctalo: después lo enciendes aquí.",
+      "Los mensajes llegan a la Bandeja y contesta usted. Para que un\n                agente conteste, conéctelo: después lo enciende aquí."
+    ],
+    [
+      "Cómo conectar tu agente <ArrowUpRight",
+      "Cómo conectar su agente <ArrowUpRight"
+    ],
+    [
+      "Tu agente empieza apagado: mientras no lo enciendas no le\n                contesta a nadie y los mensajes que lleguen los atiendes tú desde\n                la Bandeja. Con los pasos listos y tu agente conectado, aquí",
+      "Su agente empieza apagado: mientras no lo encienda no le\n                contesta a nadie y los mensajes que lleguen los atiende usted desde\n                la Bandeja. Con los pasos listos y su agente conectado, aquí"
+    ]
+  ],
+  "src/components/pipeline/amount-dialog.tsx": [
+    [
+      "Escríbelo como 12500 o 12,500.00",
+      "Escríbalo como 12500 o 12,500.00"
+    ],
+    [
+      "Déjalo vacío para quitar el monto.",
+      "Déjelo vacío para quitar el monto."
+    ]
+  ],
+  "src/components/pipeline/lead-drawer.tsx": [
+    [
+      "Déjalo vacío para quitar el monto.",
+      "Déjelo vacío para quitar el monto."
+    ],
+    [
+      "Sin monto — captúralo",
+      "Sin monto — captúrelo"
+    ]
+  ],
+  "src/components/pipeline/stage-manager.tsx": [
+    [
+      "tiene tarjetas. Elige a dónde moverlas:",
+      "tiene tarjetas. Elija a dónde moverlas:"
+    ]
+  ],
+  "src/components/results/bot-section.tsx": [
+    [
+      "tu equipo desde el panel de la conversación.",
+      "su equipo desde el panel de la conversación."
+    ]
+  ],
+  "src/components/results/results-client.tsx": [
+    [
+      "No se pudo cargar. Revisa tu conexión.",
+      "No se pudo cargar. Revise su conexión."
+    ]
+  ],
+  "src/components/results/sales-section.tsx": [
+    [
+      "Prueba con un rango más amplio.",
+      "Pruebe con un rango más amplio."
+    ]
+  ],
+  "src/components/settings/ads-client.tsx": [
+    [
+      "Conecta tu dataset y el CRM le avisará",
+      "Conecte su dataset y el CRM le avisará"
+    ],
+    [
+      "Administrador de eventos de Meta → tu conjunto de datos. Suele ser\n              el de tu propia cuenta de WhatsApp.",
+      "Administrador de eventos de Meta → su conjunto de datos. Suele ser\n              el de su propia cuenta de WhatsApp."
+    ],
+    [
+      "Déjalo vacío para reusar el de WhatsApp",
+      "Déjelo vacío para reusar el de WhatsApp"
+    ],
+    [
+      "El token de tu conexión de WhatsApp",
+      "El token de su conexión de WhatsApp"
+    ],
+    [
+      "Solo pega uno si Meta te dio otro distinto.",
+      "Solo pegue uno si Meta le dio otro distinto."
+    ],
+    [
+      "cuando el trato entra a tu etapa ganada.",
+      "cuando el trato entra a su etapa ganada."
+    ]
+  ],
+  "src/components/settings/agenda-client.tsx": [
+    [
+      "En qué franjas puede agendarte un cliente. Las horas son las de tu\n            zona;",
+      "En qué franjas un cliente puede agendarle una cita. Las horas son las de su\n            zona;"
+    ],
+    [
+      "Los demás conectan con tu propia",
+      "Los demás conectan con su propia"
+    ],
+    [
+      "Tu sala de siempre",
+      "Su sala de siempre"
+    ],
+    [
+      "Si lo dejas vacío, las",
+      "Si lo deja vacío, las"
+    ],
+    [
+      "Sin huecos: revisa el horario",
+      "Sin huecos: revise el horario"
+    ]
+  ],
+  "src/components/settings/ai-client.tsx": [
+    [
+      "Tu llave vuelve a estar activa.",
+      "Su llave vuelve a estar activa."
+    ],
+    [
+      ". Pulsa Guardar para dejarla configurada.",
+      ". Pulse Guardar para dejarla configurada."
+    ],
+    [
+      "modelos disponibles: escribe para filtrar",
+      "modelos disponibles: escriba para filtrar"
+    ],
+    [
+      "No se pudo guardar. Revisa los datos e inténtalo de nuevo.",
+      "No se pudo guardar. Revise los datos e inténtelo de nuevo."
+    ],
+    [
+      "Guardado. Prueba la conexión y corre el Laboratorio",
+      "Guardado. Pruebe la conexión y corra el Laboratorio"
+    ],
+    [
+      "Llave eliminada. Tu agente no puede contestar hasta que configures otra.",
+      "Llave eliminada. Su agente no puede contestar hasta que configure otra."
+    ],
+    [
+      "Con esta llave piensa tu agente (a través del CRM: no hace falta\n            copiarla a tu agente) y el juez del Laboratorio. Aquí eliges el",
+      "Con esta llave piensa su agente (a través del CRM: no hace falta\n            copiarla a su agente) y el juez del Laboratorio. Aquí elige el"
+    ],
+    [
+      "Lo que guardes aquí manda sobre ellas",
+      "Lo que guarde aquí manda sobre ellas"
+    ],
+    [
+      "Todavía no hay proveedor de IA: tu agente no tiene con qué pensar",
+      "Todavía no hay proveedor de IA: su agente no tiene con qué pensar"
+    ],
+    [
+      "Tu agente lo usa a través del CRM para conversar con tus\n                clientes",
+      "Su agente lo usa a través del CRM para conversar con sus\n                clientes"
+    ],
+    [
+      "(déjalo vacío para conservarla)",
+      "(déjelo vacío para conservarla)"
+    ],
+    [
+      "Se guarda cifrada en tu servidor. No la compartas por chat.",
+      "Se guarda cifrada en su servidor. No la comparta por chat."
+    ],
+    [
+      "Crea una cuenta del negocio en",
+      "Cree una cuenta del negocio en"
+    ],
+    [
+      ", carga saldo. El consumo",
+      ", cargue saldo. El consumo"
+    ],
+    [
+      "            Abre{\" \"}\n",
+      "            Abra{\" \"}\n"
+    ],
+    [
+      "→ Create key y copia la llave.",
+      "→ Create key y copie la llave."
+    ],
+    [
+      "<li>Pégala aquí, pulsa «Probar conexión»",
+      "<li>Péguela aquí, pulse «Probar conexión»"
+    ],
+    [
+      "En el panel de tu proveedor, crea una API key",
+      "En el panel de su proveedor, cree una API key"
+    ],
+    [
+      "<li>Copia su base URL",
+      "<li>Copie su base URL"
+    ],
+    [
+      "<li>Pega aquí la base URL",
+      "<li>Pegue aquí la base URL"
+    ],
+    [
+      "Si prefieres dejarlo en el entorno",
+      "Si prefiere dejarlo en el entorno"
+    ]
+  ],
+  "src/components/settings/branding-client.tsx": [
+    [
+      "Este CRM es tuyo: ponle el nombre de tu negocio y tu color.",
+      "Este CRM es suyo: póngale el nombre de su negocio y su color."
+    ]
+  ],
+  "src/components/settings/channels-client.tsx": [
+    [
+      "No se pudo dar de alta el webhook. Intenta de nuevo.",
+      "No se pudo dar de alta el webhook. Intente de nuevo."
+    ],
+    [
+      "\"tu cuenta conectada\"",
+      "\"su cuenta conectada\""
+    ],
+    [
+      "`tus ${data?.accounts} cuentas conectadas`",
+      "`sus ${data?.accounts} cuentas conectadas`"
+    ],
+    [
+      "y limitado a tus cuentas conectadas.",
+      "y limitado a sus cuentas conectadas."
+    ],
+    [
+      "En Zernio → Webhooks, da de alta esta URL",
+      "En Zernio → Webhooks, dé de alta esta URL"
+    ],
+    [
+      "y limítalo a tus cuentas. El",
+      "y limítelo a sus cuentas. El"
+    ]
+  ],
+  "src/components/settings/connector-credentials.tsx": [
+    [
+      "Se obtiene una sola vez autorizando tu propia app.",
+      "Se obtiene una sola vez autorizando su propia app."
+    ],
+    [
+      "Déjalo en «primary» para tu calendario principal.",
+      "Déjelo en «primary» para su calendario principal."
+    ],
+    [
+      "Crea una app Server-to-Server OAuth",
+      "Cree una app Server-to-Server OAuth"
+    ],
+    [
+      "Copia de ahí el Account ID",
+      "Copie de ahí el Account ID"
+    ],
+    [
+      "Dale los cuatro permisos",
+      "Dele los cuatro permisos"
+    ],
+    [
+      "Crea un proyecto en Google Cloud",
+      "Cree un proyecto en Google Cloud"
+    ],
+    [
+      "Necesitas Client ID, Client Secret",
+      "Necesita Client ID, Client Secret"
+    ],
+    [
+      "IMPORTANTE: publica tu app OAuth «en producción». Si la dejas en modo prueba",
+      "IMPORTANTE: publique su app OAuth «en producción». Si la deja en modo prueba"
+    ],
+    [
+      "Revisa las credenciales.",
+      "Revise las credenciales."
+    ],
+    [
+      "sin enlace hasta que vuelvas a conectar.",
+      "sin enlace hasta que vuelva a conectar."
+    ]
+  ],
+  "src/components/settings/favicon-card.tsx": [
+    [
+      "\"Generado con tu marca\"",
+      "\"Generado con su marca\""
+    ],
+    [
+      "Puedes quitarlo para volver a él.",
+      "Puede quitarlo para volver a él."
+    ],
+    [
+      "La inicial sobre tu color de acento. Sube tu logo para reemplazarla.",
+      "La inicial sobre su color de acento. Suba su logo para reemplazarla."
+    ],
+    [
+      "se dibuja sobre tu color de acento.",
+      "se dibuja sobre su color de acento."
+    ]
+  ],
+  "src/components/settings/instagram-client.tsx": [
+    [
+      "Vincula tu Instagram en Zernio y pega aquí tu API key",
+      "Vincule su Instagram en Zernio y pegue aquí su API key"
+    ],
+    [
+      "Crea una app en developers.facebook.com",
+      "Cree una app en developers.facebook.com"
+    ],
+    [
+      "Genera el token con los permisos",
+      "Genere el token con los permisos"
+    ],
+    [
+      "están pausados. Vuelve a conectar abajo.",
+      "están pausados. Vuelva a conectar abajo."
+    ],
+    [
+      "Los mensajes directos de tu cuenta entran",
+      "Los mensajes directos de su cuenta entran"
+    ],
+    [
+      "what=\"tu cuenta de Instagram\"",
+      "what=\"su cuenta de Instagram\""
+    ],
+    [
+      "los comentarios de tus",
+      "los comentarios de sus"
+    ],
+    [
+      "El webhook lo da de alta Vocero en tu Zernio al conectar, limitado a",
+      "El webhook lo da de alta Vocero en su Zernio al conectar, limitado a"
+    ],
+    [
+      "tus cuentas. Si un día dejan de llegar mensajes, revisa{\" \"}",
+      "sus cuentas. Si un día dejan de llegar mensajes, revise{\" \"}"
+    ],
+    [
+      "En tu app de Meta: Instagram",
+      "En su app de Meta: Instagram"
+    ],
+    [
+      "<code>messages</code>. Pega esta",
+      "<code>messages</code>. Pegue esta"
+    ],
+    [
+      "Cada entrega se verifica con la firma del App Secret de tu app.",
+      "Cada entrega se verifica con la firma del App Secret de su app."
+    ],
+    [
+      "Define META_APP_SECRET en la instancia",
+      "Defina META_APP_SECRET en la instancia"
+    ]
+  ],
+  "src/components/settings/messenger-client.tsx": [
+    [
+      "Vincula tu página en Zernio y pega aquí tu API key",
+      "Vincule su página en Zernio y pegue aquí su API key"
+    ],
+    [
+      "Crea una app en developers.facebook.com",
+      "Cree una app en developers.facebook.com"
+    ],
+    [
+      "Genera ahí el token de la página",
+      "Genere ahí el token de la página"
+    ],
+    [
+      "Pega uno nuevo abajo para",
+      "Pegue uno nuevo abajo para"
+    ],
+    [
+      "la gente le escribe a tu página entran",
+      "la gente le escribe a su página entran"
+    ],
+    [
+      "what=\"tu página de Facebook\"",
+      "what=\"su página de Facebook\""
+    ],
+    [
+      "El webhook lo da de alta Vocero en tu Zernio al conectar, limitado a",
+      "El webhook lo da de alta Vocero en su Zernio al conectar, limitado a"
+    ],
+    [
+      "tus cuentas. Si un día dejan de llegar mensajes, revisa{\" \"}",
+      "sus cuentas. Si un día dejan de llegar mensajes, revise{\" \"}"
+    ],
+    [
+      "En tu app de Meta: Messenger",
+      "En su app de Meta: Messenger"
+    ],
+    [
+      "<code>messages</code>. Pega esta URL y",
+      "<code>messages</code>. Pegue esta URL y"
+    ],
+    [
+      "y suscribe la página a la app.",
+      "y suscriba la página a la app."
+    ],
+    [
+      "Cada entrega se verifica con la firma del App Secret de tu app.",
+      "Cada entrega se verifica con la firma del App Secret de su app."
+    ],
+    [
+      "Define META_APP_SECRET en la instancia",
+      "Defina META_APP_SECRET en la instancia"
+    ]
+  ],
+  "src/components/settings/team-client.tsx": [
+    [
+      "Sin correos ni invitaciones: comparte tú mismo la contraseña\n            temporal con tu compañero",
+      "Sin correos ni invitaciones: comparta usted mismo la contraseña\n            temporal con su compañero"
+    ],
+    [
+      "Comparte estos datos ahora",
+      "Comparta estos datos ahora"
+    ]
+  ],
+  "src/components/settings/templates-client.tsx": [
+    [
+      "Corrígela y créala de nuevo con otro nombre.",
+      "Corríjala y créela de nuevo con otro nombre."
+    ],
+    [
+      "            Tus plantillas\n",
+      "            Sus plantillas\n"
+    ],
+    [
+      "Todavía no tienes plantillas",
+      "Todavía no tiene plantillas"
+    ],
+    [
+      "Crea la primera para poder escribirle a un cliente cuando pasen las 24 horas. Puedes empezar con un ejemplo.",
+      "Cree la primera para poder escribirle a un cliente cuando pasen las 24 horas. Puede empezar con un ejemplo."
+    ],
+    [
+      "title: \"Créala aquí\"",
+      "title: \"Créela aquí\""
+    ],
+    [
+      "Escribe el mensaje y marca con",
+      "Escriba el mensaje y marque con"
+    ],
+    [
+      "title: \"Úsala\"",
+      "title: \"Úsela\""
+    ],
+    [
+      "elígela, llena las variables y envía. Para escribirle primero a alguien, usa «Escribir primero»",
+      "elíjala, llene las variables y envíe. Para escribirle primero a alguien, use «Escribir primero»"
+    ],
+    [
+      "Son el único mensaje que WhatsApp te deja enviar",
+      "Son el único mensaje que WhatsApp le deja enviar"
+    ],
+    [
+      "WhatsApp solo te deja escribir con libertad durante las 24 horas\n            que siguen al último mensaje de tu cliente. Pasado ese tiempo —o\n            para escribirle a alguien que nunca te ha escrito— necesitas un",
+      "WhatsApp solo le deja escribir con libertad durante las 24 horas\n            que siguen al último mensaje de su cliente. Pasado ese tiempo —o\n            para escribirle a alguien que nunca le ha escrito— necesita un"
+    ],
+    [
+      "No empieces ni termines el mensaje con una variable, y no pongas dos variables juntas.",
+      "No empiece ni termine el mensaje con una variable, y no ponga dos variables juntas."
+    ],
+    [
+      "<li>Di quién escribe y por qué:",
+      "<li>Diga quién escribe y por qué:"
+    ],
+    [
+      "Escribe ejemplos reales para cada variable",
+      "Escriba ejemplos reales para cada variable"
+    ],
+    [
+      "El idioma que elijas debe ser el del texto.",
+      "El idioma que elija debe ser el del texto."
+    ],
+    [
+      "Mientras la revisan puedes\n          seguir usando el CRM.",
+      "Mientras la revisan puede\n          seguir usando el CRM."
+    ],
+    [
+      "Empieza con un ejemplo (opcional)",
+      "Empiece con un ejemplo (opcional)"
+    ],
+    [
+      "Tus clientes no lo ven.",
+      "Sus clientes no lo ven."
+    ],
+    [
+      "No se envían a tus clientes.",
+      "No se envían a sus clientes."
+    ],
+    [
+      "Así lo verá tu cliente",
+      "Así lo verá su cliente"
+    ]
+  ],
+  "src/components/settings/tiktok-client.tsx": [
+    [
+      "Tú no puedes iniciar una conversación: solo contestar a quien te escribió.",
+      "Usted no puede iniciar una conversación: solo contestar a quien le escribió."
+    ],
+    [
+      "del último mensaje del cliente puedes mandar",
+      "del último mensaje del cliente puede mandar"
+    ],
+    [
+      "Pega una nueva abajo para",
+      "Pegue una nueva abajo para"
+    ],
+    [
+      "Los mensajes directos de tu cuenta entran",
+      "Los mensajes directos de su cuenta entran"
+    ],
+    [
+      "Llegan por Zernio, con tu",
+      "Llegan por Zernio, con su"
+    ],
+    [
+      "what=\"tu cuenta de TikTok\"",
+      "what=\"su cuenta de TikTok\""
+    ],
+    [
+      "El webhook lo da de alta Vocero en tu Zernio al conectar, limitado a",
+      "El webhook lo da de alta Vocero en su Zernio al conectar, limitado a"
+    ],
+    [
+      "tus cuentas. Si un día dejan de llegar mensajes, revisa{\" \"}",
+      "sus cuentas. Si un día dejan de llegar mensajes, revise{\" \"}"
+    ]
+  ],
+  "src/components/settings/whatsapp-wizard.tsx": [
+    [
+      "Los envíos están pausados. Pega un token nuevo abajo y prueba la",
+      "Los envíos están pausados. Pegue un token nuevo abajo y pruebe la"
+    ],
+    [
+      "Dejarás de recibir y enviar. Tus conversaciones se quedan.",
+      "Dejará de recibir y enviar. Sus conversaciones se quedan."
+    ],
+    [
+      "Conectar tu número de WhatsApp",
+      "Conectar su número de WhatsApp"
+    ],
+    [
+      "Pega las credenciales de WhatsApp Cloud API.",
+      "Pegue las credenciales de WhatsApp Cloud API."
+    ],
+    [
+      "webhook se registra en Meta por ti.",
+      "webhook se registra en Meta por usted."
+    ],
+    [
+      "usa un token de <span",
+      "use un token de <span"
+    ],
+    [
+      "Tu agencia hace el Embedded Signup en SU plataforma y su",
+      "La agencia hace el Embedded Signup en SU plataforma y su"
+    ],
+    [
+      "backend obtiene el token del cliente; te lo entrega para",
+      "backend obtiene el token del cliente; se lo entrega para"
+    ],
+    [
+      "igual que en modo directo; si tu agencia ya enruta la cuenta a",
+      "igual que en modo directo; si la agencia ya enruta la cuenta a"
+    ],
+    [
+      "— pega uno nuevo para cambiarlo",
+      "— pegue uno nuevo para cambiarlo"
+    ],
+    [
+      "Ya puedes guardar.",
+      "Ya puede guardar."
+    ],
+    [
+      "Tu cuenta de WhatsApp ya enruta sus webhooks a",
+      "Su cuenta de WhatsApp ya enruta sus webhooks a"
+    ],
+    [
+      "cerebro externo o el backend de tu agencia). Se respeta",
+      "cerebro externo o el backend de su agencia). Se respeta"
+    ],
+    [
+      "No hace falta pegar nada en el panel de tu app.",
+      "No hace falta pegar nada en el panel de su app."
+    ],
+    [
+      "webhook en tu app. Si no llegan mensajes: en developers.facebook.com",
+      "webhook en su app. Si no llegan mensajes: en developers.facebook.com"
+    ],
+    [
+      "→ tu app → WhatsApp → Configuración, verifica una callback URL",
+      "→ su app → WhatsApp → Configuración, verifique una callback URL"
+    ],
+    [
+      "(sirve la de abajo) y suscribe el campo",
+      "(sirve la de abajo) y suscriba el campo"
+    ],
+    [
+      "{registration.message} Reintenta con",
+      "{registration.message} Reintente con"
+    ],
+    [
+      "«Registrar en Meta» o pega la URL y el verify token a mano.",
+      "«Registrar en Meta» o pegue la URL y el verify token a mano."
+    ],
+    [
+      "los mensajes de tu número dejarán de llegar a ${host} y llegarán a este CRM, que se los despacha a tu agente.",
+      "los mensajes de su número dejarán de llegar a ${host} y llegarán a este CRM, que se los despacha a su agente."
+    ],
+    [
+      "se registra en Meta por ti, en",
+      "se registra en Meta por usted, en"
+    ],
+    [
+      "Estos valores son para el backend de tu agencia",
+      "Estos valores son para el backend de su agencia"
+    ],
+    [
+      "Ajusta APP_BASE_URL con tu dominio público.",
+      "Ajuste APP_BASE_URL con su dominio público."
+    ],
+    [
+      "en la ruta: trátala como una",
+      "en la ruta: trátela como una"
+    ],
+    [
+      "Para la capa extra de firma, agrega",
+      "Para la capa extra de firma, agregue"
+    ]
+  ],
+  "src/components/settings/zernio-connect.tsx": [
+    [
+      "No se pudo conectar. Intenta de nuevo.",
+      "No se pudo conectar. Intente de nuevo."
+    ],
+    [
+      "Vocero dio de alta su webhook en tu Zernio, limitado a tus cuentas conectadas.",
+      "Vocero dio de alta el webhook en su Zernio, limitado a sus cuentas conectadas."
+    ],
+    [
+      "El webhook de tu Zernio quedó actualizado y limitado a tus cuentas conectadas.",
+      "El webhook de su Zernio quedó actualizado y limitado a sus cuentas conectadas."
+    ]
+  ],
+  "src/lib/agenda-connectors.ts": [
+    [
+      "Tu sala de siempre: pegas la URL una vez y cada cita la reparte.",
+      "Su sala de siempre: pega la URL una vez y cada cita la reparte."
+    ],
+    [
+      "Cada cita crea un evento en tu calendario con su enlace de Meet.",
+      "Cada cita crea un evento en su calendario con su enlace de Meet."
+    ]
+  ],
+  "src/lib/analytics.ts": [
+    [
+      "\"Respondiste desde el teléfono\"",
+      "\"Respondió desde el teléfono\""
+    ]
+  ],
+  "src/lib/brain-status.ts": [
+    [
+      "Responde tu cerebro externo",
+      "Responde su cerebro externo"
+    ]
+  ],
+  "src/lib/meta/send-errors.ts": [
+    [
+      "No es un fallo de tu configuración: prueba con una plantilla",
+      "No es un fallo de su configuración: pruebe con una plantilla"
+    ],
+    [
+      "Espera o usa una plantilla de categoría UTILITY.",
+      "Espere o use una plantilla de categoría UTILITY."
+    ],
+    [
+      "por límite de spam en tu número. Baja el ritmo de envíos y revisa la calidad del número.",
+      "por límite de spam en su número. Baje el ritmo de envíos y revise la calidad del número."
+    ],
+    [
+      "Tu cuenta de WhatsApp Business está bloqueada o restringida por Meta. Revísalo en el Administrador de WhatsApp.",
+      "Su cuenta de WhatsApp Business está bloqueada o restringida por Meta. Revíselo en el Administrador de WhatsApp."
+    ],
+    [
+      "en la lista de permitidos de tu app en modo de prueba.",
+      "en la lista de permitidos de su app en modo de prueba."
+    ],
+    [
+      "Superaste el límite de mensajes por segundo de Meta. Reintenta en unos momentos.",
+      "Superó el límite de mensajes por segundo de Meta. Reintente en unos momentos."
+    ],
+    [
+      "Sincroniza las plantillas y confirma que sigue aprobada.",
+      "Sincronice las plantillas y confirme que sigue aprobada."
+    ]
+  ],
+  "src/lib/templates.ts": [
+    [
+      "Pon un saludo antes, p. ej.",
+      "Ponga un saludo antes, p. ej."
+    ],
+    [
+      "Añade una frase después.",
+      "Agregue una frase después."
+    ]
+  ],
+  "src/lib/time/calendar.ts": [
+    [
+      "Pide el rango con from y to juntos",
+      "Pida el rango con from y to juntos"
+    ],
+    [
+      "Fechas inválidas: usa el formato AAAA-MM-DD",
+      "Fechas inválidas: use el formato AAAA-MM-DD"
+    ]
+  ],
+  "src/server/agenda/connectors/google.ts": [
+    [
+      "Si tu app OAuth sigue en modo prueba, Google lo revoca a los 7 días: publícala en producción y vuelve a conectar.",
+      "Si su app OAuth sigue en modo prueba, Google lo revoca a los 7 días: publíquela en producción y vuelva a conectar."
+    ]
+  ],
+  "src/server/analytics/period.ts": [
+    [
+      "Fechas inválidas: usa el formato AAAA-MM-DD",
+      "Fechas inválidas: use el formato AAAA-MM-DD"
+    ]
+  ],
+  "src/server/channels/capabilities.ts": [
+    [
+      "está cerrada; usa una plantilla aprobada",
+      "está cerrada; use una plantilla aprobada"
+    ],
+    [
+      "no acepta mensajes de más de ${limite}: acorta el texto",
+      "no acepta mensajes de más de ${limite}: acorte el texto"
+    ]
+  ],
+  "src/server/channels/status.ts": [
+    [
+      "Vuelve a intentarlo en un momento.",
+      "Vuelva a intentarlo en un momento."
+    ]
+  ],
+  "src/server/inbox/forward-image.ts": [
+    [
+      "Elige otra conversación para reenviar la imagen",
+      "Elija otra conversación para reenviar la imagen"
+    ]
+  ],
+  "src/server/inbox/send.ts": [
+    [
+      "expiró: reconecta la cuenta en Configuración",
+      "expiró: reconecte la cuenta en Configuración"
+    ],
+    [
+      "expiró: reconecta Messenger en Configuración",
+      "expiró: reconecte Messenger en Configuración"
+    ],
+    [
+      "dejó de servir: reconecta TikTok en Configuración",
+      "dejó de servir: reconecte TikTok en Configuración"
+    ],
+    [
+      "expiró: reconecta el número en Configuración",
+      "expiró: reconecte el número en Configuración"
+    ],
+    [
+      "El mensaje que quieres citar",
+      "El mensaje que quiere citar"
+    ],
+    [
+      "sendCaps.label}; manda el texto",
+      "sendCaps.label}; mande el texto"
+    ],
+    [
+      "ubicaciones ni contactos; manda el texto",
+      "ubicaciones ni contactos; mande el texto"
+    ],
+    [
+      "bytes: acorta el texto",
+      "bytes: acorte el texto"
+    ],
+    [
+      "fue revocado: reconecta la cuenta",
+      "fue revocado: reconecte la cuenta"
+    ],
+    [
+      "fue revocado: reconecta Messenger",
+      "fue revocado: reconecte Messenger"
+    ],
+    [
+      "fue revocada: reconecta TikTok",
+      "fue revocada: reconecte TikTok"
+    ],
+    [
+      "en este momento; intenta de nuevo",
+      "en este momento; intente de nuevo"
+    ]
+  ],
+  "src/server/onboarding/guide.ts": [
+    [
+      "title: \"Configura tu agente\"",
+      "title: \"Configure su agente\""
+    ],
+    [
+      "Ponle nombre y cuéntale a qué se dedica tu negocio. Si quieres ver un ejemplo primero, carga la demo desde la Bandeja y cámbiala por tus datos.",
+      "Póngale nombre y cuéntele a qué se dedica su negocio. Si quiere ver un ejemplo primero, cargue la demo desde la Bandeja y cámbiela por sus datos."
+    ],
+    [
+      "title: \"Vincula tu proveedor de IA\"",
+      "title: \"Vincule su proveedor de IA\""
+    ],
+    [
+      "Es la cuenta con la que tu agente piensa:",
+      "Es la cuenta con la que su agente piensa:"
+    ],
+    [
+      "La creas y la pagas tú; aquí solo pegas la llave y eliges el modelo.",
+      "La crea y la paga usted; aquí solo pega la llave y elige el modelo."
+    ],
+    [
+      "title: \"Vincula tu número de WhatsApp\"",
+      "title: \"Vincule su número de WhatsApp\""
+    ],
+    [
+      "Conecta el número donde te escriben tus clientes. El CRM registra el webhook en Meta por ti al guardar.",
+      "Conecte el número donde le escriben sus clientes. El CRM registra el webhook en Meta por usted al guardar."
+    ],
+    [
+      "title: \"Conecta tu agente\"",
+      "title: \"Conecte su agente\""
+    ],
+    [
+      "contesta el que conectas al lado (Nea, o el tuyo). Sin agente, Vocero funciona como bandeja manual y contestas tú.",
+      "contesta el que usted conecta al lado (Nea, o el suyo). Sin agente, Vocero funciona como bandeja manual y contesta usted."
+    ],
+    [
+      "title: \"Configura tu agenda\"",
+      "title: \"Configure su agenda\""
+    ],
+    [
+      "Define tus horarios y cómo se entrega la reunión para que tu agente pueda agendar por ti.",
+      "Defina sus horarios y cómo se entrega la reunión para que su agente pueda agendar por usted."
+    ]
+  ],
+  "src/server/onboarding/status.ts": [
+    [
+      "Pega la llave de tu proveedor y elige el modelo en Ajustes → IA",
+      "Pegue la llave de su proveedor y elija el modelo en Ajustes → IA"
+    ],
+    [
+      "Vuelve a conectar el número con un token vigente",
+      "Vuelva a conectar el número con un token vigente"
+    ],
+    [
+      "\"Vincular tu número\"",
+      "\"Vincular su número\""
+    ],
+    [
+      "token de WhatsApp: vuelve a conectar el número.",
+      "token de WhatsApp: vuelva a conectar el número."
+    ],
+    [
+      "label: \"Tu agente\"",
+      "label: \"Su agente\""
+    ],
+    [
+      "Levanta tu agente (Nea) al lado del CRM y pon BRAIN_DISPATCH_URL",
+      "Levante su agente (Nea) al lado del CRM y ponga BRAIN_DISPATCH_URL"
+    ],
+    [
+      "`Tu agente (${despacho.host}) está configurado",
+      "`Su agente (${despacho.host}) está configurado"
+    ],
+    [
+      "no responde: revisa que el servicio esté corriendo.",
+      "no responde: revise que el servicio esté corriendo."
+    ],
+    [
+      "Dale un nombre y escribe sus instrucciones o carga conocimiento del negocio",
+      "Dele un nombre y escriba sus instrucciones o cargue conocimiento del negocio"
+    ],
+    [
+      "no existe en esta instancia: elige otro en Ajustes → Agenda.",
+      "no existe en esta instancia: elija otro en Ajustes → Agenda."
+    ],
+    [
+      "la credencial guardada: vuelve a conectarlo en Ajustes → Agenda.",
+      "la credencial guardada: vuelva a conectarlo en Ajustes → Agenda."
+    ],
+    [
+      "`Elegiste ${nombre} pero no está conectado: pega sus credenciales",
+      "`Eligió ${nombre} pero no está conectado: pegue sus credenciales"
+    ],
+    [
+      "Guarda tus horarios y cómo se entrega la reunión en Ajustes → Agenda",
+      "Guarde sus horarios y cómo se entrega la reunión en Ajustes → Agenda"
+    ]
+  ],
+  "src/server/whatsapp/connect.ts": [
+    [
+      "Meta no devolvió el número: verifica que el Phone Number ID",
+      "Meta no devolvió el número: verifique que el Phone Number ID"
+    ],
+    [
+      "Verifica que corresponde a este número",
+      "Verifique que corresponde a este número"
+    ],
+    [
+      "token entregado por tu backend).",
+      "token entregado por su backend)."
+    ],
+    [
+      "en este momento; intenta de nuevo",
+      "en este momento; intente de nuevo"
+    ],
+    [
+      "Vuelve a intentarlo en unos minutos.",
+      "Vuelva a intentarlo en unos minutos."
+    ]
+  ],
+  "src/server/whatsapp/media.ts": [
+    [
+      "Conviértelo a PDF o a imagen",
+      "Conviértalo a PDF o a imagen"
+    ]
+  ],
+  "src/server/whatsapp/nota-de-voz.ts": [
+    [
+      "Vuelve a grabarlo o súbelo en MP3",
+      "Vuelva a grabarlo o súbalo en MP3"
+    ]
+  ],
+  "src/server/whatsapp/templates.ts": [
+    [
+      "Conecta tu número de WhatsApp primero",
+      "Conecte su número de WhatsApp primero"
+    ],
+    [
+      "Reconecta tu número antes de crear plantillas",
+      "Reconecte su número antes de crear plantillas"
+    ],
+    [
+      "El token expiró: reconecta el número",
+      "El token expiró: reconecte el número"
+    ],
+    [
+      "\"Reconecta el número\"",
+      "\"Reconecte el número\""
+    ]
+  ],
+  "src/server/zernio/conexiones.ts": [
+    [
+      "dar de alta el webhook. Reinténtalo desde Canales → Estado.",
+      "dar de alta el webhook. Reinténtelo desde Canales → Estado."
+    ],
+    [
+      "Zernio no aceptó el webhook. Reinténtalo desde Canales → Estado o créalo a mano en Zernio.",
+      "Zernio no aceptó el webhook. Reinténtelo desde Canales → Estado o créelo a mano en Zernio."
+    ]
+  ],
+  "src/server/zernio/cuentas.ts": [
+    [
+      "Vincúlala en Zernio y vuelve a intentar.",
+      "Vincúlela en Zernio y vuelva a intentar."
+    ],
+    [
+      "cuentas de este canal. Elige cuál conectar.",
+      "cuentas de este canal. Elija cuál conectar."
+    ],
+    [
+      "con esa llave. Vuelve a conectarla.",
+      "con esa llave. Vuelva a conectarla."
+    ],
+    [
+      "Si deja de recibir, reconéctala en Zernio.",
+      "Si deja de recibir, reconéctela en Zernio."
+    ]
+  ],
+  "src/server/zernio/guardar.ts": [
+    [
+      "No se pudo contactar a Zernio; intenta de nuevo",
+      "No se pudo contactar a Zernio; intente de nuevo"
+    ]
+  ]
+}
