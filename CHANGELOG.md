@@ -13,6 +13,7 @@ apagadas la instancia es exactamente la de upstream. Migración aditiva `0023`
 
 ### Nuevo
 
+- **052 (fork)** — Pipeline en el celular: una etapa a la vez con pestañas, total por etapa y el mismo cajón del tablero para mover, poner monto y prioridad. El tablero de escritorio no cambia.
 - **051 (fork)** — Propiedades: vista de lista densa, orden por precio, resumen bajo el título, tarjetas parejas y esqueleto de carga. Ficha en el celular: interesados arriba, secciones plegables (lo interno arranca plegado) y «Agregar fotos» con arrastrar y soltar.
 - **Tareas y «Hoy»** (`TAREAS=on`): seguimientos por contacto con tipo, día y
   hora del negocio; «Hoy» como pantalla de inicio con vencidas, de hoy y tratos

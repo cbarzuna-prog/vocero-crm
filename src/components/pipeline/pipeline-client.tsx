@@ -25,6 +25,8 @@ import { LossReasonDialog } from "./loss-reason-dialog";
 import { AmountDialog } from "./amount-dialog";
 import { PriorityBadge } from "./priority-picker";
 import { LeadDrawer } from "./lead-drawer";
+// Fork Knock Knock (052): vista del celular, fuera del archivo de upstream.
+import { PipelineMovil } from "@/components/fork/pipeline-movil";
 
 export type BoardLead = {
   id: string;
@@ -38,7 +40,8 @@ export type BoardLead = {
   priority: PriorityValue | null;
 };
 
-export function PipelineClient() {
+/** `movil` (fork 052): en el celular, una etapa a la vez en vez del tablero. */
+export function PipelineClient({ movil = false }: { movil?: boolean } = {}) {
   const [stages, setStages] = useState<StageDto[]>([]);
   const [currency, setCurrency] = useState("MXN");
   const [leads, setLeads] = useState<BoardLead[]>([]);
@@ -181,7 +184,18 @@ export function PipelineClient() {
 
       {/* El tablero se arrastra en horizontal; en el teléfono cada columna
           se detiene en su sitio (snap) para no quedar a medio camino. */}
-      <div className="flex-1 snap-x snap-mandatory overflow-x-auto p-3 sm:snap-none sm:p-4">
+      {movil && (
+        <div className="min-h-0 flex-1 md:hidden">
+          <PipelineMovil
+            stages={stages}
+            leads={leads}
+            currency={currency}
+            onOpen={(l) => setAbiertoId(l.id)}
+            onEditAmount={setEditandoMonto}
+          />
+        </div>
+      )}
+      <div className={cn("flex-1 snap-x snap-mandatory overflow-x-auto p-3 sm:snap-none sm:p-4", movil && "hidden md:block")}>
         <DndContext
           sensors={sensors}
           onDragStart={onDragStart}

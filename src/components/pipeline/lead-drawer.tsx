@@ -266,7 +266,7 @@ export function LeadDrawer({
                     aria-pressed={actual}
                     aria-label={`Mover a ${s.name}`}
                     className={cn(
-                      "rounded-full border px-2.5 py-1 text-xs transition-colors",
+                      "rounded-full border px-2.5 py-1 text-xs transition-colors [@media(pointer:coarse)]:px-3.5 [@media(pointer:coarse)]:py-2.5 [@media(pointer:coarse)]:text-[13px]",
                       actual
                         ? "border-brand bg-brand-tint font-semibold text-brand-text"
                         : "border-border text-text-2 hover:bg-accent"

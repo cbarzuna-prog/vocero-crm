@@ -165,6 +165,32 @@ if (prop) {
   check("en el celular los interesados van antes que los datos", yInteresados < yDatos, `${yInteresados} vs ${yDatos}`);
 }
 
+// 052 — Pipeline en el celular: una etapa a la vez, con pestañas.
+{
+  await page.goto(`${BASE}/pipeline`);
+  const tabs = page.getByRole("tablist", { name: "Etapas" });
+  await tabs.waitFor({ timeout: 10_000 });
+  check("en el celular el pipeline va por pestañas de etapa", await tabs.isVisible());
+  const segunda = tabs.getByRole("tab").nth(1);
+  await segunda.click();
+  check("tocar una pestaña la selecciona", (await segunda.getAttribute("aria-selected")) === "true");
+  // Llevar a alguien a esa etapa desde la primera, por el mismo cajón del tablero.
+  await tabs.getByRole("tab").first().click();
+  const fila = page.getByRole("button", { name: /Abrir el trato de/ }).first();
+  if (await fila.count()) {
+    const nombre = (await fila.getAttribute("aria-label")).replace("Abrir el trato de ", "");
+    await fila.click();
+    const cajon = page.getByRole("dialog", { name: `Trato de ${nombre}` });
+    check("tocar un trato abre el cajón del trato", await cajon.isVisible());
+    const destino = (await segunda.innerText()).replace(/\s*\d+\s*$/, "").trim();
+    await cajon.getByRole("button", { name: `Mover a ${destino}`, exact: true }).click();
+    await page.getByRole("button", { name: "Cerrar el panel del trato" }).click();
+    await segunda.click();
+    await page.waitForTimeout(500);
+    check("…y moverlo de etapa lo pasa a esa pestaña", (await page.getByRole("button", { name: `Abrir el trato de ${nombre}` }).count()) === 1);
+  }
+}
+
 // Limpieza.
 for (const x of dePersona.pendientes) await api(`/api/tareas/${x.id}`, { method: "DELETE" });
 await browser.close();
