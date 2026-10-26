@@ -178,8 +178,11 @@ repo ya registra. Los subagentes con `memory: project` usan
 
 - **Textos de UI en usted** (decisión del dueño, 2026-10-23): todo texto nuevo
   que vea el usuario va en usted («Busque un contacto», «Puede dejarlo vacío»),
-  nunca en tú ni en vos. Los textos heredados de upstream siguen en tú hasta que
-  una spec propia los centralice; no se cambian archivo por archivo, para no
-  chocar con cada actualización de `upstream`.
+  nunca en tú ni en vos. Los textos heredados de upstream **no se editan en su
+  archivo**: se pasan a usted con un par en `fork/textos-usted/diccionario.json`,
+  que el build aplica al compilar (spec 053, guía en
+  `fork/textos-usted/INSTRUCCIONES.md`). Tras un merge de `upstream`, si
+  `tests/unit/053-textos-usted.test.ts` falla, Vocero cambió una frase:
+  actualice el par.
 - Código del fork en carpetas propias tras banderas (`TAREAS`, `PROPIEDADES`);
   ver `specs/046-propiedades-y-tareas/`.

@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 
 // La versión sale de package.json y no de una constante aparte: duplicarla es
 // tenerla desactualizada en uno de los dos lados, y justo esta no puede mentir.
@@ -22,6 +23,18 @@ const nextConfig: NextConfig = {
   env: {
     NEXT_PUBLIC_APP_VERSION: version,
     NEXT_PUBLIC_BUILD_COMMIT: process.env.SOURCE_COMMIT ?? "",
+  },
+  // Fork Knock Knock (053): los textos heredados de Vocero se pasan a usted al
+  // compilar, desde fork/textos-usted/diccionario.json, sin editar los archivos
+  // de upstream (así actualizar desde Vocero no choca).
+  webpack(config) {
+    config.module.rules.push({
+      test: /\.(ts|tsx)$/,
+      include: fileURLToPath(new URL("./src", import.meta.url)),
+      enforce: "pre",
+      use: [{ loader: fileURLToPath(new URL("./fork/textos-usted/aplicar.cjs", import.meta.url)) }],
+    });
+    return config;
   },
 };
 
