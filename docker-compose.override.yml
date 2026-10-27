@@ -1,0 +1,8 @@
+# Fork Knock Knock — docker compose lo carga solo, junto a docker-compose.yml.
+#
+# La imagen publicada de Nea (ghcr.io/kevinrivm/nea-agent) solo existe para
+# amd64, y el servidor de pruebas (Oracle, Ampere) es ARM: se construye desde
+# el código fuente de la misma versión. En un servidor amd64 también sirve.
+services:
+  nea:
+    build: https://github.com/kevinrivm/nea-agent.git#v${NEA_VERSION:-2.0.2}
