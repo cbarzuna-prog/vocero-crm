@@ -13,6 +13,7 @@ apagadas la instancia es exactamente la de upstream. Migración aditiva `0023`
 
 ### Nuevo
 
+- **054 (fork)** — Ajustes → Equipo: editar nombre, correo y rol; contraseña temporal (con opción de quitar los dos pasos); quitar del equipo, con sus tareas pendientes reasignadas a quien lo quita.
 - **053 (fork)** — Las pantallas heredadas de Vocero (Bandeja, Contactos, Pipeline, Resultados, Ajustes, canales, Agente, Laboratorio, guía de inicio, registro) hablan de usted: ~330 frases en `fork/textos-usted/diccionario.json`, aplicadas al compilar sin editar los archivos de upstream.
 - **052 (fork)** — Pipeline en el celular: una etapa a la vez con pestañas, total por etapa y el mismo cajón del tablero para mover, poner monto y prioridad. El tablero de escritorio no cambia.
 - **051 (fork)** — Propiedades: vista de lista densa, orden por precio, resumen bajo el título, tarjetas parejas y esqueleto de carga. Ficha en el celular: interesados arriba, secciones plegables (lo interno arranca plegado) y «Agregar fotos» con arrastrar y soltar.
