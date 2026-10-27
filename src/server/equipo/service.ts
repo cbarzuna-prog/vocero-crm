@@ -1,6 +1,7 @@
 import { and, eq, isNull, ne } from "drizzle-orm";
 import { getAuth } from "@/lib/auth";
 import { getDb, schema } from "@/lib/db";
+import { scoped } from "@/lib/db/tenant";
 import type { SessionContext } from "@/lib/auth/session";
 import type { RolEquipo } from "@/lib/equipo";
 
@@ -26,7 +27,7 @@ async function miembro(s: SessionContext, memberId: string) {
   const [m] = await db
     .select({ id: schema.member.id, userId: schema.member.userId, role: schema.member.role })
     .from(schema.member)
-    .where(and(eq(schema.member.id, memberId), eq(schema.member.organizationId, s.organizationId)))
+    .where(scoped(schema.member.organizationId, s.organizationId, eq(schema.member.id, memberId)))
     .limit(1);
   if (!m) throw new EquipoError(404, "no_encontrado", "Esa persona no está en el equipo.");
   return m;
@@ -37,7 +38,7 @@ async function propietarios(organizationId: string): Promise<number> {
   const rows = await db
     .select({ id: schema.member.id })
     .from(schema.member)
-    .where(and(eq(schema.member.organizationId, organizationId), eq(schema.member.role, "owner")));
+    .where(scoped(schema.member.organizationId, organizationId, eq(schema.member.role, "owner")));
   return rows.length;
 }
 
@@ -122,7 +123,7 @@ export async function quitarMiembro(s: SessionContext, memberId: string): Promis
       .set({ assignedUserId: s.userId })
       .where(
         and(
-          eq(schema.task.organizationId, s.organizationId),
+          scoped(schema.task.organizationId, s.organizationId),
           eq(schema.task.assignedUserId, m.userId),
           isNull(schema.task.doneAt)
         )

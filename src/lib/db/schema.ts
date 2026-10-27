@@ -23,6 +23,7 @@ import {
   PROPERTY_TYPES,
 } from "@/lib/propiedades-enums";
 import { TASK_TYPES } from "@/lib/tareas-enums";
+import { FORMAS_PAGO, IDIOMAS, OPERACIONES_BUSCADAS, PLAZOS } from "@/lib/perfil-cliente-enums";
 
 /**
  * Tiempo: todas las columnas son `timestamp without time zone` y el marco es
@@ -1490,5 +1491,49 @@ export const task = pgTable(
     index("task_org_done_due_idx").on(t.organizationId, t.doneAt, t.dueAt),
     index("task_org_contact_idx").on(t.organizationId, t.contactId),
     index("task_org_assigned_idx").on(t.organizationId, t.assignedUserId, t.doneAt, t.dueAt),
+  ]
+);
+
+/* ============================================================
+ * 055 (fork) — Ficha inmobiliaria del contacto. 1:1 con `contact`, en su
+ * propia tabla para no tocar la de upstream. `fuentes` dice quién llenó cada
+ * campo (`agente` | `manual`): el agente nunca pisa lo que una persona puso.
+ * Montos en centavos, como en `property`.
+ * ============================================================ */
+
+export const contactPerfil = pgTable(
+  "contact_perfil",
+  {
+    contactId: text("contact_id")
+      .primaryKey()
+      .references(() => contact.id, { onDelete: "cascade" }),
+    organizationId: text("organization_id")
+      .notNull()
+      .references(() => organization.id, { onDelete: "cascade" }),
+    email: text("email"),
+    telefono2: text("telefono2"),
+    viveProvincia: text("vive_provincia"),
+    viveCanton: text("vive_canton"),
+    viveDetalle: text("vive_detalle"),
+    idioma: text("idioma", { enum: IDIOMAS }),
+    tiposCliente: text("tipos_cliente").array().notNull().default(sql`'{}'::text[]`),
+    operacion: text("operacion", { enum: OPERACIONES_BUSCADAS }),
+    tiposPropiedad: text("tipos_propiedad").array().notNull().default(sql`'{}'::text[]`),
+    zonas: text("zonas").array().notNull().default(sql`'{}'::text[]`),
+    presupuestoMinCents: bigint("presupuesto_min_cents", { mode: "number" }),
+    presupuestoMaxCents: bigint("presupuesto_max_cents", { mode: "number" }),
+    moneda: text("moneda", { enum: PROPERTY_CURRENCIES }).notNull().default("USD"),
+    habitaciones: smallint("habitaciones"),
+    plazo: text("plazo", { enum: PLAZOS }),
+    pago: text("pago", { enum: FORMAS_PAGO }),
+    fuentes: jsonb("fuentes").$type<Record<string, "agente" | "manual">>().notNull().default({}),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (t) => [
+    index("contact_perfil_org_idx").on(t.organizationId),
+    check(
+      "contact_perfil_presupuesto_ck",
+      sql`${t.presupuestoMinCents} IS NULL OR ${t.presupuestoMaxCents} IS NULL OR ${t.presupuestoMinCents} <= ${t.presupuestoMaxCents}`
+    ),
   ]
 );

@@ -22,6 +22,7 @@
     "test:e2e:tareas": "node --env-file=.env scripts/e2e-046-tareas.mjs",
     "test:e2e:propiedades": "node --env-file=.env scripts/e2e-046-propiedades.mjs",
     "test:e2e:dos-pasos": "node --env-file=.env scripts/e2e-049-dos-pasos.mjs",
+    "test:e2e:perfil": "node --env-file=.env scripts/e2e-055-perfil.mjs",
     "test:e2e:equipo": "node --env-file=.env scripts/e2e-054-equipo.mjs",
     "test:e2e:atajos": "node --env-file=.env scripts/e2e-050-atajos.mjs",
     "eval:silencios": "esbuild scripts/eval-silencios.ts --bundle --platform=node --format=esm --outfile=.tmp-eval-silencios.mjs --alias:@=./src --log-level=warning && node --env-file=.env .tmp-eval-silencios.mjs",

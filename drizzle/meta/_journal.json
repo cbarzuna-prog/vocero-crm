@@ -176,6 +176,13 @@
       "when": 1792858677884,
       "tag": "0024_dos_pasos",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1793129695219,
+      "tag": "0025_perfil_cliente",
+      "breakpoints": true
     }
   ]
 }

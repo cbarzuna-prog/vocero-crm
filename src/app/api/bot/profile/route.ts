@@ -4,6 +4,9 @@ import { apiError } from "@/lib/api";
 import { requireBotKey, resolveInstanceOrg } from "@/server/bot/auth";
 import { serializeBotProfile, type BotLlm } from "@/server/bot/profile";
 import { resolveAiProvider } from "@/lib/ai/provider";
+// Fork Knock Knock (055): las claves de la ficha inmobiliaria.
+import { INSTRUCCION_FICHA } from "@/lib/perfil-cliente";
+import { propiedadesEnabled } from "@/server/propiedades/flag";
 
 export const dynamic = "force-dynamic";
 
@@ -44,5 +47,11 @@ export async function GET(req: Request) {
   const ia = await resolveAiProvider(organizationId);
   const llm: BotLlm = ia.ok && ia.provider.model ? { path: "/api/bot/llm", model: ia.provider.model } : null;
 
-  return Response.json(serializeBotProfile(profile, kb, llm));
+  const out = serializeBotProfile(profile, kb, llm);
+  // Fork (055): con PROPIEDADES, el agente anota la ficha con claves fijas
+  // que el CRM traduce a la ficha inmobiliaria del contacto.
+  if (propiedadesEnabled()) {
+    out.profile.instructions = [out.profile.instructions, INSTRUCCION_FICHA].filter(Boolean).join("\n\n");
+  }
+  return Response.json(out);
 }
