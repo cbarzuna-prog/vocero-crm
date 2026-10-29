@@ -22,6 +22,7 @@
     "test:e2e:tareas": "node --env-file=.env scripts/e2e-046-tareas.mjs",
     "test:e2e:propiedades": "node --env-file=.env scripts/e2e-046-propiedades.mjs",
     "test:e2e:dos-pasos": "node --env-file=.env scripts/e2e-049-dos-pasos.mjs",
+    "test:e2e:contactos": "node --env-file=.env scripts/e2e-057-contactos.mjs",
     "test:e2e:revision": "node --env-file=.env scripts/e2e-056-revision.mjs",
     "test:e2e:perfil": "node --env-file=.env scripts/e2e-055-perfil.mjs",
     "test:e2e:equipo": "node --env-file=.env scripts/e2e-054-equipo.mjs",

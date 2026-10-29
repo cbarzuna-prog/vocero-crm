@@ -60,7 +60,14 @@ function Campo({ label, children }: { label: string; children: React.ReactNode }
  * llena al conversar (✦); lo que corrige una persona, el agente ya no lo pisa.
  * Se monta siempre y desaparece sola sin `PROPIEDADES` (la API da 404).
  */
-export function PerfilCliente({ contact }: { contact: { id: string; name: string } }) {
+export function PerfilCliente({
+  contact,
+  enlace = true,
+}: {
+  contact: { id: string; name: string };
+  /** 057: en la Bandeja y el Pipeline, un enlace a la página completa del contacto. */
+  enlace?: boolean;
+}) {
   const [perfil, setPerfil] = useState<PerfilDto | null>(null);
   const [editando, setEditando] = useState(false);
 
@@ -145,6 +152,11 @@ export function PerfilCliente({ contact }: { contact: { id: string; name: string
             </div>
           ))}
         </dl>
+      )}
+      {enlace && !editando && (
+        <a href={`/contacts/${contact.id}`} className="mt-3 inline-flex text-[13px] font-semibold text-brand-text hover:underline">
+          Ver página completa →
+        </a>
       )}
     </section>
   );
