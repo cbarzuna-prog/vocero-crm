@@ -233,17 +233,21 @@ export function AppNav({
       {/* Ajustes va abajo, solo: no es trabajo del día. */}
       {renderItem(SETTINGS_ITEM)}
 
-      <div className="mt-1 flex items-center gap-2.5 rounded-sm px-2.5 py-2 hover:bg-accent">
-        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-soft text-xs font-bold text-brand-text">
-          {initials(userName)}
-        </span>
-        <span className="min-w-0 flex-1">
-          <span className="block truncate text-[13px] font-semibold">{userName}</span>
-          <span className="block truncate text-[11px] text-text-3">
-            {role === "owner" ? "Propietario" : "Equipo"} · En línea
+      {/* Fork (056): quién es en una fila y sus botones en otra, de 36 px:
+          tres íconos de 24 px junto al nombre lo cortaban a «Carlos …». */}
+      <div className="mt-1 rounded-sm px-2.5 py-2">
+        <div className="flex items-center gap-2.5" title={`${userName} · ${role === "owner" ? "Propietario" : "Equipo"}`}>
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-soft text-xs font-bold text-brand-text">
+            {initials(userName)}
           </span>
-        </span>
-        <span className="flex shrink-0 items-center">
+          <span className="min-w-0 flex-1">
+            <span className="block truncate text-[13px] font-semibold">{userName}</span>
+            <span className="block truncate text-[12px] text-text-3">
+              {role === "owner" ? "Propietario" : "Equipo"} · En línea
+            </span>
+          </span>
+        </div>
+        <span className="mt-1.5 flex items-center gap-1">
           <button
             type="button"
             onClick={() => {
@@ -254,7 +258,7 @@ export function AppNav({
             aria-label={sonido ? "Sonido de mensajes: activado" : "Sonido de mensajes: silenciado"}
             aria-pressed={sonido}
             title={sonido ? "Silenciar el sonido de mensajes nuevos" : "Activar el sonido de mensajes nuevos"}
-            className="rounded p-1 text-text-3 transition-colors hover:text-foreground"
+            className="flex h-9 w-9 items-center justify-center rounded-sm text-text-2 transition-colors hover:bg-accent hover:text-foreground"
           >
             {sonido ? (
               <Bell className="h-4 w-4" strokeWidth={1.7} />
@@ -262,18 +266,18 @@ export function AppNav({
               <BellOff className="h-4 w-4" strokeWidth={1.7} />
             )}
           </button>
-          <ThemeToggle initial={theme} />
+          <ThemeToggle initial={theme} className="flex h-9 w-9 items-center justify-center rounded-sm p-0 text-text-2 hover:bg-accent" />
           <button
             aria-label="Cerrar sesión"
             title="Cerrar sesión"
-            className="rounded p-1 text-text-3 hover:text-foreground"
+            className="ml-auto flex h-9 items-center gap-1.5 rounded-sm px-2 text-[13px] font-semibold text-text-2 hover:bg-accent hover:text-foreground"
             onClick={async () => {
               await signOut();
               router.push("/login");
               router.refresh();
             }}
           >
-            <LogOut className="h-4 w-4" strokeWidth={1.7} />
+            <LogOut className="h-4 w-4" strokeWidth={1.7} /> Salir
           </button>
         </span>
       </div>

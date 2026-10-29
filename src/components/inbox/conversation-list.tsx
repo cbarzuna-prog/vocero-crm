@@ -38,7 +38,8 @@ function InboxEmptyState({
   onSeeded,
   channels,
 }: {
-  onSeeded: () => void;
+  /** Fork (056): sin él no se ofrece cargar la demo (instancia de producción). */
+  onSeeded?: () => void;
   channels: readonly Channel[];
 }) {
   const [seeding, setSeeding] = useState(false);
@@ -50,7 +51,7 @@ function InboxEmptyState({
       () => null
     );
     setSeeding(false);
-    if (res?.ok) onSeeded();
+    if (res?.ok) onSeeded?.();
     else setFailed(true);
   }
 
@@ -61,7 +62,7 @@ function InboxEmptyState({
       title="Sin conversaciones todavía"
       description={emptyInboxDescription(channels.map((ch) => CHANNEL_LABEL[ch]))}
       action={
-        !failed && (
+        !failed && onSeeded && (
           <Button
             size="sm"
             variant="outline"
@@ -89,7 +90,7 @@ export function ConversationList({
   channels: readonly Channel[];
   selectedId: string | null;
   onSelect: (id: string) => void;
-  onSeeded: () => void;
+  onSeeded?: () => void;
 }) {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<"all" | "unread" | "anuncios">("all");

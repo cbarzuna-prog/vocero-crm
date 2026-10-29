@@ -333,7 +333,7 @@ function StageColumn({
           )}
           {stage.name}
         </span>
-        <span className="rounded-full border border-border-strong bg-background px-2 py-0.5 font-mono text-[11px] text-text-3">
+        <span className="rounded-full border border-border-strong bg-background px-2 py-0.5 font-mono text-[12px] text-text-3">
           {leads.length}
         </span>
       </div>
@@ -359,7 +359,7 @@ function StageFooter({ leads, currency }: { leads: BoardLead[]; currency: string
   const conMonto = leads.length - sinMonto - otraMoneda;
 
   return (
-    <div className="border-t px-3 py-2 text-[11px]">
+    <div className="border-t px-3 py-2 text-[12px]">
       {conMonto === 0 ? (
         // Un "$0.00" aquí se lee como un error del sistema, no como un dato.
         <p className="text-muted-foreground">Sin montos capturados</p>
@@ -450,7 +450,7 @@ function LeadCard({
             <p className="truncate text-sm font-semibold">{lead.contact.name}</p>
             {lead.priority && <PriorityBadge value={lead.priority} />}
           </div>
-          <p className="text-[11px] text-muted-foreground">
+          <p className="text-[12px] text-muted-foreground">
             {lead.lastActivityAt
               ? `Actividad: ${formatTime(lead.lastActivityAt)}`
               : "Sin actividad"}

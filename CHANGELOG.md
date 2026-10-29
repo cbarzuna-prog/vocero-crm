@@ -13,6 +13,7 @@ apagadas la instancia es exactamente la de upstream. Migración aditiva `0023`
 
 ### Nuevo
 
+- **056 (fork)** — Arreglos de la revisión de UX: diálogos accesibles (portal, foco, Tab, Esc), Nuevo contacto con +506 y avisos por campo, barra lateral con los colores de Knock Knock, pie de la barra con botones de 36 px, sin datos de demo en producción.
 - **055 (fork)** — Ficha inmobiliaria del cliente: correo, dónde vive, idioma, tipo de cliente, qué busca (operación, tipos, zonas, presupuesto, habitaciones, plazo) y cómo paga. El agente la llena al conversar; lo que edita una persona no lo pisa. Migración aditiva `0025`.
 - **054 (fork)** — Ajustes → Equipo: editar nombre, correo y rol; contraseña temporal (con opción de quitar los dos pasos); quitar del equipo, con sus tareas pendientes reasignadas a quien lo quita.
 - **053 (fork)** — Las pantallas heredadas de Vocero (Bandeja, Contactos, Pipeline, Resultados, Ajustes, canales, Agente, Laboratorio, guía de inicio, registro) hablan de usted: ~330 frases en `fork/textos-usted/diccionario.json`, aplicadas al compilar sin editar los archivos de upstream.

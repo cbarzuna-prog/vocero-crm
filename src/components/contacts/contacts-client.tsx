@@ -26,7 +26,8 @@ import { SOURCE_LABELS } from "@/server/contact-source";
 import { priorityRank } from "@/server/leads/priority";
 import { PriorityBadge } from "@/components/pipeline/priority-picker";
 import { ImportContactsDialog } from "./import-contacts-dialog";
-import { NewContactDialog } from "./new-contact-dialog";
+// Fork (056): diálogo accesible con +506 por defecto.
+import { NuevoContactoDialog as NewContactDialog } from "@/components/fork/nuevo-contacto-dialog";
 import { StartConversation } from "./start-conversation";
 
 export function ContactsClient() {

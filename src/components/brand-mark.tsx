@@ -140,6 +140,7 @@ export function BrandLogo({
           "truncate font-[750] leading-none tracking-tight",
           size === "lg" ? "text-[26px]" : "text-[17px]"
         )}
+        title={branding.name}
       >
         {branding.name}
       </span>

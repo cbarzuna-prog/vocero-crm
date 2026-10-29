@@ -14,6 +14,7 @@ import {
   type PropertyType,
 } from "@/lib/propiedades";
 import { cn } from "@/lib/utils";
+import { Dialogo } from "@/components/fork/dialogo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { UbicacionFields } from "./shared";
@@ -83,26 +84,15 @@ export function NuevaPropiedadDialog({ onCancel }: { onCancel: () => void }) {
   }
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-overlay sm:items-center sm:p-4"
-      role="dialog"
-      aria-modal="true"
-      aria-label="Nueva propiedad"
-      onKeyDown={(e) => {
-        if (e.key === "Escape") onCancel();
-      }}
-    >
+    <Dialogo titulo="Nueva propiedad" descripcion="Lo mínimo para darla de alta; el resto lo completa en su ficha." onClose={onCancel} className="p-4">
       <form
-        className="max-h-[92dvh] w-full overflow-y-auto rounded-t-xl border bg-popover p-4 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-pop sm:max-w-md sm:rounded-lg"
         onSubmit={(e) => {
           e.preventDefault();
           if (!precioInvalido) void save();
         }}
       >
-        <h3 className="font-semibold">Nueva propiedad</h3>
-        <p className="mt-0.5 text-[13px] text-text-3">Lo mínimo para darla de alta; el resto lo completa en su ficha.</p>
 
-        <div className="mt-3 flex gap-1.5" role="radiogroup" aria-label="Operación">
+        <div className="flex gap-1.5" role="radiogroup" aria-label="Operación">
           {PROPERTY_OPERATIONS.map((o) => (
             <Chip key={o} active={operation === o} onClick={() => setOperation(o)}>
               {OPERATION_LABELS[o]}
@@ -182,6 +172,6 @@ export function NuevaPropiedadDialog({ onCancel }: { onCancel: () => void }) {
           </Button>
         </div>
       </form>
-    </div>
+    </Dialogo>
   );
 }

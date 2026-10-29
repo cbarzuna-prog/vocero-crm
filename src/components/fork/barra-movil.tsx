@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Building2, Inbox, Kanban, Menu, Plus, Sun, UserPlus, ListPlus, Home } from "lucide-react";
 import { isNavActive } from "@/lib/nav";
 import { cn } from "@/lib/utils";
 import { useEvents } from "@/components/use-events";
-import { NewContactDialog } from "@/components/contacts/new-contact-dialog";
+import { NuevoContactoDialog as NewContactDialog } from "./nuevo-contacto-dialog";
 import { NuevaTareaDialog } from "@/components/tareas/nueva-tarea-dialog";
 import { NuevaPropiedadDialog } from "@/components/propiedades/nueva-propiedad-dialog";
 
@@ -30,7 +30,15 @@ export function CrearRapido({
 }) {
   const router = useRouter();
   const [abierto, setAbierto] = useState(false);
-  const [creando, setCreando] = useState<Creando>(null);
+  const [creandoRaw, setCreandoRaw] = useState<Creando>(null);
+  const disparador = useRef<HTMLButtonElement>(null);
+  const creando = creandoRaw;
+  // 056: al cerrar cualquier diálogo el foco vuelve al botón que abrió el
+  // menú (la opción del menú ya no existe para recibirlo).
+  const setCreando = (v: Creando) => {
+    setCreandoRaw(v);
+    if (v === null) requestAnimationFrame(() => disparador.current?.focus());
+  };
 
   useEffect(() => {
     if (!abierto) return;
@@ -49,6 +57,7 @@ export function CrearRapido({
     <div className={variante === "lateral" ? "relative mb-4 hidden lg:block" : "flex flex-1 justify-center"}>
       {variante === "lateral" ? (
         <button
+          ref={disparador}
           type="button"
           onClick={() => setAbierto((v) => !v)}
           aria-expanded={abierto}
@@ -59,6 +68,7 @@ export function CrearRapido({
       ) : (
         // En la barra y no flotando: un «+» flotante tapa el renglón que esté debajo.
         <button
+          ref={disparador}
           type="button"
           onClick={() => setAbierto((v) => !v)}
           aria-expanded={abierto}

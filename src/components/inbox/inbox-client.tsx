@@ -46,8 +46,11 @@ const isWideEnoughForPanel = () =>
 export function InboxClient({
   channels,
   canDelete = false,
+  demo = true,
 }: {
   channels: readonly Channel[];
+  /** Fork (056): ofrecer «Cargar datos de demostración» con la bandeja vacía. */
+  demo?: boolean;
   /** 026 — Eliminar es irreversible: solo quien administra ve la opción. */
   canDelete?: boolean;
 }) {
@@ -363,7 +366,7 @@ export function InboxClient({
           channels={channels}
           selectedId={selectedId}
           onSelect={select}
-          onSeeded={() => void refetchConversations()}
+          onSeeded={demo ? () => void refetchConversations() : undefined}
         />
       </section>
 
@@ -467,7 +470,7 @@ export function InboxClient({
           </>
         ) : (
           <div className="thread-bg flex flex-1 flex-col items-center justify-center gap-2 px-6 text-center">
-            <p className="font-serif text-[24px] italic leading-tight text-text-2">
+            <p className="text-[20px] font-semibold leading-tight text-text-2">
               Elige una conversación para ver el hilo
             </p>
             <p className="kicker">Bandeja · tiempo real</p>

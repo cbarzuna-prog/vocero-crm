@@ -5,6 +5,7 @@ import { MessageCircle, MoreHorizontal, Phone, Search, MapPin } from "lucide-rea
 import { TASK_TYPE_LABELS, type TaskType } from "@/lib/tareas";
 import { TASK_TYPES } from "@/lib/tareas-enums";
 import { cn } from "@/lib/utils";
+import { Dialogo } from "@/components/fork/dialogo";
 import { authClient } from "@/lib/auth/client";
 import { diaYHora, type TaskDto } from "@/lib/tareas";
 import { Buscador, buscarPropiedades } from "@/components/propiedades/shared";
@@ -154,24 +155,14 @@ export function NuevaTareaDialog({
   }
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-overlay sm:items-center sm:p-4"
-      role="dialog"
-      aria-modal="true"
-      aria-label={editing ? "Editar tarea" : "Nueva tarea"}
-      onKeyDown={(e) => {
-        if (e.key === "Escape") onCancel();
-      }}
-    >
-      {/* Móvil: hoja desde abajo, al alcance del pulgar. Escritorio: modal. */}
+    // 056: portal, foco y Tab dentro, Esc; en el celular sube desde abajo.
+    <Dialogo titulo={editing ? "Editar tarea" : "Nueva tarea"} onClose={onCancel} className="p-4 [&>div:last-child]:mt-0">
       <form
-        className="w-full rounded-t-xl border bg-popover p-4 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-pop sm:max-w-md sm:rounded-lg"
         onSubmit={(e) => {
           e.preventDefault();
           void save();
         }}
       >
-        <h3 className="font-semibold">{editing ? "Editar tarea" : "Nueva tarea"}</h3>
 
         {contact ? (
           <p className="mt-0.5 text-[13px] text-text-3">{contact.name}</p>
@@ -335,6 +326,6 @@ export function NuevaTareaDialog({
           </Button>
         </div>
       </form>
-    </div>
+    </Dialogo>
   );
 }

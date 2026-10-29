@@ -383,3 +383,33 @@
     animation-duration: 0.01ms !important;
   }
 }
+
+/* ============================================================
+   Fork Knock Knock (056) — Barra lateral con la marca de
+   knockknockcr.com: fondo azul #083F59 y lo activo en naranja #FD5D08.
+   Fuera de @layer a propósito: gana a `.nav-dark` (base) y a las
+   utilidades `bg-brand-tint`, sin tocar el cálculo de upstream.
+   ============================================================ */
+.nav-dark {
+  --bg: #083f59;
+  --bg-subtle: #06324a;
+  --bg-panel: #0b4a68;
+  --bg-raised: #0b4a68;
+  --bg-hover: #0d5476;
+  --row-hover: #0b4a68;
+  --chip-bg: #0b4a68;
+  --text: #f3f5f6;
+  --text-2: #d2e0e7;
+  --text-3: #a9c3cf;
+  --text-4: #7d9eae;
+  --border: #1d6182;
+  --border-strong: #2d7496;
+}
+.nav-dark [aria-current="page"] {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  box-shadow: inset 3px 0 0 #fd5d08;
+}
+.nav-dark [aria-current="page"] svg {
+  color: #fd5d08;
+}
