@@ -27,7 +27,9 @@
     --bg-raised: #ffffff;
     --text: #0a1730;
     --text-2: #42506b;
-    --text-3: #8391aa;
+    /* Fork (diagnóstico de diseño, 2026-10-24): #8391aa medía 3.2:1 sobre
+       blanco; #5e6a83 pasa 4.5:1 sobre todas las superficies claras. */
+    --text-3: #5e6a83;
     --text-4: #aab4c8;
     --border: #e8edf6;
     --border-strong: #dde5f1;
@@ -351,8 +353,10 @@
   }
 
   /* Etiqueta editorial en mono: "01 · BANDEJA", "ETAPA", "NOTAS" */
+  /* Fork: la etiqueta de sección en tipo oración y legible (12px), no en
+     mayúsculas espaciadas de 10.5px. */
   .kicker {
-    @apply font-mono text-[10.5px] font-medium uppercase tracking-[0.14em] text-text-3;
+    @apply text-[12px] font-semibold text-text-3;
   }
 }
 

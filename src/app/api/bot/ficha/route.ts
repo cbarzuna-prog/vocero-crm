@@ -4,6 +4,9 @@ import { getDb, schema } from "@/lib/db";
 import { apiError, parseBody } from "@/lib/api";
 import { requireBotKey, resolveInstanceOrg } from "@/server/bot/auth";
 import { upsertFicha } from "@/server/bot/ficha";
+// Fork Knock Knock (055): lo que anota el agente llena la ficha inmobiliaria.
+import { sincronizarDesdeFicha } from "@/server/perfil/service";
+import { propiedadesEnabled } from "@/server/propiedades/flag";
 
 export const dynamic = "force-dynamic";
 
@@ -51,5 +54,6 @@ export async function PUT(req: Request) {
     ficha: body.data.ficha,
   });
   if (!result) return apiError(404, "not_found", "Contacto no encontrado");
+  if (propiedadesEnabled()) await sincronizarDesdeFicha(organizationId, rows[0].contactId, body.data.ficha);
   return Response.json(result);
 }

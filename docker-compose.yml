@@ -60,6 +60,9 @@ services:
       CHANNELS: ${CHANNELS:-}
       AGENDA: ${AGENDA:-}
       ATRIBUCION: ${ATRIBUCION:-}
+      # 046 (fork Knock Knock): tareas con «Hoy» y propiedades. Apagadas por defecto.
+      TAREAS: ${TAREAS:-}
+      PROPIEDADES: ${PROPIEDADES:-}
       BOT_API_KEY: ${BOT_API_KEY:-}
       # 2.0 — El cerebro: por defecto, el servicio `nea` de abajo. Con la
       # variable definida pero vacía en el .env, ninguno (bandeja manual).

@@ -173,3 +173,16 @@ repo ya registra. Los subagentes con `memory: project` usan
 2. **Subagentes** (`.claude/agents/`): `deploy-ops` (deploy/logs/healthchecks,
    no escribe código de app) · `public-site-builder` (páginas públicas/legales
    y config de paneles externos).
+
+## Fork Knock Knock (cbarzuna-prog/vocero-crm)
+
+- **Textos de UI en usted** (decisión del dueño, 2026-10-23): todo texto nuevo
+  que vea el usuario va en usted («Busque un contacto», «Puede dejarlo vacío»),
+  nunca en tú ni en vos. Los textos heredados de upstream **no se editan en su
+  archivo**: se pasan a usted con un par en `fork/textos-usted/diccionario.json`,
+  que el build aplica al compilar (spec 053, guía en
+  `fork/textos-usted/INSTRUCCIONES.md`). Tras un merge de `upstream`, si
+  `tests/unit/053-textos-usted.test.ts` falla, Vocero cambió una frase:
+  actualice el par.
+- Código del fork en carpetas propias tras banderas (`TAREAS`, `PROPIEDADES`);
+  ver `specs/046-propiedades-y-tareas/`.

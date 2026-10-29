@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+// Fork Knock Knock (054): editar, cambiar contraseña y quitar del equipo.
+import { EquipoMiembros } from "@/components/fork/equipo-miembros";
 
 type Member = {
   id: string;
@@ -17,7 +19,12 @@ type Member = {
   createdAt: string;
 };
 
-export function TeamClient() {
+export function TeamClient({
+  gestion,
+}: {
+  /** Fork 054: con los módulos del fork, la lista trae acciones. */
+  gestion?: { meEmail: string; esPropietario: boolean };
+} = {}) {
   const [members, setMembers] = useState<Member[]>([]);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -139,6 +146,14 @@ export function TeamClient() {
         </CardContent>
       </Card>
 
+      {gestion ? (
+        <EquipoMiembros
+          members={members}
+          meEmail={gestion.meEmail}
+          esPropietario={gestion.esPropietario}
+          onChanged={() => void refetch()}
+        />
+      ) : (
       <div className="space-y-2">
         <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
           Miembros
@@ -159,6 +174,7 @@ export function TeamClient() {
           </div>
         ))}
       </div>
+      )}
     </div>
   );
 }

@@ -44,3 +44,6 @@ Thumbs.db
 .dev-media/
 # Capturas y salidas de los self-tests (p. ej. scripts/e2e-responsive.mjs)
 scratch/
+
+# 053: borradores que se unen en fork/textos-usted/diccionario.json
+fork/textos-usted/parciales/

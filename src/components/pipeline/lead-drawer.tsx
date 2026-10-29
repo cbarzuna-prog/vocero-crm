@@ -15,6 +15,9 @@ import { cn, formatPhone } from "@/lib/utils";
 import { AnuncioOrigen } from "@/components/anuncio-origen";
 import { ContactAvatar } from "@/components/avatar";
 import { FichaPanel } from "@/components/ficha-panel";
+import { TareasContacto } from "@/components/tareas/tareas-contacto";
+import { PropiedadesContacto } from "@/components/propiedades/propiedades-contacto";
+import { PerfilCliente } from "@/components/fork/perfil-cliente";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PriorityPicker } from "./priority-picker";
@@ -169,6 +172,13 @@ export function LeadDrawer({
             )}
           </section>
 
+          {/* 046 — Se pinta solo si la instancia tiene TAREAS. */}
+          <TareasContacto contact={lead.contact} />
+          {/* 046 — Se pinta solo si la instancia tiene PROPIEDADES. */}
+          {/* 055 — Quién es y qué busca; solo con PROPIEDADES. */}
+        <PerfilCliente contact={lead.contact} />
+        <PropiedadesContacto contact={lead.contact} />
+
           {/* Cuánto */}
           <section className="border-b p-4">
             <p className="mb-2 kicker">
@@ -259,7 +269,7 @@ export function LeadDrawer({
                     aria-pressed={actual}
                     aria-label={`Mover a ${s.name}`}
                     className={cn(
-                      "rounded-full border px-2.5 py-1 text-xs transition-colors",
+                      "rounded-full border px-2.5 py-1 text-xs transition-colors [@media(pointer:coarse)]:px-3.5 [@media(pointer:coarse)]:py-2.5 [@media(pointer:coarse)]:text-[13px]",
                       actual
                         ? "border-brand bg-brand-tint font-semibold text-brand-text"
                         : "border-border text-text-2 hover:bg-accent"

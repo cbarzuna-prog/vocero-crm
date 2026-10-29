@@ -26,11 +26,12 @@ export const buttonVariants = cva(
         destructive:
           "bg-destructive text-destructive-foreground shadow-sm hover:opacity-90",
       },
+      // Fork: en pantallas táctiles todo botón mide 44px (el dedo no es un cursor).
       size: {
-        default: "h-9 px-4 py-2",
-        sm: "h-8 px-3 text-xs",
-        lg: "h-10 px-6",
-        icon: "h-9 w-9",
+        default: "h-9 px-4 py-2 [@media(pointer:coarse)]:h-11",
+        sm: "h-8 px-3 text-[13px] [@media(pointer:coarse)]:h-11",
+        lg: "h-10 px-6 [@media(pointer:coarse)]:h-11",
+        icon: "h-9 w-9 [@media(pointer:coarse)]:h-11 [@media(pointer:coarse)]:w-11",
       },
     },
     defaultVariants: {

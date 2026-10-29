@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { BarraMovil } from "@/components/fork/barra-movil";
 import { usePathname } from "next/navigation";
 import { Menu } from "lucide-react";
 import type { Branding } from "@/lib/branding";
@@ -28,6 +29,8 @@ export function AppShell({
   theme,
   commit,
   agenda = false,
+  tareas = false,
+  propiedades = false,
   kicker,
   aviso = null,
   children,
@@ -40,6 +43,9 @@ export function AppShell({
   commit?: ResolvedCommit;
   /** 015 — ¿esta instancia tiene agenda? Lo decide el servidor. */
   agenda?: boolean;
+  /** 046 — módulos del fork (banderas `TAREAS` y `PROPIEDADES`). */
+  tareas?: boolean;
+  propiedades?: boolean;
   /** 028 — La etiqueta bajo el logo (`navKicker`). */
   kicker?: string;
   /**
@@ -89,6 +95,8 @@ export function AppShell({
         role={role}
         theme={theme}
         agenda={agenda}
+        tareas={tareas}
+        propiedades={propiedades}
         kicker={kicker}
         open={navOpen}
         onClose={() => setNavOpen(false)}
@@ -112,6 +120,10 @@ export function AppShell({
         {aviso}
 
         <main className="min-h-0 min-w-0 flex-1 overflow-hidden">{children}</main>
+        {/* 050 (fork) — barra inferior y «+» en el celular, solo con los módulos del fork. */}
+        {(tareas || propiedades) && (
+          <BarraMovil tareas={tareas} propiedades={propiedades} onMas={() => setNavOpen(true)} />
+        )}
       </div>
     </div>
   );

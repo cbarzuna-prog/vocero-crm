@@ -5,6 +5,34 @@ sigue el SemVer del [README](README.md#versiones): una menor trae funciones
 nuevas y actualizar es redesplegar. Desde 1.4.0, cada tag `vX.Y.Z` publica la
 imagen `ghcr.io/kevinrivm/vocero-crm:X.Y.Z`.
 
+## Fork Knock Knock — sin publicar
+
+Sobre 2.1.0. Dos módulos nuevos, **apagados por defecto**: con las banderas
+apagadas la instancia es exactamente la de upstream. Migración aditiva `0023`
+(solo crea tablas). Spec [046](specs/046-propiedades-y-tareas/spec.md).
+
+### Nuevo
+
+- **055 (fork)** — Ficha inmobiliaria del cliente: correo, dónde vive, idioma, tipo de cliente, qué busca (operación, tipos, zonas, presupuesto, habitaciones, plazo) y cómo paga. El agente la llena al conversar; lo que edita una persona no lo pisa. Migración aditiva `0025`.
+- **054 (fork)** — Ajustes → Equipo: editar nombre, correo y rol; contraseña temporal (con opción de quitar los dos pasos); quitar del equipo, con sus tareas pendientes reasignadas a quien lo quita.
+- **053 (fork)** — Las pantallas heredadas de Vocero (Bandeja, Contactos, Pipeline, Resultados, Ajustes, canales, Agente, Laboratorio, guía de inicio, registro) hablan de usted: ~330 frases en `fork/textos-usted/diccionario.json`, aplicadas al compilar sin editar los archivos de upstream.
+- **052 (fork)** — Pipeline en el celular: una etapa a la vez con pestañas, total por etapa y el mismo cajón del tablero para mover, poner monto y prioridad. El tablero de escritorio no cambia.
+- **051 (fork)** — Propiedades: vista de lista densa, orden por precio, resumen bajo el título, tarjetas parejas y esqueleto de carga. Ficha en el celular: interesados arriba, secciones plegables (lo interno arranca plegado) y «Agregar fotos» con arrastrar y soltar.
+- **Tareas y «Hoy»** (`TAREAS=on`): seguimientos por contacto con tipo, día y
+  hora del negocio; «Hoy» como pantalla de inicio con vencidas, de hoy y tratos
+  sin siguiente paso; completar con un toque y crear la siguiente; contador en
+  el menú.
+- **Propiedades** (`PROPIEDADES=on`): inventario con código `KK-0001`, fotos,
+  filtros por operación, tipo, estado, cantón y precio (USD o ₡); vendedor
+  ligado a un contacto; compradores vinculados a varias propiedades con su
+  estado e historial; lo interno (vendedor, comisión, notas) separado de lo que
+  se comparte.
+- **Verificación en dos pasos** (049): app autenticadora + códigos de
+  respaldo, en Ajustes → Mi cuenta → Seguridad. Migración aditiva `0024`.
+- **Atajos** (050): reprogramar con un toque y deshacer, «Llamar» en la tarea,
+  enviar la ficha de una propiedad por WhatsApp, «Crear» rápido y barra
+  inferior en el celular. Contraste y toques de 44 px en pantallas táctiles.
+
 ## 2.1.0 — 2026-10-22
 
 Una bandeja que se usa como WhatsApp. Actualizar es redesplegar con la

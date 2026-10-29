@@ -35,6 +35,12 @@ const prefixes = {
   dispatch: "dsp",
   // 026 — el aviso de que una conversación se eliminó
   olvido: "olv",
+  // 046 — propiedades y tareas (fork Knock Knock)
+  property: "prop",
+  propertyPhoto: "pph",
+  propertyInterest: "pint",
+  propertyInterestEvent: "pie",
+  task: "tsk",
 } as const;
 
 export type IdKind = keyof typeof prefixes;

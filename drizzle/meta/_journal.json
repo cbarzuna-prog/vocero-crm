@@ -162,6 +162,27 @@
       "when": 1792608627646,
       "tag": "0022_responder_citando",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1792771577984,
+      "tag": "0023_propiedades_y_tareas",
+      "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1792858677884,
+      "tag": "0024_dos_pasos",
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1793129695219,
+      "tag": "0025_perfil_cliente",
+      "breakpoints": true
     }
   ]
 }

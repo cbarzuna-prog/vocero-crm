@@ -20,7 +20,7 @@ export default function LoginPage() {
     e.preventDefault();
     setError(null);
     setLoading(true);
-    const { error: err } = await signIn.email({ email, password });
+    const { data, error: err } = await signIn.email({ email, password });
     setLoading(false);
     if (err) {
       setError(
@@ -28,6 +28,11 @@ export default function LoginPage() {
           ? "Demasiados intentos. Espera unos minutos."
           : "Correo o contraseña incorrectos."
       );
+      return;
+    }
+    // 049 (fork) — con verificación en dos pasos, falta el código.
+    if (data && "twoFactorRedirect" in data && data.twoFactorRedirect) {
+      router.push("/login/verificar");
       return;
     }
     // A la raíz, no a la Bandeja: ahí se decide si toca la guía de inicio

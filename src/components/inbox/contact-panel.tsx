@@ -31,6 +31,9 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { FichaPanel } from "@/components/ficha-panel";
+import { TareasContacto } from "@/components/tareas/tareas-contacto";
+import { PropiedadesContacto } from "@/components/propiedades/propiedades-contacto";
+import { PerfilCliente } from "@/components/fork/perfil-cliente";
 import { DeleteConversationDialog } from "./delete-conversation-dialog";
 
 const HANDOFF_LABELS: Record<string, string> = {
@@ -370,6 +373,13 @@ export function ContactPanel({
             </ol>
           </section>
         )}
+
+        {/* 046 — Se pinta solo si la instancia tiene TAREAS. */}
+        <TareasContacto contact={conversation.contact} />
+        {/* 046 — Se pinta solo si la instancia tiene PROPIEDADES. */}
+        {/* 055 — Quién es y qué busca; solo con PROPIEDADES. */}
+        <PerfilCliente contact={conversation.contact} />
+        <PropiedadesContacto contact={conversation.contact} />
 
         {/* Ficha: lo que se SABE del lead. Va antes de Notas —lo que alguien
             OPINA— porque es lo que se consulta a mitad de una conversación. */}
