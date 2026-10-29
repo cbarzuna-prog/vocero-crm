@@ -160,6 +160,45 @@ async function flagOn() {
   const del2 = await api(`/api/tareas/${vencida.json.id}`, { method: "DELETE" });
   check("borrar dos veces → 404", del2.res.status === 404, `${del2.res.status}`);
 
+  // Responsable: el equipo expone el userId y la tarea se puede asignar a otro miembro.
+  const equipo = (await api("/api/settings/team")).json;
+  check(
+    "GET equipo expone userId de cada miembro",
+    Array.isArray(equipo?.members) && equipo.members.length > 0 && equipo.members.every((m) => typeof m.userId === "string" && m.userId)
+  );
+  const miCorreo = process.env.E2E_EMAIL ?? "e2e-046@example.com";
+  const yo = equipo.members.find((m) => m.email === miCorreo) ?? equipo.members[0];
+  const stampR = Date.now().toString(36);
+  const otroEmail = `e2e-046-resp-${stampR}@example.com`;
+  const alta = await api("/api/settings/team", {
+    method: "POST",
+    body: { name: `Socia ${stampR}`, email: otroEmail, password: "e2e-046-contrasena" },
+  });
+  check("alta de un segundo miembro → 201", alta.res.status === 201, `${alta.res.status} ${JSON.stringify(alta.json)}`);
+  const equipo2 = (await api("/api/settings/team")).json;
+  const socia = equipo2.members.find((m) => m.email === otroEmail);
+  check("la nueva miembro aparece con su userId", Boolean(socia?.userId));
+  if (socia?.userId) {
+    const asignada = await api("/api/tareas", {
+      method: "POST",
+      body: { contactId: laura.id, title: "Visita con responsable", day: today, assignedUserId: socia.userId },
+    });
+    check("crear con responsable → 201", asignada.res.status === 201, `${asignada.res.status} ${JSON.stringify(asignada.json)}`);
+    const todas = (await api("/api/tareas?vista=hoy&de=todas")).json;
+    const enHoy = todas.hoy.find((t) => t.id === asignada.json?.id);
+    check("la tarea queda asignada a la socia", enHoy?.assignedUserId === socia.userId, `${enHoy?.assignedUserId}`);
+    check("en «Hoy» (todas) se ve el nombre de la responsable", enHoy?.assignedUserName === `Socia ${stampR}`, `${enHoy?.assignedUserName}`);
+    const mias = (await api("/api/tareas?vista=hoy&de=mias")).json;
+    check("con «Mías» no aparece la de la socia", mias.hoy.every((t) => t.id !== asignada.json?.id));
+    const reasignada = await api(`/api/tareas/${asignada.json.id}`, { method: "PATCH", body: { assignedUserId: yo.userId } });
+    check("reasignar a uno mismo → 200", reasignada.res.ok, `${reasignada.res.status}`);
+  }
+  const ajeno = await api("/api/tareas", {
+    method: "POST",
+    body: { contactId: laura.id, title: "Responsable ajeno", day: today, assignedUserId: "usr_inexistente" },
+  });
+  check("responsable que no es del equipo → 422", ajeno.res.status === 422, `${ajeno.res.status}`);
+
   // La raíz entra a «Hoy».
   const root = await api("/", { redirect: "manual" });
   const loc = root.res.headers.get("location") ?? "";

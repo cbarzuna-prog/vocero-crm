@@ -5,6 +5,7 @@ import { MessageCircle, MoreHorizontal, Phone, Search, MapPin } from "lucide-rea
 import { TASK_TYPE_LABELS, type TaskType } from "@/lib/tareas";
 import { TASK_TYPES } from "@/lib/tareas-enums";
 import { cn } from "@/lib/utils";
+import { authClient } from "@/lib/auth/client";
 import { diaYHora, type TaskDto } from "@/lib/tareas";
 import { Buscador, buscarPropiedades } from "@/components/propiedades/shared";
 import { Button } from "@/components/ui/button";
@@ -35,6 +36,27 @@ function usePropiedadesDisponibles(): boolean {
     void propiedadesCache.then(setOk);
   }, []);
   return ok;
+}
+
+type Responsable = { userId: string; name: string };
+
+/** Miembros del equipo para el selector de responsable. Se piden una vez; si falla, no hay selector. */
+let equipoCache: Promise<Responsable[]> | null = null;
+function useEquipo(): Responsable[] {
+  const [equipo, setEquipo] = useState<Responsable[]>([]);
+  useEffect(() => {
+    equipoCache ??= fetch("/api/settings/team")
+      .then((r) => (r.ok ? r.json() : { members: [] }))
+      .then((d: { members: { userId?: string; name: string }[] }) =>
+        d.members.flatMap((m) => (m.userId ? [{ userId: m.userId, name: m.name }] : []))
+      )
+      .catch(() => {
+        equipoCache = null;
+        return [];
+      });
+    void equipoCache.then(setEquipo);
+  }, []);
+  return equipo;
 }
 
 export function NuevaTareaDialog({
@@ -71,6 +93,11 @@ export function NuevaTareaDialog({
     editing?.property ? { id: editing.property.id, label: `${editing.property.code} · ${editing.property.title}` } : defaultProperty
   );
   const conPropiedades = usePropiedadesDisponibles();
+  const equipo = useEquipo();
+  const { data: sesion } = authClient.useSession();
+  // null = sin elegir todavía: se envía vacío y el servidor asigna a quien crea.
+  const [responsable, setResponsable] = useState<string | null>(editing?.assignedUserId ?? null);
+  const responsableActual = responsable ?? sesion?.user.id ?? "";
   const [picked, setPicked] = useState<ContactOption | null>(contact ?? null);
   const [query, setQuery] = useState("");
   const [options, setOptions] = useState<ContactOption[]>([]);
@@ -114,6 +141,7 @@ export function NuevaTareaDialog({
         day,
         time: time || null,
         propertyId: propiedad?.id ?? null,
+        ...(responsable ? { assignedUserId: responsable } : {}),
       }),
     }).catch(() => null);
     setSaving(false);
@@ -249,6 +277,27 @@ export function NuevaTareaDialog({
             />
           </div>
         </div>
+
+        {equipo.length > 1 && (
+          <div className="mt-3">
+            <label className="block text-[13px] font-medium" htmlFor="tarea-responsable">
+              Responsable
+            </label>
+            <select
+              id="tarea-responsable"
+              value={responsableActual}
+              onChange={(e) => setResponsable(e.target.value)}
+              className="mt-1 h-10 w-full rounded-md border border-border-strong bg-background px-3 text-sm"
+            >
+              {equipo.map((m) => (
+                <option key={m.userId} value={m.userId}>
+                  {m.name}
+                  {m.userId === sesion?.user.id ? " (usted)" : ""}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         {conPropiedades && (
           <div className="mt-3">
