@@ -20,6 +20,7 @@ import {
   INTEREST_STATUSES,
   MOTIVOS_NO_CAPTADA,
   PROPERTY_CURRENCIES,
+  ROLES_COLABORACION,
   PROPERTY_OPERATIONS,
   PROPERTY_STATUSES,
   PROPERTY_TYPES,
@@ -1636,4 +1637,36 @@ export const captacionEvento = pgTable(
     occurredAt: timestamp("occurred_at").notNull().defaultNow(),
   },
   (t) => [index("kk_captacion_evento_org_prop_idx").on(t.organizationId, t.propertyId, t.occurredAt)]
+);
+
+/**
+ * 060 — Quién trajo y quién vende cada propiedad, y su parte de la comisión.
+ * Una persona del equipo (`user_id`) o un colaborador externo (`contact_id`),
+ * nunca las dos. Lo que no se reparte queda para la agencia.
+ */
+export const propiedadParticipante = pgTable(
+  "kk_propiedad_participante",
+  {
+    id: text("id").primaryKey(),
+    organizationId: text("organization_id")
+      .notNull()
+      .references(() => organization.id, { onDelete: "cascade" }),
+    propertyId: text("property_id")
+      .notNull()
+      .references(() => property.id, { onDelete: "cascade" }),
+    userId: text("user_id").references(() => user.id, { onDelete: "cascade" }),
+    contactId: text("contact_id").references(() => contact.id, { onDelete: "cascade" }),
+    rol: text("rol", { enum: ROLES_COLABORACION }).notNull(),
+    /** Parte de la comisión en puntos básicos: 30 % = 3000. */
+    porcentajeBp: integer("porcentaje_bp").notNull(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (t) => [
+    index("kk_propiedad_participante_org_prop_idx").on(t.organizationId, t.propertyId),
+    index("kk_propiedad_participante_org_contact_idx").on(t.organizationId, t.contactId),
+    uniqueIndex("kk_propiedad_participante_user_uq").on(t.propertyId, t.userId).where(sql`${t.userId} IS NOT NULL`),
+    uniqueIndex("kk_propiedad_participante_contact_uq").on(t.propertyId, t.contactId).where(sql`${t.contactId} IS NOT NULL`),
+    check("kk_propiedad_participante_quien_ck", sql`(${t.userId} IS NULL) <> (${t.contactId} IS NULL)`),
+    check("kk_propiedad_participante_bp_ck", sql`${t.porcentajeBp} BETWEEN 0 AND 10000`),
+  ]
 );

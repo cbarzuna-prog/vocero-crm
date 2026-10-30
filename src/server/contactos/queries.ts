@@ -5,6 +5,7 @@ import type { ContactoFila, ContactoDetalle, EventoHistorial, MensajeReciente, S
 import { TIPO_WEB_LABELS, type TipoWeb } from "@/lib/web-leads";
 import { effectiveSource } from "@/server/contact-source";
 import { leerPerfil } from "@/server/perfil/service";
+import { colaboracionesDeContacto } from "@/server/colaboracion/service";
 
 const ACTIVOS = ["interesado", "enviada", "visitada", "oferto"] as const;
 
@@ -136,7 +137,7 @@ export async function detalleContacto(organizationId: string, contactId: string)
   const fila = (await listarContactos(organizationId)).find((f) => f.id === contactId);
   if (!fila) return null;
   const db = getDb();
-  const [convs, etapas, interes, tareas, perfil, web] = await Promise.all([
+  const [convs, etapas, interes, tareas, perfil, web, colabora] = await Promise.all([
     db
       .select({ id: schema.conversation.id })
       .from(schema.conversation)
@@ -178,6 +179,7 @@ export async function detalleContacto(organizationId: string, contactId: string)
       .where(scoped(schema.webLead.organizationId, organizationId, eq(schema.webLead.contactId, contactId)))
       .orderBy(desc(schema.webLead.recibidoAt))
       .limit(30),
+    colaboracionesDeContacto(organizationId, contactId),
   ]);
   const solicitudesWeb: SolicitudWeb[] = web.map(({ w, code, title, referidor }) => ({
     id: w.id,
@@ -247,6 +249,7 @@ export async function detalleContacto(organizationId: string, contactId: string)
     perfil,
     historial: historial.slice(0, 60),
     solicitudesWeb,
+    colabora,
     mensajes: mensajes
       .reverse()
       .map((m): MensajeReciente => ({

@@ -1,6 +1,7 @@
 import { z } from "zod";
 import type { PerfilDto, TipoCliente, OperacionBuscada } from "@/lib/perfil-cliente";
 import type { PriorityValue, SourceDto } from "@/lib/types";
+import type { ColaboracionDeContacto } from "@/lib/colaboracion";
 import { SOURCE_LABELS } from "@/server/contact-source";
 
 /** 057 (fork) — Un renglón de la lista de Contactos. */
@@ -67,6 +68,8 @@ export type ContactoDetalle = {
   historial: EventoHistorial[];
   mensajes: MensajeReciente[];
   solicitudesWeb: SolicitudWeb[];
+  /** 060 — Si es co-corredor: en qué propiedades participa y cuánto le toca. */
+  colabora: ColaboracionDeContacto[];
 };
 
 export const ORDENES_CONTACTOS = ["actividad", "recientes", "nombre", "prioridad", "dias_etapa"] as const;

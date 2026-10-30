@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { ETAPA_LABELS } from "@/lib/captaciones";
+import { comisionEstimadaCents, ETAPA_LABELS, textoComision } from "@/lib/captaciones";
+import { ColaboracionPropiedad } from "@/components/fork/colaboracion-propiedad";
 import { Archive, ArchiveRestore, ArrowLeft, ChevronDown, ImagePlus, Lock, Star, Trash2, X } from "lucide-react";
 import { parseMoneyToCents } from "@/lib/money";
 import {
@@ -663,7 +664,7 @@ export function FichaClient({ initial }: { initial: PropertyDetail }) {
           <Seccion
             titulo="Interno · no compartir"
             icono={<Lock className="h-3.5 w-3.5" strokeWidth={2} aria-hidden />}
-            resumen="Vendedor, comisión y notas"
+            resumen="Vendedor, comisión, colaboradores y notas"
             className="border-dashed bg-subtle lg:col-start-1"
           >
               <p className="mb-3 text-[13px] text-text-3">Vendedor, comisión y notas: nunca se muestran al comprador.</p>
@@ -722,6 +723,13 @@ export function FichaClient({ initial }: { initial: PropertyDetail }) {
                   <Textarea id="f-notas" rows={3} maxLength={5000} value={draft.notasInternas} onChange={(e) => set({ notasInternas: e.target.value })} />
                 </Field>
               </div>
+              {/* 060 (fork) — co-corredores y reparto de la comisión. */}
+              <ColaboracionPropiedad
+                propertyId={p.id}
+                comisionCents={comisionEstimadaCents(p)}
+                currency={p.currency}
+                comisionTexto={textoComision(p)}
+              />
           </Seccion>
         </div>
       </div>

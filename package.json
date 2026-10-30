@@ -23,6 +23,7 @@
     "test:e2e:propiedades": "node --env-file=.env scripts/e2e-046-propiedades.mjs",
     "test:e2e:dos-pasos": "node --env-file=.env scripts/e2e-049-dos-pasos.mjs",
     "test:e2e:captaciones": "node --env-file=.env scripts/e2e-048-captaciones.mjs",
+    "test:e2e:colaboradores": "node --env-file=.env scripts/e2e-060-colaboradores.mjs",
     "test:e2e:web-leads": "node --env-file=.env scripts/e2e-058-web-leads.mjs",
     "test:e2e:contactos": "node --env-file=.env scripts/e2e-057-contactos.mjs",
     "test:e2e:revision": "node --env-file=.env scripts/e2e-056-revision.mjs",

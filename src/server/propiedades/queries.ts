@@ -86,6 +86,12 @@ export async function listarPropiedades(
     f.currency && f.min !== undefined ? gte(P.priceCents, Math.round(f.min * 100)) : undefined,
     f.currency && f.max !== undefined ? lte(P.priceCents, Math.round(f.max * 100)) : undefined,
   ];
+  if (f.colaborador) {
+    // 060 — Donde participa esa persona (del equipo o colaborador externo).
+    const id = f.colaborador.slice(2);
+    const col = f.colaborador.startsWith("u:") ? sql.raw(`ppa."user_id"`) : sql.raw(`ppa."contact_id"`);
+    conds.push(sql`exists (select 1 from "kk_propiedad_participante" ppa where ppa."property_id" = "property"."id" and ${col} = ${id})`);
+  }
   if (f.q) {
     const like = `%${f.q.replace(/[\\%_]/g, "\\$&")}%`;
     conds.push(or(ilike(P.code, like), ilike(P.title, like), ilike(P.zona, like), ilike(P.canton, like)));

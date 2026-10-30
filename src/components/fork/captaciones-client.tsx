@@ -13,7 +13,8 @@ import {
   useSensors,
   type DragEndEvent,
 } from "@dnd-kit/core";
-import { CalendarClock, ExternalLink, KeyRound, MessageSquareText, Phone, Plus, XCircle } from "lucide-react";
+import { CalendarClock, ExternalLink, KeyRound, MessageSquareText, Phone, Plus, Users, XCircle } from "lucide-react";
+import { resumenParticipantes, ROL_LABELS, textoPorcentaje } from "@/lib/colaboracion";
 import {
   CAPTACION_ETAPAS,
   COMISION_VENTA_BP,
@@ -67,6 +68,7 @@ export function CaptacionesClient() {
   const [pendiente, setPendiente] = useState<Pendiente | null>(null);
   const [arrastrando, setArrastrando] = useState<string | null>(null);
   const [etapaMovil, setEtapaMovil] = useState<EtapaCaptacion>("contacto");
+  const [colab, setColab] = useState("");
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }), useSensor(KeyboardSensor));
 
@@ -90,11 +92,18 @@ export function CaptacionesClient() {
     }
   }, [refetch]);
 
+  // 060 — Quiénes colaboran en alguna tarjeta, para filtrar «lo de Ana».
+  const colaboradores = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const t of tarjetas ?? []) for (const p of t.participantes) m.set(p.key, p.nombre);
+    return [...m].map(([key, nombre]) => ({ key, nombre })).sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
+  }, [tarjetas]);
+
   const porEtapa = useMemo(() => {
     const m = new Map<EtapaCaptacion, CaptacionTarjeta[]>(CAPTACION_ETAPAS.map((e) => [e, []]));
-    for (const t of tarjetas ?? []) m.get(t.etapa)?.push(t);
+    for (const t of tarjetas ?? []) if (!colab || t.participantes.some((p) => p.key === colab)) m.get(t.etapa)?.push(t);
     return m;
-  }, [tarjetas]);
+  }, [tarjetas, colab]);
 
   async function mover(t: CaptacionTarjeta, etapa: EtapaCaptacion, extra: Record<string, unknown> = {}) {
     if (t.etapa === etapa && Object.keys(extra).length === 0) return;
@@ -150,9 +159,21 @@ export function CaptacionesClient() {
               : `${activas.length} en proceso${porVencer.length ? ` · ${porVencer.length} exclusiva${porVencer.length === 1 ? "" : "s"} por renovar` : ""}`}
           </p>
         </div>
-        <Button onClick={() => setNueva(true)}>
-          <Plus className="h-4 w-4" aria-hidden /> Nueva captación
-        </Button>
+        <div className="flex flex-wrap items-center gap-2">
+          {colaboradores.length > 0 && (
+            <select aria-label="Colaborador" value={colab} onChange={(e) => setColab(e.target.value)} className="h-9 rounded-md border bg-background px-2 text-[13px] [@media(pointer:coarse)]:h-11">
+              <option value="">Todos</option>
+              {colaboradores.map((c) => (
+                <option key={c.key} value={c.key}>
+                  {c.nombre}
+                </option>
+              ))}
+            </select>
+          )}
+          <Button onClick={() => setNueva(true)}>
+            <Plus className="h-4 w-4" aria-hidden /> Nueva captación
+          </Button>
+        </div>
       </header>
 
       {error && (
@@ -403,6 +424,12 @@ function Tarjeta({ t, overlay = false }: { t: CaptacionTarjeta; overlay?: boolea
           </p>
           <p className="truncate text-sm font-semibold">{t.title}</p>
           <p className="truncate text-[13px] text-text-2">{t.dueno ? t.dueno.name : <span className="text-warning-text">Sin dueño</span>}</p>
+          {t.participantes.length > 0 && (
+            <p className="mt-0.5 flex items-center gap-1 truncate text-[12px] text-text-3" title={t.participantes.map((p) => `${p.nombre}: ${ROL_LABELS[p.rol].toLowerCase()}, ${textoPorcentaje(p.porcentajeBp)}`).join("\n")}>
+              <Users className="h-3 w-3 shrink-0" aria-hidden />
+              <span className="truncate">{resumenParticipantes(t.participantes)}</span>
+            </p>
+          )}
         </div>
       </div>
       <p className="mt-2 flex flex-wrap items-baseline gap-x-2 text-[12.5px]">

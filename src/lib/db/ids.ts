@@ -45,6 +45,8 @@ const prefixes = {
   referidor: "rfd",
   // 048 — captaciones
   captacionEvento: "cev",
+  // 060 — colaboración (co-corredores)
+  participante: "ppa",
 } as const;
 
 export type IdKind = keyof typeof prefixes;

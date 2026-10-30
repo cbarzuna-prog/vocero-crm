@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { CR_PROVINCIAS, cantonDe } from "@/lib/cr-zonas";
 import { CAPTACION_ETAPAS, MOTIVOS_NO_CAPTADA, PROPERTY_CURRENCIES, PROPERTY_OPERATIONS, PROPERTY_TYPES } from "@/lib/propiedades-enums";
+import type { Participante } from "@/lib/colaboracion";
 import type { PropertyCurrency, PropertyOperation, PropertyStatus, PropertyType } from "@/lib/propiedades";
 
 /**
@@ -121,6 +122,8 @@ export type CaptacionTarjeta = {
   motivo: MotivoNoCaptada | null;
   coverUrl: string | null;
   dueno: { id: string; name: string; phone: string | null } | null;
+  /** 060 — Quién la trajo / la vende y su parte de la comisión. */
+  participantes: Participante[];
 };
 
 /** Total de comisiones estimadas de una columna, por moneda (no se suman monedas distintas). */

@@ -250,6 +250,11 @@ export const filtroPropiedadesSchema = z.object({
   max: z.coerce.number().min(0).optional(),
   q: z.string().trim().max(80).optional(),
   archivadas: z.enum(["1", "0"]).optional(),
+  /** 060 — Propiedades donde participa: `u:<userId>` o `c:<contactId>`. */
+  colaborador: z
+    .string()
+    .regex(/^[uc]:[\w-]{1,80}$/)
+    .optional(),
 });
 export type FiltroPropiedades = z.infer<typeof filtroPropiedadesSchema>;
 

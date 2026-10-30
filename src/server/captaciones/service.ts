@@ -20,6 +20,7 @@ import { telefonoWeb } from "@/lib/web-leads";
 import { businessTimezone } from "@/server/analytics/period";
 import { guardarPerfil, leerPerfil } from "@/server/perfil/service";
 import { crearPropiedad } from "@/server/propiedades/service";
+import { participantesDe } from "@/server/colaboracion/service";
 import { crearTarea, dueInstant } from "@/server/tareas/service";
 
 /**
@@ -66,7 +67,9 @@ export async function listarCaptaciones(organizationId: string): Promise<Captaci
       )
     )
     .orderBy(asc(P.captacionDesde));
+  const participantes = await participantesDe(organizationId, rows.map((r) => r.p.id));
   return rows.map(({ p, cover, duenoNombre, duenoTel }) => ({
+    participantes: participantes.get(p.id) ?? [],
     id: p.id,
     code: p.code,
     title: p.title,
@@ -97,7 +100,17 @@ async function duenoDe(organizationId: string, input: NuevaCaptacionInput): Prom
     if (!c) throw new CaptacionError("sin_dueno", "Ese contacto no existe");
     return c.id;
   }
-  const tel = telefonoWeb(input.telefono ?? undefined);
+  return contactoPorTelefono(organizationId, input.nombre!, input.telefono ?? "");
+}
+
+/**
+ * 048/060 — El contacto con ese teléfono, o uno nuevo con ese nombre. Sin trato
+ * en el Pipeline: un dueño o un co-corredor no es un comprador.
+ */
+export async function contactoPorTelefono(organizationId: string, nombre: string, telefono: string): Promise<string> {
+  const db = getDb();
+  const C = schema.contact;
+  const tel = telefonoWeb(telefono);
   if (!tel) throw new CaptacionError("telefono_invalido", "Revise el teléfono: 8 dígitos de Costa Rica o con código de país");
   const [ya] = await db
     .select({ id: C.id })
@@ -107,7 +120,7 @@ async function duenoDe(organizationId: string, input: NuevaCaptacionInput): Prom
   if (ya) return ya.id;
   const [nuevo] = await db
     .insert(C)
-    .values({ id: newId("contact"), organizationId, name: input.nombre!, phone: tel, waIdentity: tel, source: null })
+    .values({ id: newId("contact"), organizationId, name: nombre, phone: tel, waIdentity: tel, source: null })
     .onConflictDoNothing({ target: [C.organizationId, C.channel, C.waIdentity] })
     .returning({ id: C.id });
   if (nuevo) return nuevo.id;

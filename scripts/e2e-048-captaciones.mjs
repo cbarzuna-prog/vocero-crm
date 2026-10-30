@@ -91,15 +91,22 @@ check("«Mover a» la pasa a Valoración", true);
 // 3) Arrastrar a Propuesta.
 const origen = page.getByRole("region", { name: "Valoración" }).getByRole("button", { name: new RegExp(c1.code) });
 const destino = page.getByRole("region", { name: "Propuesta" });
-const a = await origen.boundingBox();
-const b = await destino.boundingBox();
-await page.mouse.move(a.x + a.width / 2, a.y + a.height / 2);
-await page.mouse.down();
-await page.mouse.move(a.x + a.width / 2 + 20, a.y + a.height / 2, { steps: 4 });
-await page.mouse.move(b.x + b.width / 2, b.y + 120, { steps: 12 });
-const guardado = page.waitForResponse((r) => r.url().includes(`/api/captaciones/${c1.id}`) && r.request().method() === "PATCH");
-await page.mouse.up();
-await guardado;
+// Arrastrar con el ratón (el sensor exige 6 px antes de activar). Un reintento
+// si el primer gesto no llegó a soltar sobre la columna.
+for (let intento = 0; intento < 2; intento++) {
+  await origen.scrollIntoViewIfNeeded();
+  const a = await origen.boundingBox();
+  const b = await destino.boundingBox();
+  await page.mouse.move(a.x + a.width / 2, a.y + a.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(a.x + a.width / 2 + 20, a.y + a.height / 2, { steps: 4 });
+  await page.waitForTimeout(100);
+  await page.mouse.move(b.x + b.width / 2, b.y + 120, { steps: 15 });
+  await page.waitForTimeout(100);
+  const guardado = page.waitForResponse((r) => r.url().includes(`/api/captaciones/${c1.id}`) && r.request().method() === "PATCH", { timeout: 5_000 }).then(() => true, () => false);
+  await page.mouse.up();
+  if (await guardado) break;
+}
 await destino.getByText(nombre).waitFor({ timeout: 10_000 });
 caps = (await api("/api/captaciones")).json.captaciones;
 check("arrastrando la pasa a Propuesta (y se guarda)", caps.find((x) => x.id === c1.id)?.etapa === "propuesta");

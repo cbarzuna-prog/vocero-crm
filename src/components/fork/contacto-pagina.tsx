@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import { Archive, ArchiveRestore, ArrowLeft, ArrowRightLeft, Bot, Building2, CheckCircle2, ExternalLink, Globe, Mail, MessageSquareText, Pencil, Phone, Send, Sparkles, SquareCheck, UserPlus } from "lucide-react";
 import { diasDesde, origenDe, type ContactoDetalle, type EventoHistorial } from "@/lib/contactos";
 import { TIPO_WEB_LABELS, type TipoWeb } from "@/lib/web-leads";
+import { ROL_LABELS, textoPorcentaje } from "@/lib/colaboracion";
+import { formatPrecio } from "@/lib/propiedades";
 import { telHref } from "@/lib/tareas";
 import { cn, formatPhone } from "@/lib/utils";
 import { ContactAvatar } from "@/components/avatar";
@@ -163,6 +165,37 @@ export function ContactoPagina({ id }: { id: string }) {
             <Tarjeta>
               <PropiedadesContacto contact={c} />
             </Tarjeta>
+            {d.colabora.length > 0 && (
+              <Tarjeta className="p-4">
+                <p className="kicker mb-2">Colabora en</p>
+                <ul className="divide-y" aria-label="Propiedades donde colabora">
+                  {d.colabora.map((x) => (
+                    <li key={x.propertyId} className="flex flex-wrap items-baseline gap-x-3 gap-y-0.5 py-2 text-[13px] first:pt-0 last:pb-0">
+                      <Link href={`/propiedades/${x.propertyId}`} className="min-w-0 flex-1 font-semibold hover:underline">
+                        {x.code} · {x.title}
+                      </Link>
+                      <span className="text-text-2">
+                        {ROL_LABELS[x.rol]} · {textoPorcentaje(x.porcentajeBp)}
+                      </span>
+                      <span className="w-24 text-right tabular-nums">{x.montoCents === null ? "—" : formatPrecio(x.montoCents, x.currency)}</span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-2 text-[12px] text-text-3">
+                  Su parte estimada:{" "}
+                  <span className="font-semibold text-foreground tabular-nums">
+                    {(["USD", "CRC"] as const)
+                      .map((m) => {
+                        const t = d.colabora.filter((x) => x.currency === m && x.montoCents !== null).reduce((a, x) => a + x.montoCents!, 0);
+                        return t ? formatPrecio(t, m) : null;
+                      })
+                      .filter(Boolean)
+                      .join(" + ") || "sin precios todavía"}
+                  </span>{" "}
+                  (sobre la comisión de cada propiedad).
+                </p>
+              </Tarjeta>
+            )}
             {d.solicitudesWeb.length > 0 && (
               <Tarjeta className="p-4">
                 <p className="kicker mb-2">Del sitio web</p>

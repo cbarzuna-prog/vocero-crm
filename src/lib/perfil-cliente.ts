@@ -25,6 +25,8 @@ export const TIPO_CLIENTE_LABELS: Record<TipoCliente, string> = {
   inquilino: "Inquilino",
   arrendador: "Propietario que alquila",
   inversionista: "Inversionista",
+  // 060 — co-corredor externo: trae propiedades o vende, con su parte de la comisión.
+  colaborador: "Colaborador (co-corredor)",
 };
 export const IDIOMA_LABELS: Record<Idioma, string> = { es: "Español", en: "Inglés", otro: "Otro" };
 export const OPERACION_BUSCADA_LABELS: Record<OperacionBuscada, string> = {

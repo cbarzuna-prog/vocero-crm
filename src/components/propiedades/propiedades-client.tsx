@@ -26,6 +26,8 @@ import { NuevaPropiedadDialog } from "./nueva-propiedad-dialog";
 import { Cover, selectClass, StatusBadge } from "./shared";
 
 type Filtros = {
+  /** 060 — `u:<userId>` o `c:<contactId>`. */
+  colaborador: string;
   operation: string;
   type: string;
   status: string;
@@ -36,10 +38,10 @@ type Filtros = {
   q: string;
 };
 
-const VACIO: Filtros = { operation: "", type: "", status: "activas", canton: "", currency: "", min: "", max: "", q: "" };
+const VACIO: Filtros = { operation: "", type: "", status: "activas", canton: "", currency: "", min: "", max: "", q: "", colaborador: "" };
 
 function cuenta(f: Filtros): number {
-  return (["operation", "type", "canton", "currency", "min", "max"] as const).filter((k) => f[k]).length +
+  return (["operation", "type", "canton", "currency", "min", "max", "colaborador"] as const).filter((k) => f[k]).length +
     (f.status !== "activas" ? 1 : 0);
 }
 
@@ -204,6 +206,18 @@ function Esqueleto({ vista }: { vista: Vista }) {
   );
 }
 
+/** 060 — Quiénes colaboran en alguna propiedad, para el filtro. */
+function useColaboradores() {
+  const [xs, setXs] = useState<{ key: string; nombre: string; externo: boolean }[]>([]);
+  useEffect(() => {
+    void fetch("/api/colaboradores")
+      .then((r) => (r.ok ? r.json() : { colaboradores: [] }))
+      .then((d: { colaboradores: { key: string; nombre: string; externo: boolean }[] }) => setXs(d.colaboradores))
+      .catch(() => undefined);
+  }, []);
+  return xs;
+}
+
 /** 046 — Inventario (H1): tarjetas con foto y precio, filtros y alta rápida. */
 export function PropiedadesClient() {
   const [items, setItems] = useState<PropertyListItem[] | null>(null);
@@ -213,6 +227,7 @@ export function PropiedadesClient() {
   const [vista, setVista] = useState<Vista>("cuadricula");
   const [orden, setOrden] = useState<OrdenPropiedades>("recientes");
   const qRef = useRef<HTMLInputElement>(null);
+  const colaboradores = useColaboradores();
 
   const refetch = useCallback(async (filtros: Filtros, signal?: AbortSignal) => {
     const params = new URLSearchParams();
@@ -378,6 +393,17 @@ export function PropiedadesClient() {
                 </optgroup>
               ))}
             </select>
+            {colaboradores.length > 0 && (
+              <select aria-label="Colaborador" className={selectClass} value={f.colaborador} onChange={(e) => set({ colaborador: e.target.value })}>
+                <option value="">Cualquier colaborador</option>
+                {colaboradores.map((c) => (
+                  <option key={c.key} value={c.key}>
+                    {c.nombre}
+                    {c.externo ? "" : " (equipo)"}
+                  </option>
+                ))}
+              </select>
+            )}
             <select aria-label="Moneda" className={selectClass} value={f.currency} onChange={(e) => set({ currency: e.target.value })}>
               <option value="">US$ y ₡</option>
               <option value="USD">Solo US$</option>

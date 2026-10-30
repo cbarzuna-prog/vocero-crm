@@ -204,6 +204,13 @@
       "when": 1793388363241,
       "tag": "0028_captaciones",
       "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "7",
+      "when": 1793391552952,
+      "tag": "0029_colaboracion",
+      "breakpoints": true
     }
   ]
 }
