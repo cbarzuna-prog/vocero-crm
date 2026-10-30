@@ -56,6 +56,13 @@ funcionar. Teléfono o correo, al menos uno; 8 dígitos de CR reciben el 506.
 - Contactos: filtro «Referido por» y «Ref. …» en la fila; página del contacto:
   «Referido por …».
 
+## Base de datos
+
+Tablas con prefijo `kk_` (`kk_referidor`, `kk_contacto_referido`,
+`kk_web_solicitud`) y migración `0026` re-ejecutable (`IF NOT EXISTS`,
+`duplicate_object`): el servidor de pruebas tuvo tablas creadas a mano por otra
+sesión y una colisión de nombres impide arrancar la app.
+
 ## Servidor
 
 - `docker-compose.yml` pasa `WEB_LEADS_TOKEN` al contenedor.

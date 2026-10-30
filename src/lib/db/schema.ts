@@ -1548,7 +1548,7 @@ export const contactPerfil = pgTable(
  * ============================================================ */
 
 export const referidor = pgTable(
-  "referidor",
+  "kk_referidor",
   {
     id: text("id").primaryKey(),
     organizationId: text("organization_id")
@@ -1565,13 +1565,13 @@ export const referidor = pgTable(
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
   (t) => [
-    uniqueIndex("referidor_org_web_uq").on(t.organizationId, t.webId),
-    uniqueIndex("referidor_org_codigo_uq").on(t.organizationId, t.codigo),
+    uniqueIndex("kk_referidor_org_web_uq").on(t.organizationId, t.webId),
+    uniqueIndex("kk_referidor_org_codigo_uq").on(t.organizationId, t.codigo),
   ]
 );
 
 export const contactReferencia = pgTable(
-  "contact_referencia",
+  "kk_contacto_referido",
   {
     contactId: text("contact_id")
       .primaryKey()
@@ -1586,11 +1586,11 @@ export const contactReferencia = pgTable(
     propertyId: text("property_id").references(() => property.id, { onDelete: "set null" }),
     createdAt: timestamp("created_at").notNull().defaultNow(),
   },
-  (t) => [index("contact_referencia_org_ref_idx").on(t.organizationId, t.referidorId)]
+  (t) => [index("kk_contacto_referido_org_idx").on(t.organizationId, t.referidorId)]
 );
 
 export const webLead = pgTable(
-  "web_lead",
+  "kk_web_solicitud",
   {
     /** El id que manda el sitio por envío (reintentos = mismo id = un solo lead). */
     id: text("id").primaryKey(),
@@ -1605,5 +1605,5 @@ export const webLead = pgTable(
     paginaUrl: text("pagina_url"),
     recibidoAt: timestamp("recibido_at").notNull().defaultNow(),
   },
-  (t) => [index("web_lead_org_recibido_idx").on(t.organizationId, t.recibidoAt)]
+  (t) => [index("kk_web_solicitud_org_idx").on(t.organizationId, t.recibidoAt)]
 );

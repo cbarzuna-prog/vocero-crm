@@ -1,5 +1,5 @@
 {
-  "id": "1f6dddd3-c8f1-4d89-b02e-7b980fc15478",
+  "id": "dc413f0c-19c6-42a1-a23d-81a08599282b",
   "prevId": "b07961a4-b617-4e50-89c8-25c491f41dfa",
   "version": "7",
   "dialect": "postgresql",
@@ -1684,8 +1684,8 @@
       },
       "isRLSEnabled": false
     },
-    "public.contact_referencia": {
-      "name": "contact_referencia",
+    "public.kk_contacto_referido": {
+      "name": "kk_contacto_referido",
       "schema": "",
       "columns": {
         "contact_id": {
@@ -1721,8 +1721,8 @@
         }
       },
       "indexes": {
-        "contact_referencia_org_ref_idx": {
-          "name": "contact_referencia_org_ref_idx",
+        "kk_contacto_referido_org_idx": {
+          "name": "kk_contacto_referido_org_idx",
           "columns": [
             {
               "expression": "organization_id",
@@ -1744,9 +1744,9 @@
         }
       },
       "foreignKeys": {
-        "contact_referencia_contact_id_contact_id_fk": {
-          "name": "contact_referencia_contact_id_contact_id_fk",
-          "tableFrom": "contact_referencia",
+        "kk_contacto_referido_contact_id_contact_id_fk": {
+          "name": "kk_contacto_referido_contact_id_contact_id_fk",
+          "tableFrom": "kk_contacto_referido",
           "tableTo": "contact",
           "columnsFrom": [
             "contact_id"
@@ -1757,9 +1757,9 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "contact_referencia_organization_id_organization_id_fk": {
-          "name": "contact_referencia_organization_id_organization_id_fk",
-          "tableFrom": "contact_referencia",
+        "kk_contacto_referido_organization_id_organization_id_fk": {
+          "name": "kk_contacto_referido_organization_id_organization_id_fk",
+          "tableFrom": "kk_contacto_referido",
           "tableTo": "organization",
           "columnsFrom": [
             "organization_id"
@@ -1770,10 +1770,10 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "contact_referencia_referidor_id_referidor_id_fk": {
-          "name": "contact_referencia_referidor_id_referidor_id_fk",
-          "tableFrom": "contact_referencia",
-          "tableTo": "referidor",
+        "kk_contacto_referido_referidor_id_kk_referidor_id_fk": {
+          "name": "kk_contacto_referido_referidor_id_kk_referidor_id_fk",
+          "tableFrom": "kk_contacto_referido",
+          "tableTo": "kk_referidor",
           "columnsFrom": [
             "referidor_id"
           ],
@@ -1783,9 +1783,9 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "contact_referencia_property_id_property_id_fk": {
-          "name": "contact_referencia_property_id_property_id_fk",
-          "tableFrom": "contact_referencia",
+        "kk_contacto_referido_property_id_property_id_fk": {
+          "name": "kk_contacto_referido_property_id_property_id_fk",
+          "tableFrom": "kk_contacto_referido",
           "tableTo": "property",
           "columnsFrom": [
             "property_id"
@@ -5014,8 +5014,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.referidor": {
-      "name": "referidor",
+    "public.kk_referidor": {
+      "name": "kk_referidor",
       "schema": "",
       "columns": {
         "id": {
@@ -5083,8 +5083,8 @@
         }
       },
       "indexes": {
-        "referidor_org_web_uq": {
-          "name": "referidor_org_web_uq",
+        "kk_referidor_org_web_uq": {
+          "name": "kk_referidor_org_web_uq",
           "columns": [
             {
               "expression": "organization_id",
@@ -5104,8 +5104,8 @@
           "method": "btree",
           "with": {}
         },
-        "referidor_org_codigo_uq": {
-          "name": "referidor_org_codigo_uq",
+        "kk_referidor_org_codigo_uq": {
+          "name": "kk_referidor_org_codigo_uq",
           "columns": [
             {
               "expression": "organization_id",
@@ -5127,9 +5127,9 @@
         }
       },
       "foreignKeys": {
-        "referidor_organization_id_organization_id_fk": {
-          "name": "referidor_organization_id_organization_id_fk",
-          "tableFrom": "referidor",
+        "kk_referidor_organization_id_organization_id_fk": {
+          "name": "kk_referidor_organization_id_organization_id_fk",
+          "tableFrom": "kk_referidor",
           "tableTo": "organization",
           "columnsFrom": [
             "organization_id"
@@ -5983,8 +5983,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.web_lead": {
-      "name": "web_lead",
+    "public.kk_web_solicitud": {
+      "name": "kk_web_solicitud",
       "schema": "",
       "columns": {
         "id": {
@@ -6044,8 +6044,8 @@
         }
       },
       "indexes": {
-        "web_lead_org_recibido_idx": {
-          "name": "web_lead_org_recibido_idx",
+        "kk_web_solicitud_org_idx": {
+          "name": "kk_web_solicitud_org_idx",
           "columns": [
             {
               "expression": "organization_id",
@@ -6067,9 +6067,9 @@
         }
       },
       "foreignKeys": {
-        "web_lead_organization_id_organization_id_fk": {
-          "name": "web_lead_organization_id_organization_id_fk",
-          "tableFrom": "web_lead",
+        "kk_web_solicitud_organization_id_organization_id_fk": {
+          "name": "kk_web_solicitud_organization_id_organization_id_fk",
+          "tableFrom": "kk_web_solicitud",
           "tableTo": "organization",
           "columnsFrom": [
             "organization_id"
@@ -6080,9 +6080,9 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "web_lead_contact_id_contact_id_fk": {
-          "name": "web_lead_contact_id_contact_id_fk",
-          "tableFrom": "web_lead",
+        "kk_web_solicitud_contact_id_contact_id_fk": {
+          "name": "kk_web_solicitud_contact_id_contact_id_fk",
+          "tableFrom": "kk_web_solicitud",
           "tableTo": "contact",
           "columnsFrom": [
             "contact_id"
@@ -6093,9 +6093,9 @@
           "onDelete": "set null",
           "onUpdate": "no action"
         },
-        "web_lead_property_id_property_id_fk": {
-          "name": "web_lead_property_id_property_id_fk",
-          "tableFrom": "web_lead",
+        "kk_web_solicitud_property_id_property_id_fk": {
+          "name": "kk_web_solicitud_property_id_property_id_fk",
+          "tableFrom": "kk_web_solicitud",
           "tableTo": "property",
           "columnsFrom": [
             "property_id"
@@ -6106,10 +6106,10 @@
           "onDelete": "set null",
           "onUpdate": "no action"
         },
-        "web_lead_referidor_id_referidor_id_fk": {
-          "name": "web_lead_referidor_id_referidor_id_fk",
-          "tableFrom": "web_lead",
-          "tableTo": "referidor",
+        "kk_web_solicitud_referidor_id_kk_referidor_id_fk": {
+          "name": "kk_web_solicitud_referidor_id_kk_referidor_id_fk",
+          "tableFrom": "kk_web_solicitud",
+          "tableTo": "kk_referidor",
           "columnsFrom": [
             "referidor_id"
           ],
