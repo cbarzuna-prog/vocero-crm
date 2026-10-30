@@ -16,6 +16,7 @@ import {
   type ContactoFila,
   type FiltroContactos,
   type OrdenContactos,
+  origenDe,
 } from "@/lib/contactos";
 import { rangoPresupuesto, TIPO_CLIENTE_LABELS, TIPOS_CLIENTE } from "@/lib/perfil-cliente";
 import { telHref } from "@/lib/tareas";
@@ -289,6 +290,7 @@ export function ContactosClient() {
             </select>
             <select aria-label="Origen" className={selectClass} value={f.origen} onChange={(e) => set({ origen: e.target.value })}>
               <option value="">Todo origen</option>
+              <option value="web">Sitio web</option>
               {(Object.keys(SOURCE_LABELS) as (keyof typeof SOURCE_LABELS)[]).map((s) => (
                 <option key={s} value={s}>
                   {SOURCE_LABELS[s]}
@@ -392,7 +394,7 @@ export function ContactosClient() {
                           {c.referidor ? (
                             <span className="text-text-3"> · Ref. {c.referidor.nombre}</span>
                           ) : (
-                            c.source.source === "capturada" && <span className="text-text-3"> · {SOURCE_LABELS[c.source.value]}</span>
+                            origenDe(c) && <span className="text-text-3"> · {origenDe(c)}</span>
                           )}
                         </span>
                       </span>

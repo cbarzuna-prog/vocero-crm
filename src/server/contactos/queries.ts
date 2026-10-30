@@ -1,7 +1,8 @@
 import { and, desc, eq, inArray, isNull, max, ne } from "drizzle-orm";
 import { getDb, schema } from "@/lib/db";
 import { scoped } from "@/lib/db/tenant";
-import type { ContactoFila, ContactoDetalle, EventoHistorial, MensajeReciente } from "@/lib/contactos";
+import type { ContactoFila, ContactoDetalle, EventoHistorial, MensajeReciente, SolicitudWeb } from "@/lib/contactos";
+import { TIPO_WEB_LABELS, type TipoWeb } from "@/lib/web-leads";
 import { effectiveSource } from "@/server/contact-source";
 import { leerPerfil } from "@/server/perfil/service";
 
@@ -17,7 +18,7 @@ const ACTIVOS = ["interesado", "enviada", "visitada", "oferto"] as const;
  */
 export async function listarContactos(organizationId: string): Promise<ContactoFila[]> {
   const db = getDb();
-  const [contactos, leads, eventos, convs, perfiles, intereses, tareas, anuncios, referencias] = await Promise.all([
+  const [contactos, leads, eventos, convs, perfiles, intereses, tareas, anuncios, referencias, web] = await Promise.all([
     db.select().from(schema.contact).where(scoped(schema.contact.organizationId, organizationId)).orderBy(desc(schema.contact.updatedAt)).limit(2000),
     db
       .select({
@@ -66,7 +67,12 @@ export async function listarContactos(organizationId: string): Promise<ContactoF
       .from(schema.contactReferencia)
       .innerJoin(schema.referidor, eq(schema.referidor.id, schema.contactReferencia.referidorId))
       .where(scoped(schema.contactReferencia.organizationId, organizationId)),
+    db
+      .selectDistinct({ contactId: schema.webLead.contactId })
+      .from(schema.webLead)
+      .where(scoped(schema.webLead.organizationId, organizationId)),
   ]);
+  const desdeWeb = new Set(web.map((w) => w.contactId));
   const referidoDe = new Map(referencias.map((r) => [r.contactId, { id: r.id, nombre: r.nombre, codigo: r.codigo }]));
 
   const leadDe = new Map(leads.map((l) => [l.contactId, l]));
@@ -119,6 +125,7 @@ export async function listarContactos(organizationId: string): Promise<ContactoF
       propiedades: interesDe.get(c.id) ?? [],
       tareas: tareasDe.get(c.id) ?? { pendientes: 0, vencidas: 0 },
       referidor: referidoDe.get(c.id) ?? null,
+      desdeWeb: desdeWeb.has(c.id),
     });
   }
   return filas;
@@ -129,7 +136,7 @@ export async function detalleContacto(organizationId: string, contactId: string)
   const fila = (await listarContactos(organizationId)).find((f) => f.id === contactId);
   if (!fila) return null;
   const db = getDb();
-  const [convs, etapas, interes, tareas, perfil] = await Promise.all([
+  const [convs, etapas, interes, tareas, perfil, web] = await Promise.all([
     db
       .select({ id: schema.conversation.id })
       .from(schema.conversation)
@@ -158,7 +165,30 @@ export async function detalleContacto(organizationId: string, contactId: string)
       .orderBy(desc(schema.task.createdAt))
       .limit(50),
     leerPerfil(organizationId, contactId),
+    db
+      .select({
+        w: schema.webLead,
+        code: schema.property.code,
+        title: schema.property.title,
+        referidor: schema.referidor.nombre,
+      })
+      .from(schema.webLead)
+      .leftJoin(schema.property, eq(schema.property.id, schema.webLead.propertyId))
+      .leftJoin(schema.referidor, eq(schema.referidor.id, schema.webLead.referidorId))
+      .where(scoped(schema.webLead.organizationId, organizationId, eq(schema.webLead.contactId, contactId)))
+      .orderBy(desc(schema.webLead.recibidoAt))
+      .limit(30),
   ]);
+  const solicitudesWeb: SolicitudWeb[] = web.map(({ w, code, title, referidor }) => ({
+    id: w.id,
+    tipo: w.tipo,
+    propiedad: w.propertyId && code && title ? { id: w.propertyId, code, title } : null,
+    propiedadTitulo: w.propiedadTitulo,
+    mensaje: w.mensaje,
+    pagina: w.paginaUrl,
+    referidor: referidor ?? null,
+    en: w.recibidoAt.toISOString(),
+  }));
 
   const convIds = convs.map((c) => c.id);
   const mensajes = convIds.length
@@ -190,6 +220,11 @@ export async function detalleContacto(organizationId: string, contactId: string)
   const historial: EventoHistorial[] = [
     { tipo: "alta" as const, en: fila.createdAt, texto: "Se creó el contacto" },
     ...(primerMensaje ? [{ tipo: "mensaje" as const, en: primerMensaje.en.toISOString(), texto: "Escribió por primera vez" }] : []),
+    ...solicitudesWeb.map((w) => ({
+      tipo: "web" as const,
+      en: w.en,
+      texto: `Sitio web: ${TIPO_WEB_LABELS[w.tipo as TipoWeb] ?? "formulario"}${w.propiedad ? ` · ${w.propiedad.code}` : ""}`,
+    })),
     ...etapas.map((e) => ({
       tipo: "etapa" as const,
       en: e.occurredAt.toISOString(),
@@ -211,6 +246,7 @@ export async function detalleContacto(organizationId: string, contactId: string)
     contacto: fila,
     perfil,
     historial: historial.slice(0, 60),
+    solicitudesWeb,
     mensajes: mensajes
       .reverse()
       .map((m): MensajeReciente => ({

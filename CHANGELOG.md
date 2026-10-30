@@ -5,6 +5,7 @@ sigue el SemVer del [README](README.md#versiones): una menor trae funciones
 nuevas y actualizar es redesplegar. Desde 1.4.0, cada tag `vX.Y.Z` publica la
 imagen `ghcr.io/kevinrivm/vocero-crm:X.Y.Z`.
 
+
 ## Fork Knock Knock — sin publicar
 
 Sobre 2.1.0. Dos módulos nuevos, **apagados por defecto**: con las banderas
@@ -13,6 +14,7 @@ apagadas la instancia es exactamente la de upstream. Migración aditiva `0023`
 
 ### Nuevo
 
+- **059 (fork)** — Lo que llega del sitio, bien presentado: la tarea «Responder solicitud web» vence en 1 hora (ya no nace vencida); origen «Sitio web» en Contactos, en la página y en el filtro; el mensaje del formulario va a la tarjeta «Del sitio web» y a la Historia, no a las notas. Migración aditiva `0027`. Spec [059](specs/059-leads-web-ux/spec.md).
 - **058 (fork)** — Leads de knockknockcr.com y referidos: webhook `/api/webhooks/web/<token>` (compatible con el sitio actual) que crea contacto sin duplicar, interés en la propiedad, ficha, nota y una tarea; referidores con «Referido por» y pantalla Referidos. Migración aditiva `0026`. Los scripts del servidor ya no pisan cambios locales.
 - **057 (fork)** — Contactos para trabajar la cartera (buscar por zona o propiedad, filtros, orden, selección múltiple con «Deshacer», días en la etapa) y página completa de cada contacto (ficha, propiedades, tareas, conversación e historia).
 - **056 (fork)** — Arreglos de la revisión de UX: diálogos accesibles (portal, foco, Tab, Esc), Nuevo contacto con +506 y avisos por campo, barra lateral con los colores de Knock Knock, pie de la barra con botones de 36 px, sin datos de demo en producción.

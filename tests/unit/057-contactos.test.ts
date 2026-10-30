@@ -9,6 +9,7 @@ const base: ContactoFila = {
   conversationId: null, noLeidos: 0, ultimaActividad: "2026-10-28T12:00:00Z", email: "ana@x.com",
   tiposCliente: ["comprador"], operacion: "venta", zonas: ["Escazú"], presupuestoMinCents: null,
   presupuestoMaxCents: null, moneda: "USD", propiedades: ["KK-0001"], tareas: { pendientes: 1, vencidas: 0 }, referidor: null,
+  desdeWeb: false,
 };
 const fila = (p: Partial<ContactoFila>): ContactoFila => ({ ...base, ...p });
 

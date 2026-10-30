@@ -1,6 +1,7 @@
 import { z } from "zod";
 import type { PerfilDto, TipoCliente, OperacionBuscada } from "@/lib/perfil-cliente";
 import type { PriorityValue, SourceDto } from "@/lib/types";
+import { SOURCE_LABELS } from "@/server/contact-source";
 
 /** 057 (fork) — Un renglón de la lista de Contactos. */
 export type ContactoFila = {
@@ -28,10 +29,24 @@ export type ContactoFila = {
   tareas: { pendientes: number; vencidas: number };
   /** 058 — Quién lo refirió (enlace del sitio o capturado). */
   referidor: { id: string; nombre: string; codigo: string | null } | null;
+  /** 059 — Llegó por un formulario de knockknockcr.com. */
+  desdeWeb: boolean;
+};
+
+/** 059 — Un envío de un formulario del sitio. */
+export type SolicitudWeb = {
+  id: string;
+  tipo: string;
+  propiedad: { id: string; code: string; title: string } | null;
+  propiedadTitulo: string | null;
+  mensaje: string | null;
+  pagina: string | null;
+  referidor: string | null;
+  en: string;
 };
 
 export type EventoHistorial = {
-  tipo: "alta" | "mensaje" | "etapa" | "propiedad" | "tarea" | "tarea_hecha";
+  tipo: "alta" | "mensaje" | "etapa" | "propiedad" | "tarea" | "tarea_hecha" | "web";
   en: string;
   texto: string;
   quien?: "agente";
@@ -51,6 +66,7 @@ export type ContactoDetalle = {
   perfil: PerfilDto;
   historial: EventoHistorial[];
   mensajes: MensajeReciente[];
+  solicitudesWeb: SolicitudWeb[];
 };
 
 export const ORDENES_CONTACTOS = ["actividad", "recientes", "nombre", "prioridad", "dias_etapa"] as const;
@@ -100,7 +116,7 @@ export function filtrarContactos(filas: readonly ContactoFila[], f: FiltroContac
     if (!f.archivados && c.archivedAt) return false;
     if (f.archivados && !c.archivedAt) return false;
     if (f.etapa && c.lead?.stageId !== f.etapa) return false;
-    if (f.origen && c.source.value !== f.origen) return false;
+    if (f.origen === "web" ? !c.desdeWeb : f.origen && c.source.value !== f.origen) return false;
     if (f.tipo && !c.tiposCliente.includes(f.tipo as TipoCliente)) return false;
     if (f.propiedad && !c.propiedades.includes(f.propiedad)) return false;
     if (f.soloVencidas && c.tareas.vencidas === 0) return false;
@@ -171,3 +187,15 @@ export type ReferidorFila = {
   cierres: number;
   ultimoLead: string | null;
 };
+
+/**
+ * 059 — De dónde llegó, en una palabra, para la lista y la página. El sitio
+ * web manda sobre «Contenido orgánico» o «Sin identificar» (es más preciso);
+ * lo que alguien capturó distinto a mano se respeta. `null` = no mostrar nada.
+ */
+export function origenDe(c: Pick<ContactoFila, "source" | "desdeWeb">): string | null {
+  const v = c.source.value;
+  if (c.desdeWeb && (v === "organico" || v === "desconocida")) return "Sitio web";
+  if (c.source.source === "capturada" || v === "anuncio") return SOURCE_LABELS[v];
+  return null;
+}

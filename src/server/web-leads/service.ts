@@ -5,7 +5,7 @@ import { scoped } from "@/lib/db/tenant";
 import { normalizeMx } from "@/lib/meta/client";
 import { perfilDesdeFicha } from "@/lib/perfil-cliente";
 import { todayInTz } from "@/lib/time/slots";
-import { notaWeb, telefonoWeb, tipoDe, tituloTarea, webIdDeUrl, type TipoWeb, type WebLead } from "@/lib/web-leads";
+import { telefonoWeb, tipoDe, tituloTarea, webIdDeUrl, type TipoWeb, type WebLead } from "@/lib/web-leads";
 import { businessTimezone } from "@/server/analytics/period";
 import { createLeadForContact } from "@/server/inbox/lead-activity";
 import { fusionarAutomatico } from "@/server/perfil/service";
@@ -26,8 +26,8 @@ export type ResultadoWeb = { contactId: string; duplicado: boolean; propertyId: 
 
 const hhmm = (d: Date, tz: string) =>
   new Intl.DateTimeFormat("en-GB", { timeZone: tz, hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(d);
-const fechaCorta = (d: Date, tz: string) =>
-  new Intl.DateTimeFormat("es-CR", { timeZone: tz, day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(d);
+/** 059 — Plazo para contestar una solicitud del sitio (speed-to-lead). */
+export const PLAZO_RESPUESTA_MS = 60 * 60 * 1000;
 
 /** La propiedad del CRM que corresponde a la del sitio: por id web, por su URL, por código o por título. */
 async function propiedadDe(organizationId: string, p: WebLead["property"]) {
@@ -203,7 +203,7 @@ export async function recibirLeadWeb(organizationId: string, lead: WebLead): Pro
   // Reclamo del recibo primero: dos reintentos simultáneos no crean dos leads.
   const [reclamo] = await db
     .insert(schema.webLead)
-    .values({ id: lead.id, organizationId, tipo, propiedadTitulo: lead.property?.title ?? null, paginaUrl: lead.pageUrl ?? lead.property?.url ?? null })
+    .values({ id: lead.id, organizationId, tipo, propiedadTitulo: lead.property?.title ?? null, paginaUrl: lead.pageUrl ?? lead.property?.url ?? null, mensaje: lead.message ?? null })
     .onConflictDoNothing()
     .returning({ id: schema.webLead.id });
   if (!reclamo) {
@@ -243,13 +243,9 @@ export async function recibirLeadWeb(organizationId: string, lead: WebLead): Pro
 
     await fusionarAutomatico(organizationId, contacto.id, perfilDesdeWeb(tipo, lead, email), "web", { sumarListas: true });
 
-    const propTexto = prop ? `${prop.code} · ${prop.title}` : (lead.property?.title ?? null);
-    const refTexto = lead.referrer ? [lead.referrer.name, lead.referrer.code].filter(Boolean).join(" · ") : null;
-    const nota = notaWeb(tipo, lead, propTexto, refTexto, fechaCorta(ahora, tz));
-    await db
-      .update(schema.contact)
-      .set({ notes: contacto.notes ? `${contacto.notes}\n\n${nota}` : nota, updatedAt: ahora })
-      .where(eq(schema.contact.id, contacto.id));
+    // 059 — Lo que escribió queda en su solicitud (tarjeta «Del sitio web» e
+    // historia de la página del contacto), no amontonado en sus notas.
+    await db.update(schema.contact).set({ updatedAt: ahora }).where(eq(schema.contact.id, contacto.id));
 
     // Una sola tarea abierta por propiedad: si vuelve a escribir, no se apilan.
     const titulo = tituloTarea(tipo, prop ? { code: prop.code, title: prop.title } : lead.property ? { title: lead.property.title } : null);
@@ -260,14 +256,16 @@ export async function recibirLeadWeb(organizationId: string, lead: WebLead): Pro
       .limit(1);
     if (!abierta) {
       const quien = await responsable(organizationId);
+      const vence = new Date(ahora.getTime() + PLAZO_RESPUESTA_MS);
       if (quien) {
         await crearTarea(organizationId, quien, {
           contactId: contacto.id,
           propertyId: prop?.id ?? null,
           title: titulo,
           type: "whatsapp",
-          day: todayInTz(ahora, tz),
-          time: hhmm(ahora, tz),
+          // 059 — Una hora para contestar: no nace vencida.
+          day: todayInTz(vence, tz),
+          time: hhmm(vence, tz),
           assignedUserId: quien,
         });
       }

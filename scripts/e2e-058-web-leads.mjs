@@ -91,6 +91,17 @@ check("…interesado en la propiedad del CRM (encontrada por la URL)", c?.propie
 const tareas = (await api(`/api/tareas?vista=contacto&contactId=${contactId}`)).json.pendientes;
 check("…con UNA tarea «Responder solicitud web — KK-…»", tareas.length === 1 && tareas[0].title === `Responder solicitud web — ${ficha.code} · ${ficha.title}`, JSON.stringify(tareas.map((t) => t.title)));
 check("…asignada a un propietario", !!tareas[0]?.assignedUserId);
+// 059 — Una hora para contestar: la tarea no nace vencida.
+const minutos = (new Date(tareas[0]?.dueAt).getTime() - Date.now()) / 60_000;
+check("059: la tarea vence en ~1 hora, no nace vencida", minutos > 50 && minutos <= 61, `${minutos.toFixed(1)} min`);
+check("059: el origen dice «Sitio web»", c?.desdeWeb === true);
+check("059: el mensaje no se amontona en las notas", !c?.notes?.includes("¿Sigue disponible?"), c?.notes);
+const det = (await api(`/api/contactos/${contactId}`)).json;
+check("059: la solicitud guarda el mensaje y la propiedad", det?.solicitudesWeb?.[0]?.mensaje === "¿Sigue disponible?" && det.solicitudesWeb[0].propiedad?.code === ficha.code, JSON.stringify(det?.solicitudesWeb));
+check("059: y sale en la historia", det?.historial?.some((h) => h.tipo === "web"));
+await page.goto(`${BASE}/contacts/${contactId}`);
+await page.getByText("Del sitio web").waitFor({ timeout: 15_000 });
+check("059: la página del contacto muestra la tarjeta «Del sitio web» con lo que escribió", await page.getByRole("list", { name: "Formularios del sitio web" }).getByText("¿Sigue disponible?").isVisible());
 
 // 2) Reintento del mismo envío: nada se duplica.
 r = await web(hoy);

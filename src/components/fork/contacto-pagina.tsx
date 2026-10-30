@@ -3,8 +3,9 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Archive, ArchiveRestore, ArrowLeft, ArrowRightLeft, Bot, Building2, CheckCircle2, Mail, MessageSquareText, Pencil, Phone, Send, Sparkles, SquareCheck, UserPlus } from "lucide-react";
-import { diasDesde, type ContactoDetalle, type EventoHistorial } from "@/lib/contactos";
+import { Archive, ArchiveRestore, ArrowLeft, ArrowRightLeft, Bot, Building2, CheckCircle2, ExternalLink, Globe, Mail, MessageSquareText, Pencil, Phone, Send, Sparkles, SquareCheck, UserPlus } from "lucide-react";
+import { diasDesde, origenDe, type ContactoDetalle, type EventoHistorial } from "@/lib/contactos";
+import { TIPO_WEB_LABELS, type TipoWeb } from "@/lib/web-leads";
 import { telHref } from "@/lib/tareas";
 import { cn, formatPhone } from "@/lib/utils";
 import { ContactAvatar } from "@/components/avatar";
@@ -13,7 +14,6 @@ import { StartConversation } from "@/components/contacts/start-conversation";
 import { PriorityBadge } from "@/components/pipeline/priority-picker";
 import { PropiedadesContacto } from "@/components/propiedades/propiedades-contacto";
 import { TareasContacto } from "@/components/tareas/tareas-contacto";
-import { SOURCE_LABELS } from "@/server/contact-source";
 import { Dialogo } from "./dialogo";
 import { EditarContactoDialog } from "./editar-contacto-dialog";
 import { PerfilCliente } from "./perfil-cliente";
@@ -26,6 +26,7 @@ const ICONO: Record<EventoHistorial["tipo"], typeof Phone> = {
   propiedad: Building2,
   tarea: SquareCheck,
   tarea_hecha: CheckCircle2,
+  web: Globe,
 };
 
 /** Tarjeta que envuelve las secciones del panel (que traen su propio borde inferior). */
@@ -105,7 +106,7 @@ export function ContactoPagina({ id }: { id: string }) {
                   {c.referidor.codigo ? ` (${c.referidor.codigo})` : ""}
                 </span>
               ) : (
-                c.source.value !== "desconocida" && <span>· {SOURCE_LABELS[c.source.value]}</span>
+                origenDe(c) && <span>· {origenDe(c)}</span>
               )}
               <span>· desde {new Date(c.createdAt).toLocaleDateString("es-CR", { day: "numeric", month: "short", year: "numeric" })}</span>
             </p>
@@ -162,6 +163,41 @@ export function ContactoPagina({ id }: { id: string }) {
             <Tarjeta>
               <PropiedadesContacto contact={c} />
             </Tarjeta>
+            {d.solicitudesWeb.length > 0 && (
+              <Tarjeta className="p-4">
+                <p className="kicker mb-2">Del sitio web</p>
+                <ol className="divide-y" aria-label="Formularios del sitio web">
+                  {d.solicitudesWeb.map((w) => (
+                    <li key={w.id} className="py-2.5 first:pt-0 last:pb-0">
+                      <p className="flex flex-wrap items-baseline justify-between gap-x-3 text-[13px]">
+                        <span className="font-semibold">{TIPO_WEB_LABELS[w.tipo as TipoWeb] ?? "Formulario"}</span>
+                        <time className="text-text-3 tabular-nums" dateTime={w.en} title={new Date(w.en).toLocaleString("es-CR")}>
+                          {cuando(w.en)}
+                        </time>
+                      </p>
+                      {(w.propiedad || w.propiedadTitulo || w.referidor) && (
+                        <p className="mt-0.5 text-[13px] text-text-2">
+                          {w.propiedad ? (
+                            <Link href={`/propiedades/${w.propiedad.id}`} className="font-semibold text-foreground hover:underline">
+                              {w.propiedad.code} · {w.propiedad.title}
+                            </Link>
+                          ) : (
+                            w.propiedadTitulo
+                          )}
+                          {w.referidor && <span>{w.propiedad || w.propiedadTitulo ? " · " : ""}Referido por {w.referidor}</span>}
+                        </p>
+                      )}
+                      {w.mensaje && <p className="mt-1 whitespace-pre-wrap border-l-2 pl-2.5 text-sm">{w.mensaje}</p>}
+                      {w.pagina && /^https?:\/\//.test(w.pagina) && (
+                        <a href={w.pagina} target="_blank" rel="noopener noreferrer" className="mt-1 inline-flex items-center gap-1 text-[12px] font-semibold text-text-3 hover:text-foreground">
+                          Ver la página donde escribió <ExternalLink className="h-3 w-3" aria-hidden />
+                        </a>
+                      )}
+                    </li>
+                  ))}
+                </ol>
+              </Tarjeta>
+            )}
             <Tarjeta className="p-4">
               <div className="mb-2 flex items-center justify-between">
                 <p className="kicker">Notas</p>

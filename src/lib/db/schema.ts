@@ -1603,6 +1603,8 @@ export const webLead = pgTable(
     referidorId: text("referidor_id").references(() => referidor.id, { onDelete: "set null" }),
     propiedadTitulo: text("propiedad_titulo"),
     paginaUrl: text("pagina_url"),
+    /** 059 — Lo que escribió en el formulario (vive aquí, no en las notas del contacto). */
+    mensaje: text("mensaje"),
     recibidoAt: timestamp("recibido_at").notNull().defaultNow(),
   },
   (t) => [index("kk_web_solicitud_org_idx").on(t.organizationId, t.recibidoAt)]
