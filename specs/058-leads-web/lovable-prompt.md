@@ -20,3 +20,5 @@ Cambios:
 3. Registro: sigue registrando solo `requestId` y el estado HTTP del CRM. Nunca la llave, la URL completa, encabezados ni datos personales.
 
 4. Pruebas simuladas para cada tipo de formulario (con y sin referidor). Después, haz UN envío real de prueba por tipo con nombres que empiecen con «Prueba CRM» y dime el estado HTTP de cada uno. Esperado: 200 con `ok: true`. Si da 404, la llave del sitio no coincide con `WEB_LEADS_TOKEN` del servidor: avísame y no la cambies tú.
+
+5. Cuando todo dé 200: reenvía UNA vez al CRM los envíos que quedaron con estado de entrega «failed» desde el 26/10, con su MISMO `id` original (el CRM no los duplica si alguno ya había entrado). Dime cuántos se reenviaron y cuántos dieron 200.
