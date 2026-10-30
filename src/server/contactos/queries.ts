@@ -17,7 +17,7 @@ const ACTIVOS = ["interesado", "enviada", "visitada", "oferto"] as const;
  */
 export async function listarContactos(organizationId: string): Promise<ContactoFila[]> {
   const db = getDb();
-  const [contactos, leads, eventos, convs, perfiles, intereses, tareas, anuncios] = await Promise.all([
+  const [contactos, leads, eventos, convs, perfiles, intereses, tareas, anuncios, referencias] = await Promise.all([
     db.select().from(schema.contact).where(scoped(schema.contact.organizationId, organizationId)).orderBy(desc(schema.contact.updatedAt)).limit(2000),
     db
       .select({
@@ -61,7 +61,13 @@ export async function listarContactos(organizationId: string): Promise<ContactoF
       .select({ contactId: schema.adAttribution.contactId })
       .from(schema.adAttribution)
       .where(scoped(schema.adAttribution.organizationId, organizationId)),
+    db
+      .select({ contactId: schema.contactReferencia.contactId, id: schema.referidor.id, nombre: schema.referidor.nombre, codigo: schema.referidor.codigo })
+      .from(schema.contactReferencia)
+      .innerJoin(schema.referidor, eq(schema.referidor.id, schema.contactReferencia.referidorId))
+      .where(scoped(schema.contactReferencia.organizationId, organizationId)),
   ]);
+  const referidoDe = new Map(referencias.map((r) => [r.contactId, { id: r.id, nombre: r.nombre, codigo: r.codigo }]));
 
   const leadDe = new Map(leads.map((l) => [l.contactId, l]));
   const entradaDe = new Map(eventos.map((e) => [e.leadId, e.en]));
@@ -112,6 +118,7 @@ export async function listarContactos(organizationId: string): Promise<ContactoF
       moneda: p?.moneda ?? "USD",
       propiedades: interesDe.get(c.id) ?? [],
       tareas: tareasDe.get(c.id) ?? { pendientes: 0, vencidas: 0 },
+      referidor: referidoDe.get(c.id) ?? null,
     });
   }
   return filas;

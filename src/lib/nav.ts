@@ -5,6 +5,7 @@ import {
   Inbox,
   Kanban,
   Building2,
+  Handshake,
   ListChecks,
   Settings,
   Sparkles,
@@ -75,6 +76,8 @@ export function appNavGroups({
   // Citas va después de Contactos: es el paso siguiente de un trato, no una
   // sección aparte.
   if (propiedades) trabajo.push({ href: "/propiedades", label: "Propiedades", icon: Building2 });
+  // 058 (fork): quién trae clientes con su enlace.
+  if (propiedades) trabajo.push({ href: "/referidos", label: "Referidos", icon: Handshake });
   if (agenda) trabajo.push({ href: "/bookings", label: "Citas", icon: CalendarDays });
 
   const agente: NavItem[] = [];

@@ -61,7 +61,8 @@ export const CAMPOS_PERFIL = [
   "pago",
 ] as const;
 export type CampoPerfil = (typeof CAMPOS_PERFIL)[number];
-export type Fuente = "agente" | "manual";
+/** Quién llenó un campo: el agente al conversar, el formulario del sitio (058) o una persona. */
+export type Fuente = "agente" | "web" | "manual";
 
 export type PerfilDto = {
   email: string | null;

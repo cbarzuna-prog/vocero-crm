@@ -96,7 +96,17 @@ export function ContactoPagina({ id }: { id: string }) {
             <p className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-text-2">
               <span className="tabular-nums">{formatPhone(c.phone)}</span>
               {d.perfil.email && <span>· {d.perfil.email}</span>}
-              {c.source.value !== "desconocida" && <span>· {SOURCE_LABELS[c.source.value]}</span>}
+              {c.referidor ? (
+                <span>
+                  · Referido por{" "}
+                  <Link href={`/contacts?referidor=${c.referidor.id}`} className="font-semibold text-foreground hover:underline">
+                    {c.referidor.nombre}
+                  </Link>
+                  {c.referidor.codigo ? ` (${c.referidor.codigo})` : ""}
+                </span>
+              ) : (
+                c.source.value !== "desconocida" && <span>· {SOURCE_LABELS[c.source.value]}</span>
+              )}
               <span>· desde {new Date(c.createdAt).toLocaleDateString("es-CR", { day: "numeric", month: "short", year: "numeric" })}</span>
             </p>
             <p className="mt-1.5 flex flex-wrap items-center gap-1.5">

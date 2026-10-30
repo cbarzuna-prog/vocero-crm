@@ -50,7 +50,36 @@ else
   echo "(sin netfilter-persistent: las reglas valen hasta el próximo reinicio)"
 fi
 
+# Fork (058): nunca pisar cambios hechos a mano en el servidor. El 27/10 un
+# webhook construido aquí y nunca subido a GitHub se perdió al actualizar.
+# Si hay cambios o commits locales, se respaldan y se detiene todo.
+proteger_cambios_locales() {
+  local dir="$1" rama="$2"
+  [ -d "$dir/.git" ] || return 0
+  git -C "$dir" fetch --depth 50 origin "$rama" >/dev/null 2>&1 || true
+  local sucios locales
+  sucios="$(git -C "$dir" status --porcelain --untracked-files=no)"
+  locales="$(git -C "$dir" log --oneline FETCH_HEAD..HEAD 2>/dev/null || true)"
+  if [ -n "$sucios" ] || [ -n "$locales" ]; then
+    local stamp; stamp="$(date +%Y%m%d-%H%M%S)"
+    local respaldo="$HOME/vocero-respaldo-$stamp"
+    mkdir -p "$respaldo"
+    git -C "$dir" diff > "$respaldo/cambios-sin-commit.patch" || true
+    [ -n "$locales" ] && git -C "$dir" format-patch FETCH_HEAD..HEAD -o "$respaldo/commits" >/dev/null 2>&1 || true
+    echo
+    echo "ALTO: este servidor tiene cambios que no están en GitHub."
+    [ -n "$sucios" ] && echo "Archivos modificados:" && echo "$sucios"
+    [ -n "$locales" ] && echo "Commits locales:" && echo "$locales"
+    echo "Quedaron respaldados en $respaldo"
+    echo "No se actualizó nada. Súbalos a GitHub (o pídale a Claude que los revise)"
+    echo "y vuelva a correr este comando. Para descartarlos a propósito: FORZAR=1."
+    [ "${FORZAR:-}" = "1" ] || exit 1
+  fi
+}
+
 paso "3/5 Código ($BRANCH)"
+proteger_cambios_locales "$DIR" "$BRANCH"
+
 if [ -d "$DIR/.git" ]; then
   git -C "$DIR" fetch --depth 1 origin "$BRANCH"
   git -C "$DIR" checkout -B "$BRANCH" FETCH_HEAD

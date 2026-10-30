@@ -13,6 +13,7 @@ apagadas la instancia es exactamente la de upstream. Migración aditiva `0023`
 
 ### Nuevo
 
+- **058 (fork)** — Leads de knockknockcr.com y referidos: webhook `/api/webhooks/web/<token>` (compatible con el sitio actual) que crea contacto sin duplicar, interés en la propiedad, ficha, nota y una tarea; referidores con «Referido por» y pantalla Referidos. Migración aditiva `0026`. Los scripts del servidor ya no pisan cambios locales.
 - **057 (fork)** — Contactos para trabajar la cartera (buscar por zona o propiedad, filtros, orden, selección múltiple con «Deshacer», días en la etapa) y página completa de cada contacto (ficha, propiedades, tareas, conversación e historia).
 - **056 (fork)** — Arreglos de la revisión de UX: diálogos accesibles (portal, foco, Tab, Esc), Nuevo contacto con +506 y avisos por campo, barra lateral con los colores de Knock Knock, pie de la barra con botones de 36 px, sin datos de demo en producción.
 - **055 (fork)** — Ficha inmobiliaria del cliente: correo, dónde vive, idioma, tipo de cliente, qué busca (operación, tipos, zonas, presupuesto, habitaciones, plazo) y cómo paga. El agente la llena al conversar; lo que edita una persona no lo pisa. Migración aditiva `0025`.

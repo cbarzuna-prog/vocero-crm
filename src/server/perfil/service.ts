@@ -114,25 +114,44 @@ export async function sincronizarDesdeFicha(
   ficha: Record<string, unknown>
 ): Promise<void> {
   try {
-    const propuesto = perfilDesdeFicha(ficha);
-    if (Object.keys(propuesto).length === 0) return;
-    const actual = aDto(await filaDe(organizationId, contactId));
-    const patch: PerfilPatch = {};
-    const fuentes = { ...actual.fuentes };
-    for (const k of Object.keys(propuesto) as (keyof PerfilPatch)[]) {
-      const campo = campoDe(k);
-      if (actual.fuentes[campo] === "manual") continue;
-      (patch as Record<string, unknown>)[k] = propuesto[k];
-      fuentes[campo] = "agente";
-    }
-    if (!presupuestoValido({ ...actual, ...patch })) {
-      delete patch.presupuestoMinCents;
-      delete patch.presupuestoMaxCents;
-      delete patch.moneda;
-    }
-    if (Object.keys(patch).length === 0) return;
-    await escribir(organizationId, contactId, patch, fuentes);
+    await fusionarAutomatico(organizationId, contactId, perfilDesdeFicha(ficha), "agente");
   } catch (err) {
     console.warn(`[perfil] no se pudo pasar la ficha del agente a la ficha inmobiliaria: ${err instanceof Error ? err.message : err}`);
   }
+}
+
+/**
+ * 058 — Lo que llega solo (el agente al conversar, el formulario del sitio):
+ * llena o actualiza los campos que no tocó una persona. Las listas (tipo de
+ * cliente, tipos de propiedad, zonas) se suman en vez de reemplazarse: que
+ * un formulario diga «comprador» no borra el «inversionista» que anotó el agente.
+ */
+export async function fusionarAutomatico(
+  organizationId: string,
+  contactId: string,
+  propuesto: PerfilPatch,
+  fuente: "agente" | "web",
+  opciones: { sumarListas?: boolean } = {}
+): Promise<void> {
+  if (Object.keys(propuesto).length === 0) return;
+  const actual = aDto(await filaDe(organizationId, contactId));
+  const patch: PerfilPatch = {};
+  const fuentes = { ...actual.fuentes };
+  for (const k of Object.keys(propuesto) as (keyof PerfilPatch)[]) {
+    const campo = campoDe(k);
+    if (actual.fuentes[campo] === "manual") continue;
+    let valor = propuesto[k] as unknown;
+    if (opciones.sumarListas && Array.isArray(valor) && Array.isArray(actual[k])) {
+      valor = [...new Set([...(actual[k] as unknown[]), ...valor])];
+    }
+    (patch as Record<string, unknown>)[k] = valor;
+    fuentes[campo] = fuente;
+  }
+  if (!presupuestoValido({ ...actual, ...patch })) {
+    delete patch.presupuestoMinCents;
+    delete patch.presupuestoMaxCents;
+    delete patch.moneda;
+  }
+  if (Object.keys(patch).length === 0) return;
+  await escribir(organizationId, contactId, patch, fuentes);
 }

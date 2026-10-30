@@ -1334,6 +1334,8 @@ export const property = pgTable(
       .references(() => organization.id, { onDelete: "cascade" }),
     /** Código legible por org (`KK-0001`); se genera al crear y es editable. */
     code: text("code").notNull(),
+    /** 058 — Id de la propiedad en knockknockcr.com: así un lead del sitio cae en su ficha. */
+    webId: text("web_id"),
     title: text("title").notNull(),
     operation: text("operation", { enum: PROPERTY_OPERATIONS }).notNull(),
     type: text("type", { enum: PROPERTY_TYPES }).notNull(),
@@ -1526,7 +1528,7 @@ export const contactPerfil = pgTable(
     habitaciones: smallint("habitaciones"),
     plazo: text("plazo", { enum: PLAZOS }),
     pago: text("pago", { enum: FORMAS_PAGO }),
-    fuentes: jsonb("fuentes").$type<Record<string, "agente" | "manual">>().notNull().default({}),
+    fuentes: jsonb("fuentes").$type<Record<string, "agente" | "web" | "manual">>().notNull().default({}),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
   (t) => [
@@ -1536,4 +1538,72 @@ export const contactPerfil = pgTable(
       sql`${t.presupuestoMinCents} IS NULL OR ${t.presupuestoMaxCents} IS NULL OR ${t.presupuestoMinCents} <= ${t.presupuestoMaxCents}`
     ),
   ]
+);
+
+/* ============================================================
+ * 058 (fork) — Leads del sitio (knockknockcr.com) y referidores.
+ * `web_lead` es el recibo de cada envío del sitio (idempotencia por el id
+ * que manda el sitio). `referidor` es quien refiere con su enlace único;
+ * `contact_referencia` dice quién refirió a cada contacto (el primero gana).
+ * ============================================================ */
+
+export const referidor = pgTable(
+  "referidor",
+  {
+    id: text("id").primaryKey(),
+    organizationId: text("organization_id")
+      .notNull()
+      .references(() => organization.id, { onDelete: "cascade" }),
+    /** Id del referidor en el sitio. */
+    webId: text("web_id"),
+    codigo: text("codigo"),
+    nombre: text("nombre").notNull(),
+    email: text("email"),
+    telefono: text("telefono"),
+    activo: boolean("activo").notNull().default(true),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (t) => [
+    uniqueIndex("referidor_org_web_uq").on(t.organizationId, t.webId),
+    uniqueIndex("referidor_org_codigo_uq").on(t.organizationId, t.codigo),
+  ]
+);
+
+export const contactReferencia = pgTable(
+  "contact_referencia",
+  {
+    contactId: text("contact_id")
+      .primaryKey()
+      .references(() => contact.id, { onDelete: "cascade" }),
+    organizationId: text("organization_id")
+      .notNull()
+      .references(() => organization.id, { onDelete: "cascade" }),
+    referidorId: text("referidor_id")
+      .notNull()
+      .references(() => referidor.id, { onDelete: "cascade" }),
+    /** Por qué propiedad llegó (si llegó por el enlace de una). */
+    propertyId: text("property_id").references(() => property.id, { onDelete: "set null" }),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (t) => [index("contact_referencia_org_ref_idx").on(t.organizationId, t.referidorId)]
+);
+
+export const webLead = pgTable(
+  "web_lead",
+  {
+    /** El id que manda el sitio por envío (reintentos = mismo id = un solo lead). */
+    id: text("id").primaryKey(),
+    organizationId: text("organization_id")
+      .notNull()
+      .references(() => organization.id, { onDelete: "cascade" }),
+    tipo: text("tipo").notNull(),
+    contactId: text("contact_id").references(() => contact.id, { onDelete: "set null" }),
+    propertyId: text("property_id").references(() => property.id, { onDelete: "set null" }),
+    referidorId: text("referidor_id").references(() => referidor.id, { onDelete: "set null" }),
+    propiedadTitulo: text("propiedad_titulo"),
+    paginaUrl: text("pagina_url"),
+    recibidoAt: timestamp("recibido_at").notNull().defaultNow(),
+  },
+  (t) => [index("web_lead_org_recibido_idx").on(t.organizationId, t.recibidoAt)]
 );

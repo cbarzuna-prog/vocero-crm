@@ -26,6 +26,8 @@ export type ContactoFila = {
   moneda: "USD" | "CRC";
   propiedades: string[];
   tareas: { pendientes: number; vencidas: number };
+  /** 058 — Quién lo refirió (enlace del sitio o capturado). */
+  referidor: { id: string; nombre: string; codigo: string | null } | null;
 };
 
 export type EventoHistorial = {
@@ -69,6 +71,8 @@ export type FiltroContactos = {
   propiedad: string; // código | ""
   soloVencidas: boolean;
   archivados: boolean;
+  /** 058 — id del referidor, o "" */
+  referidor: string;
 };
 
 export const FILTRO_VACIO: FiltroContactos = {
@@ -79,6 +83,7 @@ export const FILTRO_VACIO: FiltroContactos = {
   propiedad: "",
   soloVencidas: false,
   archivados: false,
+  referidor: "",
 };
 
 const sinTildes = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
@@ -99,8 +104,9 @@ export function filtrarContactos(filas: readonly ContactoFila[], f: FiltroContac
     if (f.tipo && !c.tiposCliente.includes(f.tipo as TipoCliente)) return false;
     if (f.propiedad && !c.propiedades.includes(f.propiedad)) return false;
     if (f.soloVencidas && c.tareas.vencidas === 0) return false;
+    if (f.referidor && c.referidor?.id !== f.referidor) return false;
     if (q) {
-      const enTexto = [c.name, c.email ?? "", c.notes ?? "", ...c.zonas, ...c.propiedades].some((t) => sinTildes(t).includes(q));
+      const enTexto = [c.name, c.email ?? "", c.notes ?? "", c.referidor?.nombre ?? "", c.referidor?.codigo ?? "", ...c.zonas, ...c.propiedades].some((t) => sinTildes(t).includes(q));
       const enTel = qDig.length >= 3 && (c.phone ?? "").replace(/\D/g, "").includes(qDig);
       if (!enTexto && !enTel) return false;
     }
@@ -144,3 +150,24 @@ export const loteSchema = z.object({
   ids: z.array(z.string().min(1)).min(1).max(500),
   accion: z.enum(["archivar", "restaurar"]),
 });
+
+/** 058 — Referidores que aparecen en la lista, para el filtro. */
+export function referidoresDe(filas: readonly ContactoFila[]): { id: string; nombre: string }[] {
+  const m = new Map<string, string>();
+  for (const c of filas) if (c.referidor) m.set(c.referidor.id, c.referidor.nombre);
+  return [...m].map(([id, nombre]) => ({ id, nombre })).sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
+}
+
+/** 058 — Una fila de la pantalla Referidos. */
+export type ReferidorFila = {
+  id: string;
+  nombre: string;
+  codigo: string | null;
+  email: string | null;
+  telefono: string | null;
+  leads: number;
+  activos: number;
+  visitas: number;
+  cierres: number;
+  ultimoLead: string | null;
+};

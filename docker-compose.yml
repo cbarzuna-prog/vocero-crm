@@ -63,6 +63,9 @@ services:
       # 046 (fork Knock Knock): tareas con «Hoy» y propiedades. Apagadas por defecto.
       TAREAS: ${TAREAS:-}
       PROPIEDADES: ${PROPIEDADES:-}
+      # 058 (fork) — Llave del webhook de leads de knockknockcr.com (la misma
+      # que el sitio guarda como WEB_LEADS_TOKEN). Vacía = webhook apagado (404).
+      WEB_LEADS_TOKEN: ${WEB_LEADS_TOKEN:-}
       BOT_API_KEY: ${BOT_API_KEY:-}
       # 2.0 — El cerebro: por defecto, el servicio `nea` de abajo. Con la
       # variable definida pero vacía en el .env, ninguno (bandeja manual).

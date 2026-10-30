@@ -12,6 +12,7 @@ import {
   ORDEN_CONTACTOS_LABELS,
   ORDENES_CONTACTOS,
   ordenarContactos,
+  referidoresDe,
   type ContactoFila,
   type FiltroContactos,
   type OrdenContactos,
@@ -129,6 +130,12 @@ export function ContactosClient() {
 
   useEffect(() => {
     void refetch();
+    // 058: desde Referidos llega con ?referidor=<id> ya filtrado.
+    const ref = new URLSearchParams(window.location.search).get("referidor");
+    if (ref) {
+      setF((x) => ({ ...x, referidor: ref }));
+      setFiltrosAbiertos(true);
+    }
     void (async () => {
       const r = await fetch("/api/pipeline/stages").catch(() => null);
       if (r?.ok) setEtapas(((await r.json()) as { stages: StageDto[] }).stages);
@@ -149,6 +156,7 @@ export function ContactosClient() {
 
   const visibles = useMemo(() => (filas ? ordenarContactos(filtrarContactos(filas, f), orden) : null), [filas, f, orden]);
   const codigos = useMemo(() => (filas ? codigosDePropiedades(filas) : []), [filas]);
+  const referidores = useMemo(() => (filas ? referidoresDe(filas) : []), [filas]);
   const activos = filas?.filter((c) => !c.archivedAt) ?? [];
   const resumen = filas
     ? [
@@ -159,7 +167,7 @@ export function ContactosClient() {
         .filter(Boolean)
         .join(" · ")
     : "";
-  const nFiltros = (["etapa", "origen", "tipo", "propiedad"] as const).filter((k) => f[k]).length + (f.soloVencidas ? 1 : 0) + (f.archivados ? 1 : 0);
+  const nFiltros = (["etapa", "origen", "tipo", "propiedad", "referidor"] as const).filter((k) => f[k]).length + (f.soloVencidas ? 1 : 0) + (f.archivados ? 1 : 0);
   const set = (patch: Partial<FiltroContactos>) => {
     setF((x) => ({ ...x, ...patch }));
     setSel(new Set());
@@ -303,6 +311,16 @@ export function ContactosClient() {
                 </option>
               ))}
             </select>
+            {referidores.length > 0 && (
+              <select aria-label="Referido por" className={selectClass} value={f.referidor} onChange={(e) => set({ referidor: e.target.value })}>
+                <option value="">Cualquier referidor</option>
+                {referidores.map((r) => (
+                  <option key={r.id} value={r.id}>
+                    Referido por {r.nombre}
+                  </option>
+                ))}
+              </select>
+            )}
             <label className="flex min-h-9 items-center gap-2 text-[13px] [@media(pointer:coarse)]:min-h-11">
               <input type="checkbox" className={check} checked={f.soloVencidas} onChange={(e) => set({ soloVencidas: e.target.checked })} />
               Con tareas vencidas
@@ -371,7 +389,11 @@ export function ContactosClient() {
                         </span>
                         <span className="block truncate text-[13px] text-text-2 tabular-nums">
                           {formatPhone(c.phone)}
-                          {c.source.source === "capturada" && <span className="text-text-3"> · {SOURCE_LABELS[c.source.value]}</span>}
+                          {c.referidor ? (
+                            <span className="text-text-3"> · Ref. {c.referidor.nombre}</span>
+                          ) : (
+                            c.source.source === "capturada" && <span className="text-text-3"> · {SOURCE_LABELS[c.source.value]}</span>
+                          )}
                         </span>
                       </span>
                     </Link>

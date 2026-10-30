@@ -183,6 +183,13 @@
       "when": 1793129695219,
       "tag": "0025_perfil_cliente",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1793331845060,
+      "tag": "0026_leads_web_y_referidos",
+      "breakpoints": true
     }
   ]
 }
