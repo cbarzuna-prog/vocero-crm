@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { ETAPA_LABELS } from "@/lib/captaciones";
 import { Archive, ArchiveRestore, ArrowLeft, ChevronDown, ImagePlus, Lock, Star, Trash2, X } from "lucide-react";
 import { parseMoneyToCents } from "@/lib/money";
 import {
@@ -49,6 +50,7 @@ type Draft = {
   comision: string;
   exclusiva: boolean;
   captadaAt: string;
+  exclusivaVence: string;
   urlExterna: string;
 };
 
@@ -76,6 +78,7 @@ function toDraft(p: PropertyDetail): Draft {
     comision: p.comisionBp === null ? "" : String(p.comisionBp / 100),
     exclusiva: p.exclusiva,
     captadaAt: p.captadaAt ?? "",
+    exclusivaVence: p.exclusivaVence ?? "",
     urlExterna: p.urlExterna ?? "",
   };
 }
@@ -116,6 +119,7 @@ function toPatch(d: Draft): { body: Record<string, unknown> } | { error: string 
       comisionBp: comision === null ? null : Math.round(comision * 100),
       exclusiva: d.exclusiva,
       captadaAt: d.captadaAt || null,
+      exclusivaVence: d.exclusiva ? d.exclusivaVence || null : null,
       urlExterna: textOrNull(d.urlExterna),
     },
   };
@@ -682,9 +686,15 @@ export function FichaClient({ initial }: { initial: PropertyDetail }) {
                     />
                   )}
                 </Field>
-                <Field label="Comisión %" htmlFor="f-com">
-                  <Input id="f-com" inputMode="decimal" placeholder="5" value={draft.comision} onChange={(e) => set({ comision: e.target.value.replace(/[^\d.,]/g, "") })} />
-                </Field>
+                {draft.operation === "alquiler" ? (
+                  <Field label="Comisión">
+                    <p className="flex h-9 items-center text-sm">1 mes de renta</p>
+                  </Field>
+                ) : (
+                  <Field label="Comisión %" htmlFor="f-com">
+                    <Input id="f-com" inputMode="decimal" placeholder="5" value={draft.comision} onChange={(e) => set({ comision: e.target.value.replace(/[^\d.,]/g, "") })} />
+                  </Field>
+                )}
                 <Field label="Exclusiva">
                   <div className="flex h-9 items-center">
                     <Switch checked={draft.exclusiva} onCheckedChange={(v) => set({ exclusiva: v })} label="Exclusiva" />
@@ -693,6 +703,18 @@ export function FichaClient({ initial }: { initial: PropertyDetail }) {
                 <Field label="Fecha de captación" htmlFor="f-capt">
                   <Input id="f-capt" type="date" value={draft.captadaAt} onChange={(e) => set({ captadaAt: e.target.value })} />
                 </Field>
+                {draft.exclusiva && (
+                  <Field label="Exclusiva vence" htmlFor="f-vence">
+                    <Input id="f-vence" type="date" value={draft.exclusivaVence} onChange={(e) => set({ exclusivaVence: e.target.value })} />
+                  </Field>
+                )}
+                {p.captacionEtapa && (
+                  <Field label="Captación">
+                    <Link href="/captaciones" className="flex h-9 items-center text-sm font-semibold text-brand-text hover:underline">
+                      {ETAPA_LABELS[p.captacionEtapa]}
+                    </Link>
+                  </Field>
+                )}
                 <Field label="Anuncio en portal (URL)" htmlFor="f-url" className="col-span-2 sm:col-span-3">
                   <Input id="f-url" type="url" placeholder="https://" value={draft.urlExterna} onChange={(e) => set({ urlExterna: e.target.value })} />
                 </Field>

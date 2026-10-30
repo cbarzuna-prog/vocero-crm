@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { CR_PROVINCIAS, cantonDe } from "@/lib/cr-zonas";
 import {
+  CAPTACION_ETAPAS,
   DISCARD_REASONS,
   INTEREST_STATUSES,
   PROPERTY_CURRENCIES,
@@ -148,6 +149,9 @@ export type PropertyDetail = PropertyListItem & {
   comisionBp: number | null;
   exclusiva: boolean;
   captadaAt: string | null;
+  /** 048 — Etapa en Captaciones (null = no está en el tablero) y vencimiento de la exclusiva. */
+  captacionEtapa: (typeof CAPTACION_ETAPAS)[number] | null;
+  exclusivaVence: string | null;
   urlExterna: string | null;
   photos: { id: string; url: string }[];
   interesadosDetalle: InteresadoDto[];
@@ -221,6 +225,10 @@ export const editarPropiedadSchema = z
     comisionBp: z.number().int().min(0).max(10_000).nullable(),
     exclusiva: z.boolean(),
     captadaAt: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/)
+      .nullable(),
+    exclusivaVence: z
       .string()
       .regex(/^\d{4}-\d{2}-\d{2}$/)
       .nullable(),

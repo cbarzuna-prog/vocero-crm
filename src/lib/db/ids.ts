@@ -43,6 +43,8 @@ const prefixes = {
   task: "tsk",
   // 058 — leads del sitio y referidores (fork Knock Knock)
   referidor: "rfd",
+  // 048 — captaciones
+  captacionEvento: "cev",
 } as const;
 
 export type IdKind = keyof typeof prefixes;

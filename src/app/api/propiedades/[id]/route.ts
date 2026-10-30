@@ -5,6 +5,7 @@ import { propiedadesDisabledResponse, propiedadesEnabled } from "@/server/propie
 import { propiedadErrorResponse } from "@/server/propiedades/http";
 import { fichaPropiedad } from "@/server/propiedades/queries";
 import { archivarPropiedad, editarPropiedad } from "@/server/propiedades/service";
+import { sincronizarRenovacion } from "@/server/captaciones/service";
 
 export const dynamic = "force-dynamic";
 
@@ -30,7 +31,12 @@ export const PATCH = withAuth(async (session, req: Request, ctx: Ctx) => {
     if ("archived" in body.data && typeof body.data.archived === "boolean") {
       await archivarPropiedad(session.organizationId, id, body.data.archived);
     } else {
-      await editarPropiedad(session.organizationId, id, body.data as z.infer<typeof editarPropiedadSchema>);
+      const patch = body.data as z.infer<typeof editarPropiedadSchema>;
+      await editarPropiedad(session.organizationId, id, patch);
+      // 048 — La tarea «Renovar exclusiva» sigue a la fecha de vencimiento.
+      if (patch.exclusivaVence !== undefined || patch.exclusiva !== undefined) {
+        await sincronizarRenovacion(session.organizationId, session.userId, id);
+      }
     }
     return Response.json({ ok: true });
   } catch (err) {

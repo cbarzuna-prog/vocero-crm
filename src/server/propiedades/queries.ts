@@ -154,6 +154,8 @@ export async function fichaPropiedad(organizationId: string, propertyId: string)
     seller: p.sellerContactId && r.sellerName ? { id: p.sellerContactId, name: r.sellerName } : null,
     comisionBp: p.comisionBp,
     exclusiva: p.exclusiva,
+    captacionEtapa: p.captacionEtapa,
+    exclusivaVence: p.exclusivaVence,
     captadaAt: p.captadaAt,
     urlExterna: p.urlExterna,
     photos: photos.map((ph) => ({ id: ph.id, url: `/api/media/${ph.assetId}` })),

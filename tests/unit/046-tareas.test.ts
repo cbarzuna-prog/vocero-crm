@@ -57,7 +57,7 @@ describe("menú", () => {
     const trabajo = appNavGroups({ role: "owner", propiedades: true, agenda: true })[0]!.items.map(
       (i) => i.label
     );
-    expect(trabajo).toEqual(["Bandeja", "Pipeline", "Contactos", "Propiedades", "Referidos", "Citas"]);
+    expect(trabajo).toEqual(["Bandeja", "Pipeline", "Captaciones", "Contactos", "Propiedades", "Referidos", "Citas"]);
   });
 });
 

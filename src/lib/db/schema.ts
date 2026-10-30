@@ -15,8 +15,10 @@ import {
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import {
+  CAPTACION_ETAPAS,
   DISCARD_REASONS,
   INTEREST_STATUSES,
+  MOTIVOS_NO_CAPTADA,
   PROPERTY_CURRENCIES,
   PROPERTY_OPERATIONS,
   PROPERTY_STATUSES,
@@ -1372,6 +1374,13 @@ export const property = pgTable(
     comisionBp: integer("comision_bp"),
     exclusiva: boolean("exclusiva").notNull().default(false),
     captadaAt: date("captada_at"),
+    /** 048 — Etapa en el tablero de Captaciones. NULL = no está en el tablero (cargada directo al inventario). */
+    captacionEtapa: text("captacion_etapa", { enum: CAPTACION_ETAPAS }),
+    /** 048 — Desde cuándo está en su etapa (para «días en la etapa»). */
+    captacionDesde: timestamp("captacion_desde"),
+    /** 048 — Cuándo vence el contrato de exclusiva. */
+    exclusivaVence: date("exclusiva_vence"),
+    motivoNoCaptada: text("motivo_no_captada", { enum: MOTIVOS_NO_CAPTADA }),
     urlExterna: text("url_externa"),
     createdBy: text("created_by").references(() => user.id, { onDelete: "set null" }),
     archivedAt: timestamp("archived_at"),
@@ -1608,4 +1617,23 @@ export const webLead = pgTable(
     recibidoAt: timestamp("recibido_at").notNull().defaultNow(),
   },
   (t) => [index("kk_web_solicitud_org_idx").on(t.organizationId, t.recibidoAt)]
+);
+
+/** 048 — Cada movimiento en el tablero de Captaciones. Append-only. */
+export const captacionEvento = pgTable(
+  "kk_captacion_evento",
+  {
+    id: text("id").primaryKey(),
+    organizationId: text("organization_id")
+      .notNull()
+      .references(() => organization.id, { onDelete: "cascade" }),
+    propertyId: text("property_id")
+      .notNull()
+      .references(() => property.id, { onDelete: "cascade" }),
+    deEtapa: text("de_etapa", { enum: CAPTACION_ETAPAS }),
+    aEtapa: text("a_etapa", { enum: CAPTACION_ETAPAS }).notNull(),
+    actorUserId: text("actor_user_id").references(() => user.id, { onDelete: "set null" }),
+    occurredAt: timestamp("occurred_at").notNull().defaultNow(),
+  },
+  (t) => [index("kk_captacion_evento_org_prop_idx").on(t.organizationId, t.propertyId, t.occurredAt)]
 );

@@ -35,3 +35,7 @@ export const DISCARD_REASONS = [
   "eligio_otra",
   "otro",
 ] as const;
+
+/** 048 — Etapas del tablero de Captaciones (pipeline de vendedores). */
+export const CAPTACION_ETAPAS = ["contacto", "valoracion", "propuesta", "firmada", "publicada", "perdida"] as const;
+export const MOTIVOS_NO_CAPTADA = ["precio_irreal", "firmo_con_otro", "decidio_no_vender", "no_responde", "otro"] as const;

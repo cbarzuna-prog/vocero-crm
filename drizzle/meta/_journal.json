@@ -197,6 +197,13 @@
       "when": 1793370485040,
       "tag": "0027_solicitud_web_mensaje",
       "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "7",
+      "when": 1793388363241,
+      "tag": "0028_captaciones",
+      "breakpoints": true
     }
   ]
 }

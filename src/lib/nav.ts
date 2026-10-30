@@ -6,6 +6,7 @@ import {
   Kanban,
   Building2,
   Handshake,
+  KeyRound,
   ListChecks,
   Settings,
   Sparkles,
@@ -71,6 +72,8 @@ export function appNavGroups({
     ...(tareas ? [{ href: "/hoy", label: "Hoy", icon: Sun, tareasBadge: true }] : []),
     { href: "/inbox", label: "Bandeja", icon: Inbox, badge: true },
     { href: "/pipeline", label: "Pipeline", icon: Kanban },
+    // 048 (fork): el pipeline de vendedores, junto al de compradores.
+    ...(propiedades ? [{ href: "/captaciones", label: "Captaciones", icon: KeyRound }] : []),
     { href: "/contacts", label: "Contactos", icon: Users },
   ];
   // Citas va después de Contactos: es el paso siguiente de un trato, no una
