@@ -52,7 +52,8 @@ check("Mayús+Tab tampoco", await page.evaluate(() => !!document.activeElement?.
 await page.keyboard.press("Escape");
 await dlg.waitFor({ state: "detached" });
 check("Esc cierra el diálogo", true);
-check("…y el foco vuelve a «Crear»", await page.evaluate(() => document.activeElement?.textContent?.trim() === "Crear"));
+const enfocado = await page.evaluate(() => `${document.activeElement?.tagName}|${document.activeElement?.textContent?.trim().slice(0, 40)}`);
+check("…y el foco vuelve a «Crear»", enfocado === "BUTTON|Crear", enfocado);
 
 // Obligatorios: el botón está activo y avisa debajo del campo.
 await crear.click();
@@ -87,7 +88,9 @@ for (const name of [/Sonido de mensajes/, /^Tema:/, "Cerrar sesión"]) {
   check(`botón del pie «${name}» mide ≥ 36 px`, !!b && b.height >= 36 && b.width >= 36, JSON.stringify(b));
 }
 const activo = page.locator('nav [aria-current="page"]').first();
-check("la opción activa se distingue (marca naranja)", /253, 93, 8/.test(await activo.evaluate((el) => getComputedStyle(el).boxShadow)));
+// 061 — Estilo Apple: píldora gris y el ícono en el azul de la marca (#083F59).
+const marca = await activo.evaluate((el) => ({ fondo: getComputedStyle(el).backgroundColor, icono: getComputedStyle(el.querySelector("svg")).color }));
+check("la opción activa se distingue (píldora gris, ícono en azul de marca)", marca.fondo !== "rgba(0, 0, 0, 0)" && /8, 63, 89/.test(marca.icono), JSON.stringify(marca));
 
 // Celular: el «+» abre el mismo diálogo.
 const movil = await (await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, storageState: await page.context().storageState() })).newPage();

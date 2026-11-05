@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Building2, Inbox, Kanban, Menu, Plus, Sun, UserPlus, ListPlus, Home } from "lucide-react";
@@ -35,10 +35,17 @@ export function CrearRapido({
   const creando = creandoRaw;
   // 056: al cerrar cualquier diálogo el foco vuelve al botón que abrió el
   // menú (la opción del menú ya no existe para recibirlo).
-  const setCreando = (v: Creando) => {
-    setCreandoRaw(v);
-    if (v === null) requestAnimationFrame(() => disparador.current?.focus());
-  };
+  const setCreando = (v: Creando) => setCreandoRaw(v);
+  // En el mismo commit en que el diálogo se desmonta (no en el cuadro
+  // siguiente): así nada queda un instante en <body> ni le gana otro foco.
+  const habiaDialogo = useRef(false);
+  useLayoutEffect(() => {
+    if (creandoRaw !== null) habiaDialogo.current = true;
+    else if (habiaDialogo.current) {
+      habiaDialogo.current = false;
+      disparador.current?.focus();
+    }
+  }, [creandoRaw]);
 
   useEffect(() => {
     if (!abierto) return;

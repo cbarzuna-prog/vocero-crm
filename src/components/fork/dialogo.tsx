@@ -76,7 +76,10 @@ export function Dialogo({
     return () => {
       document.removeEventListener("keydown", onKey, true);
       document.body.style.overflow = scroll;
-      if (previo && document.contains(previo)) previo.focus();
+      // Si al abrir no había nada enfocado (el menú que lo abrió ya se había
+      // desmontado), no se le devuelve el foco a <body>: le ganaría al botón
+      // que el dueño del diálogo quiere enfocar (056, e2e intermitente).
+      if (previo && previo !== document.body && document.contains(previo)) previo.focus();
     };
   }, [montado]);
 

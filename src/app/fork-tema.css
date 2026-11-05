@@ -1,0 +1,306 @@
+/* ============================================================
+   061 (fork) — Tema Knock Knock con estética de Apple.
+
+   Un solo archivo, cargado DESPUÉS de globals.css (ver app/layout.tsx), que
+   solo redefine tokens y unas pocas piezas: no toca ningún componente de
+   upstream, así que las actualizaciones de Vocero no chocan con él. Borrar
+   la línea del import lo apaga entero.
+
+   Lo que lo hace «Apple», en orden de peso:
+   1. La tipografía del sistema (San Francisco en Mac y iPhone; Segoe UI
+      Variable en Windows), con el interletrado negativo de Apple.
+   2. Grises neutros (sin el tinte azul de Vocero): tinta #1d1d1f, segundo
+      #6e6e73, separadores finos #e5e5ea, lienzo #f5f5f7.
+   3. Barra lateral clara, como Finder o Mail: gris del sistema, el ítem
+      activo en una píldora gris con el ícono en el azul Knock Knock.
+   4. Esquinas más redondas y continuas, sombras apenas perceptibles,
+      campos rellenos de gris que se vuelven blancos al enfocarlos.
+   5. Materiales translúcidos (desenfoque) donde algo flota sobre el
+      contenido: barra superior del celular, cajón, diálogos y menús.
+
+   El azul de la marca (#083F59) sigue siendo el acento (Ajustes → Marca);
+   el naranja #FD5D08 queda para avisos de la marca, no para la interfaz.
+   ============================================================ */
+
+/* ---------- Tipografía ---------- */
+:root:root {
+  /* `:root:root` gana a la clase de next/font que define la variable en <html>. */
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI Variable Text", "Segoe UI", system-ui, "Helvetica Neue", Arial, sans-serif;
+  /* Horas, conteos y códigos: Apple los escribe en la misma letra, con cifras
+     tabulares (ver abajo), no en monoespaciada. */
+  --font-mono: var(--font-sans);
+}
+body {
+  letter-spacing: -0.011em;
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "kern", "calt";
+}
+h1 {
+  letter-spacing: -0.022em;
+}
+h2,
+h3 {
+  letter-spacing: -0.016em;
+}
+/* Cifras que se comparan (precios, teléfonos, horas): tabulares siempre. */
+.font-mono,
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+.font-mono {
+  letter-spacing: -0.005em;
+}
+/* Título grande, como las apps de Apple, en escritorio y tableta. */
+@media (min-width: 768px) {
+  :root main h1 {
+    font-size: 28px;
+    line-height: 1.15;
+    font-weight: 700;
+  }
+}
+
+/* ---------- Tema claro ---------- */
+:root:root:not([data-theme="dark"]) {
+  --bg: #ffffff;
+  --bg-subtle: #f5f5f7;
+  --bg-panel: #f2f2f7;
+  --bg-hover: #ebebf0;
+  --bg-raised: #ffffff;
+  --row-hover: #f5f5f7;
+  --chip-bg: #ffffff;
+  --cal-off: #f5f5f7;
+  --chat-bg: #f5f5f7;
+
+  --text: #1d1d1f;
+  --text-2: #424245;
+  /* 5.0:1 sobre blanco y 4.6:1 sobre #f5f5f7 (piso de legibilidad 4.5). */
+  --text-3: #6e6e73;
+  --text-4: #aeaeb2;
+
+  --border: #e5e5ea;
+  --border-strong: #d2d2d7;
+
+  --success: #34c759;
+  --success-tint: #eaf8ee;
+  --success-soft: #c7eed2;
+  --success-text: #1b7a35;
+  --warning: #ff9f0a;
+  --warning-tint: #fff4e2;
+  --warning-soft: #ffe1b0;
+  --warning-text: #9a5b00;
+  --danger: #ff3b30;
+  --danger-tint: #ffefee;
+  --danger-soft: #ffd0cd;
+  --danger-text: #c4271d;
+
+  --overlay: rgba(0, 0, 0, 0.32);
+
+  --radius-sm: 8px;
+  --radius: 11px;
+  --radius-lg: 16px;
+  --shadow-sm: 0 0.5px 1px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 2px 6px rgba(0, 0, 0, 0.04), 0 10px 30px -8px rgba(0, 0, 0, 0.1);
+  --shadow-pop: 0 0 0 0.5px rgba(0, 0, 0, 0.06), 0 24px 64px -12px rgba(0, 0, 0, 0.22), 0 8px 20px -8px rgba(0, 0, 0, 0.1);
+}
+
+/* ---------- Tema oscuro (grises del sistema de Apple) ---------- */
+:root:root[data-theme="dark"] {
+  --bg: #1c1c1e;
+  --bg-subtle: #141416;
+  --bg-panel: #2c2c2e;
+  --bg-hover: #3a3a3c;
+  --bg-raised: #2c2c2e;
+  --row-hover: #2c2c2e;
+  --chip-bg: #2c2c2e;
+  --cal-off: #141416;
+  --chat-bg: #141416;
+
+  --text: #f5f5f7;
+  --text-2: #d1d1d6;
+  --text-3: #98989d;
+  --text-4: #636366;
+
+  --border: #38383a;
+  --border-strong: #48484a;
+
+  --success: #30d158;
+  --warning: #ffd60a;
+  --danger: #ff453a;
+
+  --overlay: rgba(0, 0, 0, 0.55);
+
+  --radius-sm: 8px;
+  --radius: 11px;
+  --radius-lg: 16px;
+}
+
+/* ---------- Barra lateral y barra superior del celular ---------- */
+/* Gana al `.nav-dark` de globals y al acento calculado para fondo oscuro
+   que inyecta el white-label (`:root .nav-dark` > `.nav-dark`). */
+:root .nav-dark {
+  color-scheme: light;
+  --bg: #f6f6f8;
+  --bg-subtle: #f6f6f8;
+  --bg-panel: #ebebf0;
+  --bg-raised: #ffffff;
+  --bg-hover: rgba(0, 0, 0, 0.05);
+  --row-hover: rgba(0, 0, 0, 0.04);
+  --chip-bg: #ffffff;
+  --text: #1d1d1f;
+  --text-2: #3a3a3c;
+  --text-3: #6e6e73;
+  --text-4: #aeaeb2;
+  --border: #e5e5ea;
+  --border-strong: #d2d2d7;
+  --accent: #083f59;
+  --accent-hover: #0b5578;
+  --accent-soft: #c9dde7;
+  --accent-tint: rgba(8, 63, 89, 0.08);
+  --accent-text: #083f59;
+  --accent-fg: #ffffff;
+  --accent-ink: #083f59;
+  --ring: #083f59;
+}
+:root[data-theme="dark"] .nav-dark {
+  color-scheme: dark;
+  --bg: #1c1c1e;
+  --bg-subtle: #1c1c1e;
+  --bg-panel: #2c2c2e;
+  --bg-raised: #2c2c2e;
+  --bg-hover: rgba(255, 255, 255, 0.08);
+  --row-hover: rgba(255, 255, 255, 0.06);
+  --chip-bg: #2c2c2e;
+  --text: #f5f5f7;
+  --text-2: #d1d1d6;
+  --text-3: #98989d;
+  --text-4: #636366;
+  --border: #38383a;
+  --border-strong: #48484a;
+  --accent: #5fb3d9;
+  --accent-hover: #7cc3e3;
+  --accent-soft: #1f4a5e;
+  --accent-tint: rgba(95, 179, 217, 0.14);
+  --accent-text: #8fd0ec;
+  --accent-fg: #0b1a22;
+  --accent-ink: #8fd0ec;
+  --ring: #5fb3d9;
+}
+/* El renglón activo: píldora gris, ícono en el azul de la marca (como Finder). */
+:root .nav-dark [aria-current="page"] {
+  background: rgba(0, 0, 0, 0.065);
+  color: var(--text);
+  box-shadow: none;
+}
+:root[data-theme="dark"] .nav-dark [aria-current="page"] {
+  background: rgba(255, 255, 255, 0.1);
+}
+:root .nav-dark [aria-current="page"] svg {
+  color: var(--accent);
+}
+/* Material translúcido donde la barra flota sobre el contenido. */
+@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  /* La barra superior del celular. */
+  header.nav-dark {
+    background: rgba(246, 246, 248, 0.78);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    backdrop-filter: saturate(180%) blur(20px);
+  }
+  :root[data-theme="dark"] header.nav-dark {
+    background: rgba(28, 28, 30, 0.78);
+  }
+  /* El cajón del menú en el celular (en escritorio es una columna fija). */
+  @media (max-width: 1023px) {
+    aside.nav-dark {
+      background: rgba(246, 246, 248, 0.86);
+      -webkit-backdrop-filter: saturate(180%) blur(24px);
+      backdrop-filter: saturate(180%) blur(24px);
+    }
+    :root[data-theme="dark"] aside.nav-dark {
+      background: rgba(28, 28, 30, 0.86);
+    }
+  }
+  /* Velo detrás de diálogos y cajones: desenfoca lo de atrás. */
+  .bg-overlay {
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+  }
+}
+
+/* ---------- Campos ---------- */
+/* Rellenos de gris, sin borde visible; al enfocar, blancos con halo del acento. */
+:root:not([data-theme="dark"]) input.border-input:not([type="checkbox"]):not([type="radio"]):not([type="color"]),
+:root:not([data-theme="dark"]) textarea.border-input,
+:root:not([data-theme="dark"]) select.border-input {
+  background-color: #f2f2f7;
+  border-color: transparent;
+  box-shadow: none;
+}
+:root:not([data-theme="dark"]) input.border-input:focus-visible,
+:root:not([data-theme="dark"]) textarea.border-input:focus-visible,
+:root:not([data-theme="dark"]) select.border-input:focus-visible {
+  background-color: #ffffff;
+  border-color: var(--accent);
+}
+:root[data-theme="dark"] input.border-input:not([type="checkbox"]):not([type="radio"]),
+:root[data-theme="dark"] textarea.border-input {
+  background-color: #2c2c2e;
+  border-color: transparent;
+}
+
+/* ---------- Botones ---------- */
+/* El contorno de Vocero se vuelve el botón gris relleno de Apple; sin el
+   «salto» al pasar el cursor (Apple no levanta los botones). */
+button.border-border-strong.bg-transparent,
+a.border-border-strong.bg-transparent {
+  border-color: transparent;
+  background-color: var(--bg-panel);
+}
+button.border-border-strong.bg-transparent:hover,
+a.border-border-strong.bg-transparent:hover {
+  background-color: var(--bg-hover);
+}
+.hover\:-translate-y-px:hover {
+  --tw-translate-y: 0px;
+}
+/* `scale` (no `transform`): se suma a las traslaciones de Tailwind sin pisarlas. */
+button:active:not(:disabled) {
+  scale: 0.98;
+}
+
+/* ---------- Tarjetas y columnas ---------- */
+/* Las columnas del Pipeline y Captaciones: gris del sistema, sin borde duro. */
+section.bg-subtle.border-border-strong,
+div.bg-subtle.border-border-strong {
+  border-color: transparent;
+}
+/* Las tarjetas sobre esas columnas: blancas, sin borde, con sombra mínima. */
+.bg-subtle .bg-card.border-border-strong {
+  border-color: transparent;
+  box-shadow: var(--shadow-sm);
+}
+
+/* El hilo del chat, liso: sin el resplandor de la landing de Vocero. */
+:root .thread-bg,
+:root[data-theme="dark"] .thread-bg {
+  background-image: none;
+}
+
+/* ---------- Movimiento ---------- */
+/* La curva de Apple para lo que se abre y se desliza. */
+.transition-colors,
+.transition-shadow,
+.transition-transform,
+[class*="transition-["] {
+  transition-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+/* ---------- Barras de desplazamiento finas, como macOS ---------- */
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.18);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+:root[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  background-clip: padding-box;
+}

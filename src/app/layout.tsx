@@ -8,6 +8,8 @@ import { getBranding } from "@/server/branding";
 import { enabledChannels } from "@/server/channels/enabled";
 import { productName } from "@/lib/channels";
 import "./globals.css";
+// 061 (fork) — Tema con estética de Apple; quitar esta línea lo apaga.
+import "./fork-tema.css";
 
 // Las tres voces de la marca, las mismas de vocerocrm.com. next/font las
 // descarga en BUILD y las sirve self-hosted (sin CDN en runtime: soberanía).
