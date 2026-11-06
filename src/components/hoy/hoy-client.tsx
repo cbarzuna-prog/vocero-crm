@@ -1,5 +1,6 @@
 "use client";
 
+import { EsperandoAtencion } from "@/components/fork/atencion";
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { AlertCircle, CalendarCheck, CircleDashed, Plus, Sun } from "lucide-react";
@@ -150,6 +151,8 @@ export function HoyClient({ initial }: { initial: HoyDto }) {
         {/* Escritorio: tareas a la izquierda, tratos sin siguiente paso a la
             derecha (dos preguntas, dos columnas, sin hueco). Celular: una columna. */}
         <div className="mx-auto max-w-6xl">
+          {/* 062 — Lo que espera contacto según los tiempos de su etapa, lo rojo primero. */}
+          <EsperandoAtencion />
           {total === 0 ? (
             <EmptyState
               icon={CalendarCheck}

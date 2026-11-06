@@ -211,6 +211,13 @@
       "when": 1793391552952,
       "tag": "0029_colaboracion",
       "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "7",
+      "when": 1793983344890,
+      "tag": "0030_config_atencion",
+      "breakpoints": true
     }
   ]
 }

@@ -1670,3 +1670,12 @@ export const propiedadParticipante = pgTable(
     check("kk_propiedad_participante_bp_ck", sql`${t.porcentajeBp} BETWEEN 0 AND 10000`),
   ]
 );
+
+/** 062 — Tiempos de atención por etapa y horario de oficina (uno por organización). */
+export const configAtencion = pgTable("kk_config_atencion", {
+  organizationId: text("organization_id")
+    .primaryKey()
+    .references(() => organization.id, { onDelete: "cascade" }),
+  config: jsonb("config").$type<Record<string, unknown>>().notNull(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});

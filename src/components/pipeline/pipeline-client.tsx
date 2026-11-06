@@ -27,6 +27,7 @@ import { PriorityBadge } from "./priority-picker";
 import { LeadDrawer } from "./lead-drawer";
 // Fork Knock Knock (052): vista del celular, fuera del archivo de upstream.
 import { PipelineMovil } from "@/components/fork/pipeline-movil";
+import { AtencionLinea, AtencionProvider, claseAtencion, useAtencionLead } from "@/components/fork/atencion";
 
 export type BoardLead = {
   id: string;
@@ -40,8 +41,12 @@ export type BoardLead = {
   priority: PriorityValue | null;
 };
 
-/** `movil` (fork 052): en el celular, una etapa a la vez en vez del tablero. */
-export function PipelineClient({ movil = false }: { movil?: boolean } = {}) {
+/**
+ * `movil` (fork 052): en el celular, una etapa a la vez en vez del tablero.
+ * `atencion` (fork 062): semáforo de atención en cada tarjeta.
+ */
+export function PipelineClient({ movil = false, atencion = false }: { movil?: boolean; atencion?: boolean } = {}) {
+  const [version, setVersion] = useState(0);
   const [stages, setStages] = useState<StageDto[]>([]);
   const [currency, setCurrency] = useState("MXN");
   const [leads, setLeads] = useState<BoardLead[]>([]);
@@ -78,6 +83,7 @@ export function PipelineClient({ movil = false }: { movil?: boolean } = {}) {
     if (data.currency) setCurrency(data.currency);
     setStages(data.stages);
     setLeads(data.leads);
+    setVersion((v) => v + 1);
   }, []);
 
   useEffect(() => {
@@ -173,7 +179,7 @@ export function PipelineClient({ movil = false }: { movil?: boolean } = {}) {
     void moverLead(leadId, stageId);
   }
 
-  return (
+  const tablero = (
     <div className="flex h-full flex-col">
       <header className="flex flex-wrap items-center justify-between gap-2 border-b px-4 py-3 sm:px-6 sm:py-4">
         <h2 className="text-[17px] font-bold tracking-tight">Pipeline</h2>
@@ -277,6 +283,7 @@ export function PipelineClient({ movil = false }: { movil?: boolean } = {}) {
       )}
     </div>
   );
+  return atencion ? <AtencionProvider version={version}>{tablero}</AtencionProvider> : tablero;
 }
 
 /**
@@ -436,11 +443,13 @@ function LeadCard({
   overlay?: boolean;
   onEditAmount?: (lead: BoardLead) => void;
 }) {
+  const atn = useAtencionLead(lead.id); // fork 062
   return (
     <div
       className={cn(
         "cursor-grab rounded-md border border-border-strong bg-card p-3 shadow-sm transition-shadow hover:shadow-md",
-        overlay && "rotate-2 shadow-pop"
+        overlay && "rotate-2 shadow-pop",
+        claseAtencion(atn?.nivel)
       )}
     >
       <div className="flex items-center gap-2.5">
@@ -468,6 +477,7 @@ function LeadCard({
           </Link>
         )}
       </div>
+      <AtencionLinea e={atn} />
       {!overlay && onEditAmount && (
         <button
           // `stopPropagation` en pointerdown: sin esto, tocar el monto empieza

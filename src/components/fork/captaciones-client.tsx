@@ -40,6 +40,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialogo } from "./dialogo";
+import { AtencionLinea, AtencionProvider, claseAtencion, useAtencionCaptacion } from "./atencion";
 import { NuevaCaptacionDialog } from "./nueva-captacion-dialog";
 
 const ETAPA_KEY = "kk.captaciones.etapa";
@@ -61,6 +62,16 @@ type Pendiente = { tarjeta: CaptacionTarjeta; etapa: "firmada" | "perdida" };
  * exclusiva pide fechas y comisión; perderla pide el motivo.
  */
 export function CaptacionesClient() {
+  const [version, setVersion] = useState(0);
+  const onCambio = useCallback(() => setVersion((v) => v + 1), []);
+  return (
+    <AtencionProvider version={version}>
+      <Tablero onCambio={onCambio} />
+    </AtencionProvider>
+  );
+}
+
+function Tablero({ onCambio }: { onCambio: () => void }) {
   const [tarjetas, setTarjetas] = useState<CaptacionTarjeta[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [nueva, setNueva] = useState(false);
@@ -80,7 +91,8 @@ export function CaptacionesClient() {
     }
     setError(null);
     setTarjetas(((await res.json()) as { captaciones: CaptacionTarjeta[] }).captaciones);
-  }, []);
+    onCambio();
+  }, [onCambio]);
 
   useEffect(() => {
     void refetch();
@@ -409,11 +421,12 @@ function VenceBadge({ vence }: { vence: string }) {
 }
 
 function Tarjeta({ t, overlay = false }: { t: CaptacionTarjeta; overlay?: boolean }) {
+  const atn = useAtencionCaptacion(t.id); // 062
   const precio = formatPrecio(t.priceCents, t.currency);
   const comision = comisionEstimadaCents(t);
   const dias = diasDesde(t.desde);
   return (
-    <div className={cn("cursor-grab rounded-md border border-border-strong bg-card p-3 shadow-sm transition-shadow hover:shadow-md", overlay && "rotate-2 shadow-pop")}>
+    <div className={cn("cursor-grab rounded-md border border-border-strong bg-card p-3 shadow-sm transition-shadow hover:shadow-md", overlay && "rotate-2 shadow-pop", claseAtencion(atn?.nivel))}>
       <div className="flex gap-2.5">
         {/* eslint-disable-next-line @next/next/no-img-element -- foto privada servida con sesión */}
         {t.coverUrl && <img src={t.coverUrl} alt="" className="h-11 w-11 shrink-0 rounded object-cover" />}
@@ -453,6 +466,7 @@ function Tarjeta({ t, overlay = false }: { t: CaptacionTarjeta; overlay?: boolea
         )}
         {t.exclusivaVence && t.etapa !== "perdida" && <VenceBadge vence={t.exclusivaVence} />}
       </p>
+      <AtencionLinea e={atn} />
     </div>
   );
 }

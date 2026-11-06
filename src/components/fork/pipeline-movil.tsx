@@ -1,5 +1,6 @@
 "use client";
 
+import { AtencionLinea, claseAtencion, useAtencionLead } from "./atencion";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { MessageSquareText, Trophy, XCircle } from "lucide-react";
@@ -136,7 +137,7 @@ export function PipelineMovil({
           ) : (
             <ul className="divide-y border-y bg-card">
               {deEtapa.map((lead) => (
-                <li key={lead.id} className="flex items-center gap-1 pr-2">
+                <FilaMovil key={lead.id} lead={lead}>
                   <button
                     type="button"
                     onClick={() => onOpen(lead)}
@@ -152,6 +153,7 @@ export function PipelineMovil({
                       <span className="block text-[13px] text-text-3">
                         {lead.lastActivityAt ? `Actividad: ${formatTime(lead.lastActivityAt)}` : "Sin actividad"}
                       </span>
+                      <LineaAtencion leadId={lead.id} />
                     </span>
                   </button>
                   <button
@@ -174,7 +176,7 @@ export function PipelineMovil({
                       <MessageSquareText className="h-5 w-5" strokeWidth={1.8} />
                     </Link>
                   )}
-                </li>
+                </FilaMovil>
               ))}
             </ul>
           )}
@@ -182,4 +184,14 @@ export function PipelineMovil({
       )}
     </div>
   );
+}
+
+/** 062 — La fila se tiñe de ámbar o rojo según la espera. */
+function FilaMovil({ lead, children }: { lead: BoardLead; children: React.ReactNode }) {
+  const atn = useAtencionLead(lead.id);
+  return <li className={cn("flex items-center gap-1 border-l-0 pr-2", claseAtencion(atn?.nivel))}>{children}</li>;
+}
+
+function LineaAtencion({ leadId }: { leadId: string }) {
+  return <AtencionLinea e={useAtencionLead(leadId)} className="mt-0.5" />;
 }

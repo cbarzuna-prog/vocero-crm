@@ -6,6 +6,7 @@ export const dynamic = "force-dynamic";
 
 export default function PipelinePage() {
   // Fork (052): la vista del celular solo con los módulos del fork encendidos;
-  // apagados, el pipeline es el de upstream.
-  return <PipelineClient movil={tareasEnabled() || propiedadesEnabled()} />;
+  // apagados, el pipeline es el de upstream. 062: y el semáforo de atención.
+  const fork = tareasEnabled() || propiedadesEnabled();
+  return <PipelineClient movil={fork} atencion={fork} />;
 }

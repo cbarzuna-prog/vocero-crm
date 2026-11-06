@@ -35,6 +35,7 @@ import { SOURCE_LABELS } from "@/server/contact-source";
 import { Dialogo } from "./dialogo";
 import { EditarContactoDialog } from "./editar-contacto-dialog";
 import { NuevoContactoDialog } from "./nuevo-contacto-dialog";
+import { AtencionLinea, claseAtencion, useAtencionDatos } from "./atencion";
 
 const ORDEN_KEY = "kk.contactos.orden";
 
@@ -118,6 +119,7 @@ export function ContactosClient() {
   const [filtrosAbiertos, setFiltrosAbiertos] = useState(false);
   const [sel, setSel] = useState<Set<string>>(new Set());
   const [aviso, setAviso] = useState<{ texto: string; deshacer?: () => void } | null>(null);
+  const atencion = useAtencionDatos(); // 062
   const [creando, setCreando] = useState(false);
   const [importando, setImportando] = useState(false);
   const [editando, setEditando] = useState<ContactoFila | null>(null);
@@ -371,7 +373,7 @@ export function ContactosClient() {
                 const dias = c.lead ? diasDesde(c.lead.desde) : null;
                 const b = busca(c);
                 return (
-                  <li key={c.id} className={cn("flex flex-wrap items-center gap-x-3 gap-y-1.5 px-3 py-2.5 sm:px-4 lg:flex-nowrap", sel.has(c.id) && "bg-brand-tint")}>
+                  <li key={c.id} className={cn("flex flex-wrap items-center gap-x-3 gap-y-1.5 px-3 py-2.5 sm:px-4 lg:flex-nowrap", c.lead && claseAtencion(atencion?.leads[c.lead.id]?.nivel), sel.has(c.id) && "bg-brand-tint")}>
                     <label className="flex h-11 w-7 shrink-0 items-center justify-center lg:h-auto lg:w-auto">
                       <input type="checkbox" className={check} aria-label={`Seleccionar a ${c.name}`} checked={sel.has(c.id)} onChange={() => alternar(c.id)} />
                     </label>
@@ -410,6 +412,9 @@ export function ContactosClient() {
                           )}
                           {c.archivedAt && <Badge variant="secondary">Archivado</Badge>}
                           <span className="text-text-2 lg:hidden">{b ? `· ${b}` : ""}</span>
+                          {atencion?.leads[c.lead.id] && atencion.leads[c.lead.id]!.nivel !== "ok" && (
+                            <AtencionLinea e={atencion.leads[c.lead.id]!} className="mt-0 w-full" />
+                          )}
                         </span>
                       ) : (
                         <span className="text-text-3">Sin etapa</span>
