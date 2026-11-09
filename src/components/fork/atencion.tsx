@@ -124,7 +124,7 @@ export function EsperandoAtencion({ datos: dados }: { datos?: AtencionDto | null
             <Link href={p.href} className={cn("block rounded-md border px-3 py-2 hover:shadow-sm", claseAtencion(p.nivel))}>
               <span className="flex items-baseline justify-between gap-3">
                 <span className="truncate text-sm font-semibold">{p.nombre}</span>
-                <span className="shrink-0 text-[12px] text-text-3">{p.tipo === "captacion" ? `Dueño · ${p.etapa}` : p.etapa}</span>
+                <span className="shrink-0 text-[12px] text-text-3">{p.tipo === "captacion" ? `Captación externa · ${p.etapa}` : p.etapa}</span>
               </span>
               <AtencionLinea e={p} className="mt-0.5" />
             </Link>
@@ -139,7 +139,7 @@ export function EsperandoAtencion({ datos: dados }: { datos?: AtencionDto | null
           </Link>{" "}
           y en{" "}
           <Link href="/captaciones" className="font-semibold text-brand-text hover:underline">
-            Dueños
+            Captación externa
           </Link>
           .
         </p>

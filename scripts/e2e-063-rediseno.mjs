@@ -1,6 +1,6 @@
 /**
  * 063 (fork) — Self-test del rediseño con las referencias del dueño: nombres
- * «Compradores»/«Dueños», tablero con flechas de color, ponderado, buscador y
+ * «Compradores»/«Captación externa», tablero con flechas de color, ponderado, buscador y
  * «Solo en rojo»; ficha del contacto con botones redondos, barra de etapas que
  * mueve el trato, resumen de la IA y una sola línea de actividad; y «Hoy» con
  * la franja de bienvenida. Contra la app viva con mocks:
@@ -54,7 +54,7 @@ check("Hoy: las cuatro cifras del día", ["Esperan atención", "Vencidas", "Para
 check("Hoy: «+ Tarea» y «Todas/Mías» dentro de la franja", (await franja.getByRole("button", { name: /Tarea/ }).isVisible()) && (await franja.getByRole("radio", { name: "Mías" }).isVisible()));
 
 // 2) Menú con los nombres nuevos.
-check("menú: «Compradores» y «Dueños»", (await page.getByRole("link", { name: "Compradores" }).first().isVisible()) && (await page.getByRole("link", { name: "Dueños" }).first().isVisible()));
+check("menú: «Compradores» y «Captación externa»", (await page.getByRole("link", { name: "Compradores" }).first().isVisible()) && (await page.getByRole("link", { name: "Captación externa" }).first().isVisible()));
 
 // 3) Compradores: flechas de color, ponderado, buscador.
 await page.goto(`${BASE}/pipeline`);
@@ -112,10 +112,10 @@ await acciones.getByText("Tarea", { exact: true }).click();
 check("«Tarea» abre la nueva tarea", await page.getByRole("dialog").first().isVisible());
 await page.keyboard.press("Escape");
 
-// 5) Dueños.
+// 5) Captación externa.
 await page.goto(`${BASE}/captaciones`);
-await page.getByRole("heading", { name: "Dueños" }).waitFor({ timeout: 60_000 });
-check("Dueños: subtítulo con el término del oficio", await page.getByText(/Captación de propiedades/).waitFor({ timeout: 20_000 }).then(() => true, () => false));
+await page.getByRole("heading", { name: "Captación externa" }).waitFor({ timeout: 60_000 });
+check("Captación externa: subtítulo dice que son de terceros", await page.getByText(/Propiedades que nos traen terceros/).waitFor({ timeout: 20_000 }).then(() => true, () => false));
 
 // 6) Celular: la ficha no se desborda (la barra de etapas se desliza sola).
 const movil = await browser.newContext({ viewport: { width: 390, height: 844 }, storageState: await ctx.storageState(), isMobile: true, hasTouch: true });

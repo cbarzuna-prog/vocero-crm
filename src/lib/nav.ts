@@ -72,9 +72,9 @@ export function appNavGroups({
     ...(tareas ? [{ href: "/hoy", label: "Hoy", icon: Sun, tareasBadge: true }] : []),
     { href: "/inbox", label: "Bandeja", icon: Inbox, badge: true },
     // 063 (fork): con el inventario encendido hay dos embudos, nombrados por
-    // la persona que se atiende: «Compradores» (el pipeline) y «Dueños» (captación).
+    // la persona que se atiende: «Compradores» (el pipeline) y «Captación externa» (lo que traen terceros; 064).
     { href: "/pipeline", label: propiedades ? "Compradores" : "Pipeline", icon: Kanban },
-    ...(propiedades ? [{ href: "/captaciones", label: "Dueños", icon: KeyRound }] : []),
+    ...(propiedades ? [{ href: "/captaciones", label: "Captación externa", icon: KeyRound }] : []),
     { href: "/contacts", label: "Contactos", icon: Users },
   ];
   // Citas va después de Contactos: es el paso siguiente de un trato, no una

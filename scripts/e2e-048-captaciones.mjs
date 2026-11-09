@@ -50,8 +50,8 @@ const tel = `8${String(Math.floor(Math.random() * 1e7)).padStart(7, "0")}`;
 const nombre = `Dueña ${stamp}`;
 
 await page.goto(`${BASE}/captaciones`);
-await page.locator("h1", { hasText: "Dueños" }).waitFor();
-check("el menú tiene «Dueños» (063: antes «Captaciones»)", await page.getByRole("link", { name: "Dueños" }).first().isVisible());
+await page.locator("h1", { hasText: "Captación externa" }).waitFor();
+check("el menú tiene «Captación externa» (064: antes «Dueños»/«Captaciones»)", await page.getByRole("link", { name: "Captación externa" }).first().isVisible());
 
 // 1) Nueva captación desde la pantalla, con un dueño nuevo.
 await page.getByRole("button", { name: "Nueva captación" }).first().click();

@@ -3,7 +3,7 @@
 Referencias (2026-11-06/07, «no copiar, solo referencia»): tablero de Kommo,
 pipeline y ficha de trato de Bitrix24, pipeline y ficha de trato de HubSpot.
 Borradores aprobados en el lienzo «Knock Knock CRM — direcciones de diseño»
-(fila «Borrador»). Decisión del dueño (2026-11-09): «Compradores» y «Dueños».
+(fila «Borrador»). Decisión del dueño (2026-11-09): «Compradores» y «Dueños» (este último pasó a «Captación externa» en 064).
 
 ## Nombres
 

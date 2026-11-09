@@ -165,11 +165,11 @@ function Tablero({ onCambio }: { onCambio: () => void }) {
     <div className="flex h-full flex-col">
       <header className="flex flex-wrap items-start justify-between gap-3 border-b px-4 py-3 sm:px-6 sm:py-4">
         <div className="min-w-0">
-          <h1 className="text-[22px] font-bold leading-tight tracking-tight">Dueños</h1>
+          <h1 className="text-[22px] font-bold leading-tight tracking-tight">Captación externa</h1>
           <p className="mt-0.5 text-[13px] text-text-2">
             {tarjetas === null
               ? "Cargando…"
-              : `Captación de propiedades · ${activas.length} en proceso${porVencer.length ? ` · ${porVencer.length} exclusiva${porVencer.length === 1 ? "" : "s"} por renovar` : ""}`}
+              : `Propiedades que nos traen terceros · ${activas.length} en proceso${porVencer.length ? ` · ${porVencer.length} exclusiva${porVencer.length === 1 ? "" : "s"} por renovar` : ""}`}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">

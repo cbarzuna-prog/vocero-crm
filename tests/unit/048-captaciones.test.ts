@@ -82,8 +82,8 @@ describe("048 — menú", () => {
   it("Captaciones va junto al Pipeline, solo con propiedades", () => {
     const items = (p: boolean) => appNavGroups({ propiedades: p })[0]!.items.map((i) => i.label);
     // 063 — con el inventario, los dos embudos se nombran por la persona.
-    expect(items(true).slice(0, 3)).toEqual(["Bandeja", "Compradores", "Dueños"]);
-    expect(items(false)).not.toContain("Dueños");
+    expect(items(true).slice(0, 3)).toEqual(["Bandeja", "Compradores", "Captación externa"]);
+    expect(items(false)).not.toContain("Captación externa");
     expect(items(false)).toContain("Pipeline");
   });
 });

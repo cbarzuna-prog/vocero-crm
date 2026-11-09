@@ -8,6 +8,8 @@ imagen `ghcr.io/kevinrivm/vocero-crm:X.Y.Z`.
 
 ## Fork Knock Knock — sin publicar
 
+- **064** — El tablero de captaciones se llama «Captación externa»: es para las propiedades que traen terceros.
+
 Sobre 2.1.0. Dos módulos nuevos, **apagados por defecto**: con las banderas
 apagadas la instancia es exactamente la de upstream. Migración aditiva `0023`
 (solo crea tablas). Spec [046](specs/046-propiedades-y-tareas/spec.md).

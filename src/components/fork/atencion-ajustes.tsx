@@ -259,7 +259,7 @@ export function AtencionAjustes() {
 
       <section aria-labelledby="etapas-captaciones">
         <h2 id="etapas-captaciones" className="text-[15px] font-bold">
-          Dueños (captación)
+          Captación externa
         </h2>
         <ul className="divide-y">
           {(Object.keys(CAPTACION_TIEMPOS) as (keyof typeof CAPTACION_TIEMPOS)[]).map((k) => (
