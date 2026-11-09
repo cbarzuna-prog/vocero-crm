@@ -120,6 +120,13 @@ export function aiMockCompletion(messages: InMessage[]): string {
     return JSON.stringify({ veredicto: "verde", hallazgos: [] });
   }
 
+  // fork 063 — Resumen de contacto: JSON determinista con lo que vio.
+  if (system.includes("[[RESUMEN_CONTACTO]]")) {
+    const nombre = /Nombre: (.+)/.exec(lastUser)?.[1] ?? "el cliente";
+    const etapa = /Etapa: ([^(\n]+)/.exec(lastUser)?.[1]?.trim() ?? "sin etapa";
+    return JSON.stringify({ resumen: `Resumen de prueba: ${nombre} está en ${etapa}.`, siguientePaso: `Llamar a ${nombre}` });
+  }
+
   // 036 — Lo demás es un cerebro pensando por `/api/bot/llm`: texto de eco,
   // determinista. El agente que contestaba con acciones JSON ya no existe.
   return `Respuesta de prueba sobre: ${lastUser.slice(0, 80)}`;

@@ -1,6 +1,7 @@
 "use client";
 
 import { AtencionLinea, claseAtencion, useAtencionLead } from "./atencion";
+import { PropiedadTarjeta } from "./embudo";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { MessageSquareText, Trophy, XCircle } from "lucide-react";
@@ -153,6 +154,7 @@ export function PipelineMovil({
                       <span className="block text-[13px] text-text-3">
                         {lead.lastActivityAt ? `Actividad: ${formatTime(lead.lastActivityAt)}` : "Sin actividad"}
                       </span>
+                      <PropiedadTarjeta leadId={lead.id} />
                       <LineaAtencion leadId={lead.id} />
                     </span>
                   </button>

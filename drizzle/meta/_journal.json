@@ -218,6 +218,13 @@
       "when": 1793983344890,
       "tag": "0030_config_atencion",
       "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "7",
+      "when": 1794255716415,
+      "tag": "0031_resumen_contacto",
+      "breakpoints": true
     }
   ]
 }

@@ -1,4 +1,4 @@
-import { and, eq, inArray, isNotNull, isNull, max, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, isNotNull, isNull, max, sql } from "drizzle-orm";
 import { getDb, schema } from "@/lib/db";
 import { scoped } from "@/lib/db/tenant";
 import {
@@ -13,6 +13,7 @@ import {
 } from "@/lib/atencion";
 import { businessTimezone } from "@/server/analytics/period";
 import { ETAPA_LABELS } from "@/lib/captaciones";
+import { coverUrl } from "@/lib/propiedades";
 
 /** 062 (fork) — Semáforo de atención: la configuración y el cálculo. */
 
@@ -138,7 +139,27 @@ export async function calcularAtencion(organizationId: string, ahora = new Date(
   const hechaProp = new Map(hechasProp.map((t) => [t.propertyId!, t.en]));
   const masReciente = (...ds: (Date | null | undefined)[]) => ds.filter((d): d is Date => !!d).reduce((a, b) => (a > b ? a : b));
 
-  const out: AtencionDto = { horario: cfg.horario, leads: {}, captaciones: {}, pendientes: [] };
+  const out: AtencionDto = { horario: cfg.horario, leads: {}, captaciones: {}, pendientes: [], propiedades: {} };
+  // 063 — La propiedad activa más reciente de cada contacto, para la tarjeta.
+  if (contactIds.length) {
+    const PI = schema.propertyInterest;
+    const intereses = await db
+      .selectDistinctOn([PI.contactId], {
+        contactId: PI.contactId,
+        code: schema.property.code,
+        title: schema.property.title,
+        cover: sql<string | null>`(select pph."media_asset_id" from "property_photo" pph where pph."property_id" = ${schema.property.id} order by pph."position" asc limit 1)`,
+      })
+      .from(PI)
+      .innerJoin(schema.property, eq(schema.property.id, PI.propertyId))
+      .where(scoped(PI.organizationId, organizationId, inArray(PI.contactId, contactIds), inArray(PI.status, ["interesado", "enviada", "visitada", "oferto"])))
+      .orderBy(PI.contactId, desc(PI.updatedAt));
+    const porContacto = new Map(intereses.map((i) => [i.contactId, { code: i.code, title: i.title, coverUrl: coverUrl(i.cover) }]));
+    for (const l of leads) {
+      const p = porContacto.get(l.contactId);
+      if (p) out.propiedades[l.id] = p;
+    }
+  }
   const pendientes: PendienteAtencion[] = [];
   for (const l of leads) {
     const msg = mensajes.get(l.contactId);

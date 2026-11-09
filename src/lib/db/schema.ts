@@ -1679,3 +1679,16 @@ export const configAtencion = pgTable("kk_config_atencion", {
   config: jsonb("config").$type<Record<string, unknown>>().notNull(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
+
+/** 063 — Resumen del contacto escrito por la IA (uno por contacto; se regenera a pedido). */
+export const resumenContacto = pgTable("kk_resumen_contacto", {
+  contactId: text("contact_id")
+    .primaryKey()
+    .references(() => contact.id, { onDelete: "cascade" }),
+  organizationId: text("organization_id")
+    .notNull()
+    .references(() => organization.id, { onDelete: "cascade" }),
+  texto: text("texto").notNull(),
+  siguientePaso: text("siguiente_paso"),
+  generadoAt: timestamp("generado_at").notNull().defaultNow(),
+});

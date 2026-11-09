@@ -81,7 +81,9 @@ describe("048 — contratos", () => {
 describe("048 — menú", () => {
   it("Captaciones va junto al Pipeline, solo con propiedades", () => {
     const items = (p: boolean) => appNavGroups({ propiedades: p })[0]!.items.map((i) => i.label);
-    expect(items(true).slice(0, 3)).toEqual(["Bandeja", "Pipeline", "Captaciones"]);
-    expect(items(false)).not.toContain("Captaciones");
+    // 063 — con el inventario, los dos embudos se nombran por la persona.
+    expect(items(true).slice(0, 3)).toEqual(["Bandeja", "Compradores", "Dueños"]);
+    expect(items(false)).not.toContain("Dueños");
+    expect(items(false)).toContain("Pipeline");
   });
 });

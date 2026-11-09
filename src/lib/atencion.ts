@@ -243,6 +243,8 @@ export type AtencionDto = {
   captaciones: Record<string, EstadoAtencion>;
   /** Lo que está en ámbar o rojo, lo más urgente primero (para «Hoy»). */
   pendientes: PendienteAtencion[];
+  /** 063 — La propiedad más reciente que le interesa a cada trato (para la tarjeta). */
+  propiedades: Record<string, { code: string; title: string; coverUrl: string | null }>;
 };
 
 export type PendienteAtencion = EstadoAtencion & {

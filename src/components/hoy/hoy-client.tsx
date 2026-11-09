@@ -1,9 +1,10 @@
 "use client";
 
-import { EsperandoAtencion } from "@/components/fork/atencion";
+import { EsperandoAtencion, useAtencionDatos } from "@/components/fork/atencion";
+import { BienvenidaHoy } from "@/components/fork/bienvenida-hoy";
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { AlertCircle, CalendarCheck, CircleDashed, Plus, Sun } from "lucide-react";
+import { AlertCircle, CalendarCheck, CircleDashed, Sun } from "lucide-react";
 import type { HoyDto } from "@/lib/tareas";
 import { cn } from "@/lib/utils";
 import { authClient } from "@/lib/auth/client";
@@ -82,6 +83,7 @@ export function HoyClient({ initial }: { initial: HoyDto }) {
 
   const { data: session } = authClient.useSession();
   const meId = session?.user.id ?? null;
+  const atencion = useAtencionDatos(); // 063: un solo pedido para la franja y la lista
   const { toggle, remove, posponer, editar, ui } = useCompletarTarea({
     today: data.today,
     timezone: data.timezone,
@@ -89,19 +91,11 @@ export function HoyClient({ initial }: { initial: HoyDto }) {
   });
   const acciones = { meId, onToggle: toggle, onPosponer: posponer, onEditar: editar, onDelete: remove };
 
-  // El hallazgo del día, debajo del título: lo primero que hay que saber.
+  // La vencida más antigua: la franja dice de cuándo es.
   const masVieja = data.vencidas[0];
   const diasVieja = masVieja
     ? Math.max(1, Math.round((Date.parse(`${data.today}T12:00:00Z`) - Date.parse(masVieja.dueAt)) / 86_400_000))
     : 0;
-  const hallazgo =
-    data.vencidas.length > 0
-      ? `${data.vencidas.length} ${data.vencidas.length === 1 ? "vencida" : "vencidas"}, la más antigua de hace ${diasVieja} ${diasVieja === 1 ? "día" : "días"}`
-      : data.hoy.length > 0
-        ? `${data.hoy.length} ${data.hoy.length === 1 ? "tarea" : "tareas"} para hoy, nada vencido`
-        : data.sinSiguientePaso.length > 0
-          ? `${data.sinSiguientePaso.length} ${data.sinSiguientePaso.length === 1 ? "trato" : "tratos"} sin siguiente paso`
-          : "Todo al día";
 
   const total = data.vencidas.length + data.hoy.length + data.sinSiguientePaso.length;
   const fechaRaw = new Intl.DateTimeFormat("es", {
@@ -112,47 +106,34 @@ export function HoyClient({ initial }: { initial: HoyDto }) {
   }).format(new Date(`${data.today}T12:00:00Z`));
   // «Viernes, 23 de octubre»: mayúscula solo al inicio, como se escribe en español.
   const fecha = fechaRaw.charAt(0).toUpperCase() + fechaRaw.slice(1);
+  const horaNegocio = Number(new Intl.DateTimeFormat("en-US", { timeZone: data.timezone, hour: "numeric", hourCycle: "h23" }).format(new Date()));
 
   return (
     <div className="flex h-full flex-col">
-      <header className="flex flex-wrap items-center justify-between gap-3 border-b px-4 py-3 sm:px-6 sm:py-4">
-        <div>
-          <h1 className="text-[22px] font-bold tracking-tight">Hoy</h1>
-          <p className="text-[13px] text-text-2">
-            {fecha} · <span className={cn(data.vencidas.length > 0 && "font-semibold text-danger-text")}>{hallazgo}</span>
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="flex rounded-full border p-0.5" role="radiogroup" aria-label="Qué tareas ver">
-            {(["todas", "mias"] as const).map((f) => (
-              <button
-                key={f}
-                type="button"
-                role="radio"
-                aria-checked={filtro === f}
-                onClick={() => setFiltro(f)}
-                className={cn(
-                  "min-h-9 rounded-full px-3 py-1 text-[13px] font-semibold transition-colors",
-                  filtro === f ? "bg-brand-tint text-brand-text" : "text-text-2 hover:text-foreground"
-                )}
-              >
-                {f === "todas" ? "Todas" : "Mías"}
-              </button>
-            ))}
-          </div>
-          <Button size="sm" onClick={() => setCreating("nuevo")}>
-            <Plus className="mr-1 h-4 w-4" strokeWidth={2} />
-            Tarea
-          </Button>
-        </div>
-      </header>
 
       <div className="flex-1 overflow-y-auto p-4 sm:p-6">
         {/* Escritorio: tareas a la izquierda, tratos sin siguiente paso a la
             derecha (dos preguntas, dos columnas, sin hueco). Celular: una columna. */}
         <div className="mx-auto max-w-6xl">
+          {/* 063 — Franja de bienvenida con el día en cuatro números (estilo Kommo). */}
+          <div className="mb-6">
+            <BienvenidaHoy
+              nombre={session?.user.name ?? null}
+              fecha={fecha}
+              hora={horaNegocio}
+              atencion={atencion}
+              vencidas={data.vencidas.length}
+              diasVencida={diasVieja}
+              paraHoy={data.hoy.length}
+              visitasHoy={data.hoy.filter((t) => t.type === "visita").length}
+              sinSiguiente={data.sinSiguientePaso.length}
+              filtro={filtro}
+              onFiltro={setFiltro}
+              onNueva={() => setCreating("nuevo")}
+            />
+          </div>
           {/* 062 — Lo que espera contacto según los tiempos de su etapa, lo rojo primero. */}
-          <EsperandoAtencion />
+          <EsperandoAtencion datos={atencion} />
           {total === 0 ? (
             <EmptyState
               icon={CalendarCheck}

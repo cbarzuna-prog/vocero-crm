@@ -99,7 +99,8 @@ async function flagOn() {
   check("crear tarea → 201", vencida.res.status === 201, `${vencida.res.status} ${JSON.stringify(vencida.json)}`);
   const deHoy = await crear({ contactId: pedro.id, title: "Segunda visita Pedro", type: "visita", day: today, time: "23:00" });
   const todoElDia = await crear({ contactId: laura.id, title: "Mandar ficha a Laura", type: "whatsapp", day: today });
-  await crear({ contactId: laura.id, title: "Seguimiento Laura", day: dayOffset(today, 3) });
+  // (Con id propio: la base de pruebas acumula «Seguimiento Laura» de corridas de días pasados.)
+  const futura = await crear({ contactId: laura.id, title: "Seguimiento Laura", day: dayOffset(today, 3) });
 
   const malo = await crear({ contactId: "ct_inexistente", title: "x", day: today });
   check("contacto ajeno o inexistente → 422", malo.res.status === 422, `${malo.res.status}`);
@@ -112,7 +113,7 @@ async function flagOn() {
   const idsHoy = hoy.hoy.map((t) => t.id);
   check("la de ayer está en Vencidas", idsVencidas.includes(vencida.json.id));
   check("las de hoy están en Para hoy", idsHoy.includes(deHoy.json.id) && idsHoy.includes(todoElDia.json.id));
-  check("la de dentro de 3 días no aparece en Hoy", hoy.hoy.every((t) => !t.title.startsWith("Seguimiento Laura")));
+  check("la de dentro de 3 días no aparece en Hoy", hoy.hoy.every((t) => t.id !== futura.json.id));
   check(
     "en Para hoy, la de todo el día va antes que la de hora",
     idsHoy.indexOf(todoElDia.json.id) < idsHoy.indexOf(deHoy.json.id)

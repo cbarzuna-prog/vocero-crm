@@ -110,8 +110,8 @@ await page.waitForURL(new RegExp(`/contacts/${a.id}`));
 await page.locator("h1", { hasText: `Zeta Comprador ${stamp}` }).waitFor();
 check("la página abre con el nombre como título", true);
 const main = page.locator("main");
-const acciones = await Promise.all(["Escribir primero", "Llamar", "Archivar"].map((t) => main.locator("header").getByText(t, { exact: true }).count()));
-check("trae las acciones: Escribir primero, Llamar, Archivar", acciones.every((n) => n > 0), JSON.stringify(acciones));
+const acciones = await Promise.all(["Escribir", "Llamar", "Archivar"].map((t) => main.locator("header").getByText(t, { exact: true }).count()));
+check("trae las acciones: Escribir (primero), Llamar, Archivar", acciones.every((n) => n > 0), JSON.stringify(acciones));
 check("…su ficha de cliente", await main.getByText(/US\$450,000/).first().waitFor({ timeout: 10_000 }).then(() => true, () => false));
 check("…sus tareas", (await main.innerText()).includes(`Llamar ${stamp}`));
 check("…y su historia («Se creó el contacto»)", (await main.innerText()).includes("Se creó el contacto"));
@@ -120,8 +120,8 @@ check("en la página no se repite «Ver página completa»", (await main.getByTe
 // Celular: tareas antes que la ficha.
 const movil = await (await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, storageState: await ctx.storageState() })).newPage();
 await movil.goto(`${BASE}/contacts/${a.id}`);
-await movil.getByText(`Llamar ${stamp}`).waitFor({ timeout: 15_000 });
-const yTarea = (await movil.getByText(`Llamar ${stamp}`).boundingBox())?.y ?? 1e9;
+await movil.getByText(`Llamar ${stamp}`, { exact: true }).waitFor({ timeout: 15_000 });
+const yTarea = (await movil.getByText(`Llamar ${stamp}`, { exact: true }).boundingBox())?.y ?? 1e9;
 const yFicha = (await movil.getByText("US$450,000").first().boundingBox())?.y ?? 0;
 check("en el celular las tareas van antes que la ficha", yTarea < yFicha, `${yTarea} vs ${yFicha}`);
 

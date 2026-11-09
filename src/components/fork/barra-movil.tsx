@@ -198,7 +198,7 @@ export function BarraMovil({
     };
   }, []);
 
-  const pipeline = { href: "/pipeline", label: "Pipeline", icon: Kanban, badge: 0, danger: false };
+  const pipeline = { href: "/pipeline", label: "Compradores", icon: Kanban, badge: 0, danger: false }; // 063
   // Cinco celdas: dos a cada lado del «+». Con propiedades, el Pipeline (un
   // tablero ancho, incómodo en el teléfono) queda en «Más».
   const izquierda = [

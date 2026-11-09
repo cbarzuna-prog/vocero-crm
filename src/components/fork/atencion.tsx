@@ -14,9 +14,10 @@ import { cn } from "@/lib/utils";
 
 const Ctx = createContext<AtencionDto | null>(null);
 
-export function useAtencionDatos(version = 0): AtencionDto | null {
+export function useAtencionDatos(version = 0, activo = true): AtencionDto | null {
   const [datos, setDatos] = useState<AtencionDto | null>(null);
   useEffect(() => {
+    if (!activo) return;
     let vivo = true;
     const cargar = async () => {
       const res = await fetch("/api/atencion", { cache: "no-store" }).catch(() => null);
@@ -31,8 +32,16 @@ export function useAtencionDatos(version = 0): AtencionDto | null {
       window.clearInterval(t);
       document.removeEventListener("visibilitychange", alVolver);
     };
-  }, [version]);
+  }, [version, activo]);
   return datos;
+}
+
+/** 063 — Para quien ya cargó los datos (el tablero de Compradores, que también filtra con ellos). */
+export function AtencionValor({ value, children }: { value: AtencionDto | null; children: React.ReactNode }) {
+  return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
+}
+export function usePropiedadLead(leadId: string) {
+  return useContext(Ctx)?.propiedades?.[leadId] ?? null;
 }
 
 /** `version` cambia cuando la pantalla movió algo (etapa, tarea): se recalcula al instante. */
@@ -62,6 +71,13 @@ export function AtencionLinea({ e, className }: { e: EstadoAtencion | null; clas
   const horario = useHorarioAtencion();
   if (!e) return null;
   if (e.nivel === "ok") {
+    // 063 — Sin tarea a futuro: se dice (como el «No upcoming» de HubSpot).
+    if (e.motivo === "etapa")
+      return (
+        <p className={cn("mt-1.5", className)}>
+          <span className="inline-block rounded-full border border-warning px-2 py-0.5 text-[11.5px] font-semibold text-warning-text">Sin siguiente paso</span>
+        </p>
+      );
     if (e.motivo !== "agendado") return null;
     return (
       <p className={cn("mt-1.5 flex items-center gap-1 truncate text-[12px] text-text-3", className)} title={`Siguiente paso: ${e.accion}`}>
@@ -85,8 +101,9 @@ export function AtencionLinea({ e, className }: { e: EstadoAtencion | null; clas
 }
 
 /** «Esperan atención», arriba en «Hoy»: lo rojo primero. */
-export function EsperandoAtencion() {
-  const datos = useAtencionDatos();
+export function EsperandoAtencion({ datos: dados }: { datos?: AtencionDto | null } = {}) {
+  const propios = useAtencionDatos(0, dados === undefined);
+  const datos = dados === undefined ? propios : dados;
   // Las tareas vencidas ya salen en «Vencidas» de Hoy: aquí no se repiten.
   const lista = (datos?.pendientes ?? []).filter((p) => p.motivo !== "tarea_vencida");
   if (lista.length === 0) return null;
@@ -107,7 +124,7 @@ export function EsperandoAtencion() {
             <Link href={p.href} className={cn("block rounded-md border px-3 py-2 hover:shadow-sm", claseAtencion(p.nivel))}>
               <span className="flex items-baseline justify-between gap-3">
                 <span className="truncate text-sm font-semibold">{p.nombre}</span>
-                <span className="shrink-0 text-[12px] text-text-3">{p.tipo === "captacion" ? `Captación · ${p.etapa}` : p.etapa}</span>
+                <span className="shrink-0 text-[12px] text-text-3">{p.tipo === "captacion" ? `Dueño · ${p.etapa}` : p.etapa}</span>
               </span>
               <AtencionLinea e={p} className="mt-0.5" />
             </Link>
@@ -118,11 +135,11 @@ export function EsperandoAtencion() {
         <p className="mt-1.5 text-[13px] text-text-3">
           Y {lista.length - VISIBLES} más en el{" "}
           <Link href="/pipeline" className="font-semibold text-brand-text hover:underline">
-            Pipeline
+            Compradores
           </Link>{" "}
           y en{" "}
           <Link href="/captaciones" className="font-semibold text-brand-text hover:underline">
-            Captaciones
+            Dueños
           </Link>
           .
         </p>

@@ -71,9 +71,10 @@ export function appNavGroups({
   const trabajo: NavItem[] = [
     ...(tareas ? [{ href: "/hoy", label: "Hoy", icon: Sun, tareasBadge: true }] : []),
     { href: "/inbox", label: "Bandeja", icon: Inbox, badge: true },
-    { href: "/pipeline", label: "Pipeline", icon: Kanban },
-    // 048 (fork): el pipeline de vendedores, junto al de compradores.
-    ...(propiedades ? [{ href: "/captaciones", label: "Captaciones", icon: KeyRound }] : []),
+    // 063 (fork): con el inventario encendido hay dos embudos, nombrados por
+    // la persona que se atiende: «Compradores» (el pipeline) y «Dueños» (captación).
+    { href: "/pipeline", label: propiedades ? "Compradores" : "Pipeline", icon: Kanban },
+    ...(propiedades ? [{ href: "/captaciones", label: "Dueños", icon: KeyRound }] : []),
     { href: "/contacts", label: "Contactos", icon: Users },
   ];
   // Citas va después de Contactos: es el paso siguiente de un trato, no una

@@ -27,7 +27,8 @@ import { PriorityBadge } from "./priority-picker";
 import { LeadDrawer } from "./lead-drawer";
 // Fork Knock Knock (052): vista del celular, fuera del archivo de upstream.
 import { PipelineMovil } from "@/components/fork/pipeline-movil";
-import { AtencionLinea, AtencionProvider, claseAtencion, useAtencionLead } from "@/components/fork/atencion";
+import { AtencionLinea, AtencionValor, claseAtencion, useAtencionDatos, useAtencionLead } from "@/components/fork/atencion";
+import { BarraCompradores, EmbudoProvider, EncabezadoEtapa, filtrarCompradores, PonderadoEtapa, PropiedadTarjeta, useEmbudo } from "@/components/fork/embudo";
 
 export type BoardLead = {
   id: string;
@@ -47,6 +48,10 @@ export type BoardLead = {
  */
 export function PipelineClient({ movil = false, atencion = false }: { movil?: boolean; atencion?: boolean } = {}) {
   const [version, setVersion] = useState(0);
+  // fork 063 — buscador y «Solo en rojo» del tablero de Compradores.
+  const [busqueda, setBusqueda] = useState("");
+  const [soloRojo, setSoloRojo] = useState(false);
+  const datosAtn = useAtencionDatos(version, atencion);
   const [stages, setStages] = useState<StageDto[]>([]);
   const [currency, setCurrency] = useState("MXN");
   const [leads, setLeads] = useState<BoardLead[]>([]);
@@ -179,14 +184,18 @@ export function PipelineClient({ movil = false, atencion = false }: { movil?: bo
     void moverLead(leadId, stageId);
   }
 
+  const visibles = atencion ? filtrarCompradores(leads, datosAtn, { q: busqueda, soloRojo }) : leads;
   const tablero = (
     <div className="flex h-full flex-col">
       <header className="flex flex-wrap items-center justify-between gap-2 border-b px-4 py-3 sm:px-6 sm:py-4">
-        <h2 className="text-[17px] font-bold tracking-tight">Pipeline</h2>
+        <h2 className="text-[17px] font-bold tracking-tight">{atencion ? "Compradores" : "Pipeline"}</h2>
         <Button variant="outline" size="sm" onClick={() => setManaging(true)}>
           <Settings2 className="h-4 w-4" /> Gestionar etapas
         </Button>
       </header>
+      {atencion && (
+        <BarraCompradores leads={leads} datos={datosAtn} q={busqueda} onQ={setBusqueda} soloRojo={soloRojo} onSoloRojo={setSoloRojo} />
+      )}
 
       {/* El tablero se arrastra en horizontal; en el teléfono cada columna
           se detiene en su sitio (snap) para no quedar a medio camino. */}
@@ -194,7 +203,7 @@ export function PipelineClient({ movil = false, atencion = false }: { movil?: bo
         <div className="min-h-0 flex-1 md:hidden">
           <PipelineMovil
             stages={stages}
-            leads={leads}
+            leads={visibles}
             currency={currency}
             onOpen={(l) => setAbiertoId(l.id)}
             onEditAmount={setEditandoMonto}
@@ -215,7 +224,7 @@ export function PipelineClient({ movil = false, atencion = false }: { movil?: bo
                 currency={currency}
                 onEditAmount={setEditandoMonto}
                 onOpen={(l) => setAbiertoId(l.id)}
-                leads={leads
+                leads={visibles
                   .filter((l) => l.stageId === stage.id)
                   .sort((a, b) => a.position - b.position)}
               />
@@ -283,7 +292,13 @@ export function PipelineClient({ movil = false, atencion = false }: { movil?: bo
       )}
     </div>
   );
-  return atencion ? <AtencionProvider version={version}>{tablero}</AtencionProvider> : tablero;
+  return atencion ? (
+    <AtencionValor value={datosAtn}>
+      <EmbudoProvider etapas={stages}>{tablero}</EmbudoProvider>
+    </AtencionValor>
+  ) : (
+    tablero
+  );
 }
 
 /**
@@ -324,14 +339,17 @@ function StageColumn({
   onOpen: (lead: BoardLead) => void;
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: stage.id });
+  const embudo = useEmbudo(); // fork 063: encabezado en flecha de color
   return (
     <div
       ref={setNodeRef}
       className={cn(
         "flex h-full w-64 shrink-0 snap-start flex-col rounded-lg border border-border-strong bg-subtle transition-[box-shadow,border-color]",
+        embudo && "overflow-hidden",
         isOver && "border-brand ring-[3px] ring-brand-soft"
       )}
     >
+      {embudo ? <EncabezadoEtapa etapa={stage} cantidad={leads.length} /> : (
       <div className="flex items-center justify-between px-3 py-2.5">
         <span className="flex items-center gap-1.5 text-[13.5px] font-bold tracking-tight">
           {stage.kind === "won" && <Trophy className="h-3.5 w-3.5 text-primary" />}
@@ -344,6 +362,7 @@ function StageColumn({
           {leads.length}
         </span>
       </div>
+      )}
       <div className="flex-1 space-y-2 overflow-y-auto p-2">
         {leads.map((lead) => (
           <DraggableLead
@@ -355,13 +374,13 @@ function StageColumn({
           />
         ))}
       </div>
-      <StageFooter leads={leads} currency={currency} />
+      <StageFooter leads={leads} currency={currency} stageId={stage.id} />
     </div>
   );
 }
 
 /** Cuánto dinero hay en esta etapa, y qué quedó fuera de la cuenta. */
-function StageFooter({ leads, currency }: { leads: BoardLead[]; currency: string }) {
+function StageFooter({ leads, currency, stageId }: { leads: BoardLead[]; currency: string; stageId?: string }) {
   const { totalCents, sinMonto, otraMoneda } = totalesDeEtapa(leads, currency);
   const conMonto = leads.length - sinMonto - otraMoneda;
 
@@ -380,6 +399,7 @@ function StageFooter({ leads, currency }: { leads: BoardLead[]; currency: string
           </span>
         </div>
       )}
+      {stageId && conMonto > 0 && <PonderadoEtapa etapaId={stageId} totalCents={totalCents} currency={currency} />}
       {otraMoneda > 0 && (
         // Descartarlos en silencio haría que el total mintiera sin que nadie
         // pudiera notarlo.
@@ -477,6 +497,7 @@ function LeadCard({
           </Link>
         )}
       </div>
+      <PropiedadTarjeta leadId={lead.id} />
       <AtencionLinea e={atn} />
       {!overlay && onEditAmount && (
         <button

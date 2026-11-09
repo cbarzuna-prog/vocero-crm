@@ -40,6 +40,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialogo } from "./dialogo";
+import { visualEtapa } from "@/lib/embudo";
 import { AtencionLinea, AtencionProvider, claseAtencion, useAtencionCaptacion } from "./atencion";
 import { NuevaCaptacionDialog } from "./nueva-captacion-dialog";
 
@@ -164,11 +165,11 @@ function Tablero({ onCambio }: { onCambio: () => void }) {
     <div className="flex h-full flex-col">
       <header className="flex flex-wrap items-start justify-between gap-3 border-b px-4 py-3 sm:px-6 sm:py-4">
         <div className="min-w-0">
-          <h1 className="text-[22px] font-bold leading-tight tracking-tight">Captaciones</h1>
+          <h1 className="text-[22px] font-bold leading-tight tracking-tight">Dueños</h1>
           <p className="mt-0.5 text-[13px] text-text-2">
             {tarjetas === null
               ? "Cargando…"
-              : `${activas.length} en proceso${porVencer.length ? ` · ${porVencer.length} exclusiva${porVencer.length === 1 ? "" : "s"} por renovar` : ""}`}
+              : `Captación de propiedades · ${activas.length} en proceso${porVencer.length ? ` · ${porVencer.length} exclusiva${porVencer.length === 1 ? "" : "s"} por renovar` : ""}`}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -197,7 +198,7 @@ function Tablero({ onCambio }: { onCambio: () => void }) {
       {tarjetas !== null && tarjetas.length === 0 ? (
         <div className="mx-auto mt-16 max-w-sm px-6 text-center">
           <KeyRound className="mx-auto h-8 w-8 text-text-3" aria-hidden />
-          <p className="mt-3 font-semibold">Todavía no hay captaciones</p>
+          <p className="mt-3 font-semibold">Todavía no hay dueños en captación</p>
           <p className="mt-1 text-[13px] text-text-2">
             Cuando un dueño quiera vender o alquilar, regístrelo aquí y sígalo hasta firmar la exclusiva y publicar.
           </p>
@@ -342,28 +343,30 @@ function Columna({ etapa, tarjetas, cargando, onOpen }: { etapa: EtapaCaptacion;
       ref={setNodeRef}
       aria-label={ETAPA_LABELS[etapa]}
       className={cn(
-        "flex h-full shrink-0 flex-col rounded-lg border border-border-strong bg-subtle transition-[box-shadow,border-color]",
+        "flex h-full shrink-0 flex-col overflow-hidden rounded-lg border border-border-strong bg-subtle transition-[box-shadow,border-color]",
         perdida ? "w-56" : "min-w-[208px] flex-1 basis-0",
         isOver && "border-brand ring-[3px] ring-brand-soft"
       )}
     >
-      <div className="px-3 pt-2.5">
-        <div className="flex items-center justify-between gap-2">
-          <h2 className="flex items-center gap-1.5 text-[13.5px] font-bold tracking-tight">
-            {perdida && <XCircle className="h-3.5 w-3.5 text-text-3" aria-hidden />}
-            {ETAPA_LABELS[etapa]}
-          </h2>
-          <span className="flex items-center gap-1">
-            <span className="rounded-full border border-border-strong bg-background px-2 py-0.5 font-mono text-[12px] text-text-3">{tarjetas.length}</span>
-            {perdida && (
-              <button type="button" onClick={() => setAbierta(false)} aria-expanded className="rounded px-1 text-[12px] font-semibold text-text-3 hover:text-foreground">
-                Plegar
-              </button>
-            )}
-          </span>
-        </div>
-        <p className="mt-0.5 text-[12px] leading-snug text-text-3">{ETAPA_AYUDA[etapa]}</p>
+      {/* 063 — Encabezado en flecha de color, como el de Compradores. */}
+      <div
+        className="flex items-center justify-between gap-2 py-2.5 pl-3 pr-6 text-[13.5px] font-bold tracking-tight"
+        style={{ background: visualEtapa(perdida ? "lost" : etapa === "publicada" ? "won" : "open", CAPTACION_ETAPAS.indexOf(etapa)).fondo, color: visualEtapa(perdida ? "lost" : etapa === "publicada" ? "won" : "open", CAPTACION_ETAPAS.indexOf(etapa)).texto, clipPath: "polygon(0 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 0 100%)" }}
+      >
+        <span className="flex min-w-0 items-center gap-1.5">
+          {perdida && <XCircle className="h-3.5 w-3.5 shrink-0" aria-hidden />}
+          <span className="truncate">{ETAPA_LABELS[etapa]}</span>
+        </span>
+        <span className="flex items-center gap-1">
+          <span className="font-semibold tabular-nums">{tarjetas.length}</span>
+          {perdida && (
+            <button type="button" onClick={() => setAbierta(false)} aria-expanded className="rounded px-1 text-[12px] font-semibold opacity-80 hover:opacity-100">
+              Plegar
+            </button>
+          )}
+        </span>
       </div>
+      <p className="px-3 pt-1.5 text-[12px] leading-snug text-text-3">{ETAPA_AYUDA[etapa]}</p>
       <div className="flex-1 space-y-2 overflow-y-auto p-2">
         {cargando && <div className="h-24 animate-pulse rounded-md bg-background" aria-hidden />}
         {tarjetas.map((t) => (

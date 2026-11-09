@@ -201,7 +201,7 @@ ok(
 await page.getByRole("button", { name: /^Sonido de mensajes/ }).click();
 
 console.log("\n== Fuera de la Bandeja ==");
-await page.getByRole("link", { name: "Pipeline" }).click();
+await page.getByRole("link", { name: /^(Pipeline|Compradores)$/ }).click();
 await page.waitForURL(/\/pipeline/);
 ok(
   "en otra pantalla el título sigue contando",
@@ -246,7 +246,7 @@ await page.getByText(F.name).first().click();
 await page.getByText(`última ${S}`).last().waitFor({ timeout: 15000 });
 await sleep(3500);
 ok("con una foto que tarda, abre abajo", Math.abs(await alFondo()) < 4, `faltan ${await alFondo()} px`);
-await page.getByRole("link", { name: "Pipeline" }).click();
+await page.getByRole("link", { name: /^(Pipeline|Compradores)$/ }).click();
 await page.waitForURL(/\/pipeline/);
 await page.getByRole("link", { name: /Bandeja/ }).click();
 await page.waitForURL(/\/inbox/);
