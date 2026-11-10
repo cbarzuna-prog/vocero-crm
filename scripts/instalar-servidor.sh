@@ -226,11 +226,18 @@ fi
 if [ "$ENTORNO" = "real" ]; then
   fijar_env SITIOS_DIR "$SITIOS"
   if [ -n "$ALIAS_VIEJO" ] && [ "$ALIAS_VIEJO" != "$DOMAIN" ]; then
-    # 308 (no 301): los formularios del sitio que todavía publican al dominio
-    # viejo siguen llegando con su contenido.
+    # Los webhooks (formularios del sitio, WhatsApp) se ATIENDEN en el dominio
+    # viejo, sin redirigir: las funciones del sitio publican con
+    # `redirect: "error"` y una redirección las haría fallar (10/11/2026).
+    # Todo lo demás redirige al dominio nuevo.
     cat > "$SITIOS/alias-viejo.caddy" <<EOF
 $ALIAS_VIEJO {
-	redir https://$DOMAIN{uri} 308
+	handle /api/webhooks/* {
+		reverse_proxy app:3000
+	}
+	handle {
+		redir https://$DOMAIN{uri} 308
+	}
 }
 EOF
     echo "El dominio viejo $ALIAS_VIEJO redirige a $DOMAIN."
@@ -245,6 +252,15 @@ $DOMAIN {
 }
 EOF
   echo "El Caddy del real atiende $DOMAIN."
+fi
+
+# SOLO_CADDY=1: reescribe los sitios y recarga Caddy al instante, sin
+# reconstruir la app (para arreglos de dominios que no pueden esperar).
+if [ "${SOLO_CADDY:-}" = "1" ] && [ "$ENTORNO" = "real" ]; then
+  "${COMPOSE[@]}" up -d --no-build caddy
+  "${COMPOSE[@]}" exec -T caddy caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile
+  echo "Caddy recargado con los sitios nuevos. Listo."
+  exit 0
 fi
 
 # 066 — La copia de datos del real al sandbox, sin credenciales.
