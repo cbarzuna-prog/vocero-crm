@@ -2,7 +2,8 @@ import { and, desc, eq, inArray, isNull, max, ne } from "drizzle-orm";
 import { getDb, schema } from "@/lib/db";
 import { scoped } from "@/lib/db/tenant";
 import type { ContactoFila, ContactoDetalle, EventoHistorial, MensajeReciente, SolicitudWeb } from "@/lib/contactos";
-import { TIPO_WEB_LABELS, type TipoWeb } from "@/lib/web-leads";
+import { TIPO_WEB_LABELS, telefonoWeb, type TipoWeb } from "@/lib/web-leads";
+import { normalizeMx } from "@/lib/meta/client";
 import { effectiveSource } from "@/server/contact-source";
 import { leerPerfil } from "@/server/perfil/service";
 import { colaboracionesDeContacto } from "@/server/colaboracion/service";
@@ -276,3 +277,25 @@ const ESTADO_INTERES: Record<string, string> = {
   ganada: "cerró",
   descartada: "la descartó",
 };
+
+/**
+ * 067 — Cambia el teléfono del contacto (atributo, no su identidad: la llave
+ * sigue siendo `wa_identity`). Mismo criterio que los formularios del sitio:
+ * 8 dígitos de Costa Rica reciben el 506. `null` lo borra. Devuelve `false`
+ * si el número no alcanza para ser un teléfono; lanza si no existe.
+ */
+export async function cambiarTelefono(organizationId: string, contactId: string, crudo: string | null): Promise<"ok" | "invalido" | "no_encontrado"> {
+  let phone: string | null = null;
+  if (crudo && crudo.trim()) {
+    const t = telefonoWeb(crudo);
+    if (!t) return "invalido";
+    phone = normalizeMx(t);
+  }
+  const C = schema.contact;
+  const filas = await getDb()
+    .update(C)
+    .set({ phone, updatedAt: new Date() })
+    .where(scoped(C.organizationId, organizationId, eq(C.id, contactId)))
+    .returning({ id: C.id });
+  return filas.length ? "ok" : "no_encontrado";
+}

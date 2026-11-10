@@ -27,6 +27,7 @@ import { PerfilCliente } from "./perfil-cliente";
 import { cuando } from "./contactos-client";
 import { useAtencionDatos } from "./atencion";
 import { AnuncioDeContacto, TratoFicha } from "./trato-ficha";
+import { DatosContacto } from "./datos-contacto";
 
 const ICONO: Record<EventoHistorial["tipo"], typeof Phone> = {
   alta: UserPlus,
@@ -536,6 +537,19 @@ export function ContactoPagina({ id }: { id: string }) {
 
           {/* Izquierda: quién es y qué busca, y las notas del equipo. */}
           <div className="order-3 space-y-4 lg:order-1">
+            {/* 067 — Los datos de contacto también dentro de la ficha (se repiten a propósito). */}
+            <Tarjeta>
+              <DatosContacto
+                phone={c.phone}
+                email={c.email}
+                origen={origen}
+                referidor={c.referidor ? `${c.referidor.nombre}${c.referidor.codigo ? ` (${c.referidor.codigo})` : ""}` : null}
+                tipos={p.tiposCliente.length ? p.tiposCliente.map((t) => TIPO_CLIENTE_LABELS[t]).join(", ") : null}
+                creado={c.createdAt}
+                ultimaActividad={c.ultimaActividad}
+                onEditar={() => setEditando(true)}
+              />
+            </Tarjeta>
             {c.lead && (
               <Tarjeta>
                 <TratoFicha
