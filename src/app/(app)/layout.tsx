@@ -13,6 +13,7 @@ import { enabledChannels } from "@/server/channels/enabled";
 import { navKicker } from "@/lib/channels";
 import { avisoIaDe } from "@/server/ai/aviso";
 import { AvisoIaBanner } from "@/components/avisos/aviso-ia";
+import { AvisoEntorno } from "@/components/fork/aviso-entorno";
 
 export default async function AppLayout({
   children,
@@ -48,7 +49,13 @@ export default async function AppLayout({
       tareas={tareasEnabled()}
       propiedades={propiedadesEnabled()}
       kicker={navKicker([...enabledChannels()])}
-      aviso={<AvisoIaBanner aviso={aviso} />}
+      aviso={
+        <>
+          {/* 066 (fork): la franja del sandbox. */}
+          <AvisoEntorno />
+          <AvisoIaBanner aviso={aviso} />
+        </>
+      }
     >
       {children}
     </AppShell>

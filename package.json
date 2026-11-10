@@ -26,6 +26,7 @@
     "test:e2e:colaboradores": "node --env-file=.env scripts/e2e-060-colaboradores.mjs",
     "test:e2e:atencion": "node --env-file=.env scripts/e2e-062-atencion.mjs",
     "test:e2e:rediseno": "node --env-file=.env scripts/e2e-063-rediseno.mjs",
+    "test:e2e:entornos": "node --env-file=.env scripts/e2e-066-entornos.mjs",
     "test:e2e:web-leads": "node --env-file=.env scripts/e2e-058-web-leads.mjs",
     "test:e2e:contactos": "node --env-file=.env scripts/e2e-057-contactos.mjs",
     "test:e2e:revision": "node --env-file=.env scripts/e2e-056-revision.mjs",

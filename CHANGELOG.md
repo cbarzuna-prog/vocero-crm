@@ -8,6 +8,8 @@ imagen `ghcr.io/kevinrivm/vocero-crm:X.Y.Z`.
 
 ## Fork Knock Knock — sin publicar
 
+- **066** — Dos entornos en el mismo servidor: el CRM real (crm.knockknockcr.com, rama `produccion`) y el sandbox (sandbox.knockknockcr.com, copia de los datos sin credenciales, con franja naranja).
+
 - **065** — Una sola ficha: la tarjeta de Compradores abre la ficha completa del contacto, que ahora también edita el monto y la prioridad del trato y muestra el anuncio de origen.
 
 - **064** — El tablero de captaciones se llama «Captación externa»: es para las propiedades que traen terceros.

@@ -1,0 +1,18 @@
+# Fork Knock Knock (066) — Se suma a docker-compose.yml en el SANDBOX:
+#   docker compose -p vocero-sandbox -f docker-compose.yml -f fork/servidor/compose.sandbox.yml up -d app postgres
+# Sin Caddy propio (los puertos 80/443 son del real) ni agente: el Caddy del
+# real lo alcanza por la red kk_proxy con el nombre kk-sandbox-app.
+services:
+  app:
+    image: knockknock-crm:sandbox
+    environment:
+      ENTORNO: ${ENTORNO:-}
+    networks:
+      default: {}
+      kk_proxy:
+        aliases:
+          - kk-sandbox-app
+
+networks:
+  kk_proxy:
+    external: true

@@ -1,0 +1,13 @@
+# Fork Knock Knock (066) — Caddy del servidor con dos entornos.
+# El sitio principal es el CRM real ({$DOMAIN}); los demás (el sandbox, la
+# redirección del dominio viejo) son archivos en /etc/caddy/sitios que escribe
+# scripts/instalar-servidor.sh.
+{$DOMAIN} {
+	reverse_proxy app:3000 {
+		# SSE: sin buffering ni timeouts cortos en el proxy
+		flush_interval -1
+	}
+	encode gzip
+}
+
+import /etc/caddy/sitios/*.caddy

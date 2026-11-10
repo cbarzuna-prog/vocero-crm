@@ -1,0 +1,19 @@
+# Fork Knock Knock (066) — Se suma a docker-compose.yml en el CRM REAL:
+#   docker compose -f docker-compose.yml -f fork/servidor/compose.knockknock.yml …
+# Caddy atiende también el sandbox (red compartida kk_proxy) y el dominio viejo.
+services:
+  app:
+    image: knockknock-crm:real
+    environment:
+      ENTORNO: ${ENTORNO:-}
+  caddy:
+    volumes:
+      - ./fork/servidor/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ${SITIOS_DIR:-./fork/servidor/sitios-vacio}:/etc/caddy/sitios:ro
+    networks:
+      - default
+      - kk_proxy
+
+networks:
+  kk_proxy:
+    external: true
