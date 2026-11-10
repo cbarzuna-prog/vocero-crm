@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   DndContext,
   DragOverlay,
@@ -72,6 +73,10 @@ export function PipelineClient({ movil = false, atencion = false }: { movil?: bo
    */
   const [abiertoId, setAbiertoId] = useState<string | null>(null);
   const abierto = leads.find((l) => l.id === abiertoId) ?? null;
+  // 065 (fork) — Con el fork, la tarjeta abre la ficha completa del contacto
+  // (seguimiento, tareas, actividad); sin el fork, el panel del trato de siempre.
+  const router = useRouter();
+  const abrir = (l: BoardLead) => (atencion ? router.push(`/contacts/${l.contact.id}?desde=compradores`) : setAbiertoId(l.id));
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } })
@@ -205,7 +210,7 @@ export function PipelineClient({ movil = false, atencion = false }: { movil?: bo
             stages={stages}
             leads={visibles}
             currency={currency}
-            onOpen={(l) => setAbiertoId(l.id)}
+            onOpen={abrir}
             onEditAmount={setEditandoMonto}
           />
         </div>
@@ -223,7 +228,7 @@ export function PipelineClient({ movil = false, atencion = false }: { movil?: bo
                 stage={stage}
                 currency={currency}
                 onEditAmount={setEditandoMonto}
-                onOpen={(l) => setAbiertoId(l.id)}
+                onOpen={abrir}
                 leads={visibles
                   .filter((l) => l.stageId === stage.id)
                   .sort((a, b) => a.position - b.position)}

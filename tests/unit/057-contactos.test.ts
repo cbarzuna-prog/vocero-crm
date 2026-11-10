@@ -5,7 +5,7 @@ import { cuando } from "@/components/fork/contactos-client";
 const base: ContactoFila = {
   id: "c1", name: "Ana Mora", phone: "50688881234", notes: null, aiPaused: false, archivedAt: null,
   createdAt: "2026-10-01T12:00:00Z", source: { value: "referido", source: "capturada" }, priority: null,
-  lead: { id: "l1", stageId: "s1", stageName: "Nuevo", stageKind: "open", desde: "2026-10-20T12:00:00Z" },
+  lead: { id: "l1", stageId: "s1", stageName: "Nuevo", stageKind: "open", desde: "2026-10-20T12:00:00Z", amountCents: null, currency: null },
   conversationId: null, noLeidos: 0, ultimaActividad: "2026-10-28T12:00:00Z", email: "ana@x.com",
   tiposCliente: ["comprador"], operacion: "venta", zonas: ["Escazú"], presupuestoMinCents: null,
   presupuestoMaxCents: null, moneda: "USD", propiedades: ["KK-0001"], tareas: { pendientes: 1, vencidas: 0 }, referidor: null,
@@ -15,7 +15,7 @@ const fila = (p: Partial<ContactoFila>): ContactoFila => ({ ...base, ...p });
 
 const lista = [
   base,
-  fila({ id: "c2", name: "Bruno Solís", phone: "13055550101", tiposCliente: ["vendedor"], zonas: ["Santa Ana"], propiedades: [], tareas: { pendientes: 2, vencidas: 1 }, priority: "alta", ultimaActividad: "2026-10-29T08:00:00Z", source: { value: "anuncio", source: "deducida" }, lead: { id: "l2", stageId: "s2", stageName: "Interesado", stageKind: "open", desde: "2026-09-01T00:00:00Z" } }),
+  fila({ id: "c2", name: "Bruno Solís", phone: "13055550101", tiposCliente: ["vendedor"], zonas: ["Santa Ana"], propiedades: [], tareas: { pendientes: 2, vencidas: 1 }, priority: "alta", ultimaActividad: "2026-10-29T08:00:00Z", source: { value: "anuncio", source: "deducida" }, lead: { id: "l2", stageId: "s2", stageName: "Interesado", stageKind: "open", desde: "2026-09-01T00:00:00Z", amountCents: null, currency: null } }),
   fila({ id: "c3", name: "Carla Mena", archivedAt: "2026-10-10T00:00:00Z", createdAt: "2026-10-27T00:00:00Z" }),
 ];
 

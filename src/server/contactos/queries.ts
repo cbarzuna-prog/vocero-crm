@@ -6,6 +6,7 @@ import { TIPO_WEB_LABELS, type TipoWeb } from "@/lib/web-leads";
 import { effectiveSource } from "@/server/contact-source";
 import { leerPerfil } from "@/server/perfil/service";
 import { colaboracionesDeContacto } from "@/server/colaboracion/service";
+import { getBranding } from "@/server/branding";
 
 const ACTIVOS = ["interesado", "enviada", "visitada", "oferto"] as const;
 
@@ -28,6 +29,8 @@ export async function listarContactos(organizationId: string): Promise<ContactoF
         stageId: schema.lead.stageId,
         createdAt: schema.lead.createdAt,
         priority: schema.lead.priority,
+        amountCents: schema.lead.amountCents,
+        currency: schema.lead.currency,
         stageName: schema.pipelineStage.name,
         stageKind: schema.pipelineStage.kind,
       })
@@ -112,7 +115,7 @@ export async function listarContactos(organizationId: string): Promise<ContactoF
       createdAt: c.createdAt.toISOString(),
       source: effectiveSource(c.source, conAnuncio.has(c.id)),
       priority: l?.priority ?? null,
-      lead: l ? { id: l.id, stageId: l.stageId, stageName: l.stageName, stageKind: l.stageKind, desde: enEtapa!.toISOString() } : null,
+      lead: l ? { id: l.id, stageId: l.stageId, stageName: l.stageName, stageKind: l.stageKind, desde: enEtapa!.toISOString(), amountCents: l.amountCents, currency: l.currency } : null,
       conversationId: conv?.id ?? null,
       noLeidos: conv?.unread ?? 0,
       ultimaActividad: (conv?.lastMessageAt ?? c.updatedAt).toISOString(),
@@ -137,7 +140,7 @@ export async function detalleContacto(organizationId: string, contactId: string)
   const fila = (await listarContactos(organizationId)).find((f) => f.id === contactId);
   if (!fila) return null;
   const db = getDb();
-  const [convs, etapas, interes, tareas, perfil, web, colabora] = await Promise.all([
+  const [convs, etapas, interes, tareas, perfil, web, colabora, marca] = await Promise.all([
     db
       .select({ id: schema.conversation.id })
       .from(schema.conversation)
@@ -180,6 +183,7 @@ export async function detalleContacto(organizationId: string, contactId: string)
       .orderBy(desc(schema.webLead.recibidoAt))
       .limit(30),
     colaboracionesDeContacto(organizationId, contactId),
+    getBranding(organizationId),
   ]);
   const solicitudesWeb: SolicitudWeb[] = web.map(({ w, code, title, referidor }) => ({
     id: w.id,
@@ -246,6 +250,7 @@ export async function detalleContacto(organizationId: string, contactId: string)
 
   return {
     contacto: fila,
+    monedaNegocio: marca.currency,
     perfil,
     historial: historial.slice(0, 60),
     solicitudesWeb,

@@ -8,6 +8,8 @@ imagen `ghcr.io/kevinrivm/vocero-crm:X.Y.Z`.
 
 ## Fork Knock Knock — sin publicar
 
+- **065** — Una sola ficha: la tarjeta de Compradores abre la ficha completa del contacto, que ahora también edita el monto y la prioridad del trato y muestra el anuncio de origen.
+
 - **064** — El tablero de captaciones se llama «Captación externa»: es para las propiedades que traen terceros.
 
 Sobre 2.1.0. Dos módulos nuevos, **apagados por defecto**: con las banderas

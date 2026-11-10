@@ -111,11 +111,12 @@ for (const tab of await page.getByRole("tab").all()) {
   if (await page.getByRole("button", { name: `Abrir el trato de Comprador ${stamp}` }).count()) break;
 }
 await page.getByRole("button", { name: `Abrir el trato de Comprador ${stamp}` }).click();
-const cajon = page.getByRole("dialog", { name: `Trato de Comprador ${stamp}` });
-const seccion = cajon.locator(`section[aria-labelledby="perfil-${contacto.id}"]`);
+// 065 — La tarjeta abre la ficha completa del contacto (antes: el cajón del trato).
+await page.waitForURL(new RegExp(`/contacts/${contacto.id}`), { timeout: 15_000 });
+const seccion = page.locator(`section[aria-labelledby="perfil-${contacto.id}"]`);
 await seccion.waitFor({ timeout: 10_000 });
 const textoSeccion = await seccion.innerText();
-check("el cajón del trato muestra la ficha: presupuesto y zonas", /US\$300,000 – US\$450,000/.test(textoSeccion) && /Santa Ana, Escazú/.test(textoSeccion), textoSeccion.slice(0, 200));
+check("la ficha (desde Compradores) muestra el perfil: presupuesto y zonas", /US\$300,000 – US\$450,000/.test(textoSeccion) && /Santa Ana, Escazú/.test(textoSeccion), textoSeccion.slice(0, 200));
 check("…con la marca de lo que anotó el agente", (await seccion.getByLabel("Lo anotó el agente").count()) > 0);
 await seccion.getByRole("button", { name: /Editar/ }).click();
 await seccion.getByLabel("Habitaciones mínimas").fill("4");

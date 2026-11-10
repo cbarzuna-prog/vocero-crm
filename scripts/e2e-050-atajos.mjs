@@ -179,13 +179,17 @@ if (prop) {
   const fila = page.getByRole("button", { name: /Abrir el trato de/ }).first();
   if (await fila.count()) {
     const nombre = (await fila.getAttribute("aria-label")).replace("Abrir el trato de ", "");
-    await fila.click();
-    const cajon = page.getByRole("dialog", { name: `Trato de ${nombre}` });
-    check("tocar un trato abre el cajón del trato", await cajon.isVisible());
     const destino = (await segunda.innerText()).replace(/\s*\d+\s*$/, "").trim();
-    await cajon.getByRole("button", { name: `Mover a ${destino}`, exact: true }).click();
-    await page.getByRole("button", { name: "Cerrar el panel del trato" }).click();
-    await segunda.click();
+    await fila.click();
+    // 065 — Con el fork, tocar un trato abre la ficha completa del contacto.
+    await page.waitForURL(/\/contacts\/.+desde=compradores/, { timeout: 15_000 });
+    check("tocar un trato abre la ficha del contacto", await page.getByRole("heading", { name: nombre }).waitFor({ timeout: 30_000 }).then(() => true, () => false));
+    const barra = page.getByRole("group", { name: "Etapa del trato" });
+    await barra.getByRole("button", { name: new RegExp(`^${destino}`) }).first().click();
+    await page.waitForFunction((n) => document.querySelector('[aria-label="Etapa del trato"] [aria-current=step]')?.textContent?.startsWith(n), destino, { timeout: 15_000 });
+    await page.getByRole("link", { name: "Compradores" }).first().click();
+    await page.waitForURL(/\/pipeline/);
+    await page.getByRole("tablist", { name: "Etapas" }).getByRole("tab").nth(1).click();
     await page.waitForTimeout(500);
     check("…y moverlo de etapa lo pasa a esa pestaña", (await page.getByRole("button", { name: `Abrir el trato de ${nombre}` }).count()) === 1);
   }

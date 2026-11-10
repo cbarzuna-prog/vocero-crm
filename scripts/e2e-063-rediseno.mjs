@@ -81,6 +81,24 @@ if (await rojo.isEnabled()) {
 }
 check("la tarjeta sin tarea dice «Sin siguiente paso»", await tarjeta.getByText("Sin siguiente paso").isVisible());
 
+// 065 — La tarjeta abre la ficha completa (no el panel del trato), con monto y prioridad.
+await tarjeta.click();
+await page.waitForURL(new RegExp(`/contacts/${contactId}\\?desde=compradores`), { timeout: 15_000 });
+check("065: la tarjeta de Compradores abre la ficha del contacto", await page.getByRole("heading", { name: nombre }).waitFor({ timeout: 30_000 }).then(() => true, () => false));
+check("065: sin el panel viejo del trato", (await page.getByRole("dialog", { name: `Trato de ${nombre}` }).count()) === 0);
+const trato = page.getByRole("region", { name: "Trato" });
+check("065: la ficha muestra el monto del trato", /450,000/.test(await trato.innerText()), await trato.innerText());
+await trato.getByRole("button", { name: "Editar el monto del trato" }).click();
+await trato.getByLabel("Monto del trato").fill("520000");
+await trato.getByRole("button", { name: "Guardar" }).click();
+await trato.getByText(/520,000/).waitFor({ timeout: 15_000 });
+await trato.getByRole("button", { name: /Alta/ }).first().click();
+await page.waitForTimeout(800);
+const leadGuardado = (await api("/api/pipeline/board")).json.leads.find((l) => l.id === leadId);
+check("065: monto y prioridad se guardan desde la ficha", leadGuardado?.amountCents === 52_000_000 && leadGuardado?.priority === "alta", JSON.stringify({ a: leadGuardado?.amountCents, p: leadGuardado?.priority }));
+await page.getByRole("link", { name: "Compradores" }).first().click();
+check("065: «← Compradores» vuelve al tablero", await page.waitForURL(/\/pipeline/, { timeout: 15_000 }).then(() => true, () => false));
+
 // 4) Ficha del contacto.
 await page.goto(`${BASE}/contacts/${contactId}`);
 await page.getByRole("heading", { name: nombre }).waitFor({ timeout: 60_000 });
@@ -109,7 +127,7 @@ if (r === "ok") check("…y queda guardado al recargar", (await api(`/api/contac
 
 // «Tarea» abre el diálogo de nueva tarea con el contacto.
 await acciones.getByText("Tarea", { exact: true }).click();
-check("«Tarea» abre la nueva tarea", await page.getByRole("dialog").first().isVisible());
+check("«Tarea» abre la nueva tarea", await page.getByRole("dialog").first().waitFor({ timeout: 10_000 }).then(() => true, () => false));
 await page.keyboard.press("Escape");
 
 // 5) Captación externa.

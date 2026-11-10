@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Archive, ArchiveRestore, ArrowLeft, ArrowRightLeft, Building2, CheckCircle2, ExternalLink, Globe, Mail, MessageSquareText, Pencil, Phone, RefreshCw, Sparkles, SquareCheck, UserPlus } from "lucide-react";
 import { diasDesde, origenDe, type ContactoDetalle, type EventoHistorial } from "@/lib/contactos";
 import { TIPO_WEB_LABELS, type TipoWeb } from "@/lib/web-leads";
@@ -26,6 +26,7 @@ import { EditarContactoDialog } from "./editar-contacto-dialog";
 import { PerfilCliente } from "./perfil-cliente";
 import { cuando } from "./contactos-client";
 import { useAtencionDatos } from "./atencion";
+import { AnuncioDeContacto, TratoFicha } from "./trato-ficha";
 
 const ICONO: Record<EventoHistorial["tipo"], typeof Phone> = {
   alta: UserPlus,
@@ -238,6 +239,7 @@ function ResumenIa({ contactId }: { contactId: string }) {
  */
 export function ContactoPagina({ id }: { id: string }) {
   const router = useRouter();
+  const desdeCompradores = useSearchParams().get("desde") === "compradores";
   const [d, setD] = useState<ContactoDetalle | null | "no">(null);
   const [editando, setEditando] = useState(false);
   const [escribiendo, setEscribiendo] = useState(false);
@@ -310,8 +312,9 @@ export function ContactoPagina({ id }: { id: string }) {
   return (
     <div className="flex h-full flex-col bg-subtle">
       <header className="border-b bg-background px-4 py-3 sm:px-6 sm:py-4">
-        <Link href="/contacts" className="mb-2 inline-flex items-center gap-1 text-[13px] font-semibold text-text-2 hover:text-foreground">
-          <ArrowLeft className="h-4 w-4" aria-hidden /> Contactos
+        {/* 065 — Si llegó desde la tarjeta de Compradores, vuelve allá. */}
+        <Link href={desdeCompradores ? "/pipeline" : "/contacts"} className="mb-2 inline-flex items-center gap-1 text-[13px] font-semibold text-text-2 hover:text-foreground">
+          <ArrowLeft className="h-4 w-4" aria-hidden /> {desdeCompradores ? "Compradores" : "Contactos"}
         </Link>
         <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
           <ContactAvatar name={c.name} seed={c.id} size="md" />
@@ -455,6 +458,9 @@ export function ContactoPagina({ id }: { id: string }) {
           {/* Derecha: tareas, propiedades y lo que llegó del sitio. */}
           <aside className="order-2 space-y-4 lg:order-3">
             <Tarjeta>
+              <AnuncioDeContacto contactId={c.id} />
+            </Tarjeta>
+            <Tarjeta>
               <TareasContacto key={version} contact={c} />
             </Tarjeta>
             <Tarjeta>
@@ -530,6 +536,18 @@ export function ContactoPagina({ id }: { id: string }) {
 
           {/* Izquierda: quién es y qué busca, y las notas del equipo. */}
           <div className="order-3 space-y-4 lg:order-1">
+            {c.lead && (
+              <Tarjeta>
+                <TratoFicha
+                  key={`${c.lead.id}-${c.lead.amountCents}-${c.priority}`}
+                  leadId={c.lead.id}
+                  amountCents={c.lead.amountCents}
+                  moneda={c.lead.currency ?? d.monedaNegocio}
+                  priority={c.priority}
+                  onCambio={() => void refetch()}
+                />
+              </Tarjeta>
+            )}
             <Tarjeta>
               <PerfilCliente contact={c} enlace={false} />
             </Tarjeta>

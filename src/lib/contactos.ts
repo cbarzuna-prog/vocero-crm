@@ -15,7 +15,8 @@ export type ContactoFila = {
   createdAt: string;
   source: SourceDto;
   priority: PriorityValue | null;
-  lead: { id: string; stageId: string; stageName: string; stageKind: "open" | "won" | "lost"; desde: string } | null;
+  /** 065 — `amountCents`/`currency`: el monto del trato, editable en la ficha. */
+  lead: { id: string; stageId: string; stageName: string; stageKind: "open" | "won" | "lost"; desde: string; amountCents: number | null; currency: string | null } | null;
   conversationId: string | null;
   noLeidos: number;
   ultimaActividad: string;
@@ -64,6 +65,8 @@ export type MensajeReciente = {
 
 export type ContactoDetalle = {
   contacto: ContactoFila;
+  /** 065 — La moneda del negocio (la del trato sin moneda propia). */
+  monedaNegocio: string;
   perfil: PerfilDto;
   historial: EventoHistorial[];
   mensajes: MensajeReciente[];
