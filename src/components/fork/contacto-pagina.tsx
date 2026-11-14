@@ -30,6 +30,7 @@ import { AnuncioDeContacto, TratoFicha } from "./trato-ficha";
 import { DatosContacto } from "./datos-contacto";
 import { CamposFicha } from "./plantillas/campos-ficha";
 import { RegistrosFicha } from "./plantillas/registros-ficha";
+import { CriterioEtapa } from "./plantillas/criterio-etapa";
 
 const ICONO: Record<EventoHistorial["tipo"], typeof Phone> = {
   alta: UserPlus,
@@ -248,6 +249,7 @@ export function ContactoPagina({ id }: { id: string }) {
   const [escribiendo, setEscribiendo] = useState(false);
   const [nuevaTarea, setNuevaTarea] = useState(false);
   const [version, setVersion] = useState(0);
+  const [vCriterio, setVCriterio] = useState(0);
   const atencion = useAtencionDatos(version);
 
   const refetch = useCallback(async () => {
@@ -365,7 +367,10 @@ export function ContactoPagina({ id }: { id: string }) {
         </div>
         {c.lead && (
           <div className="mt-3">
-            <BarraEtapas leadId={c.lead.id} etapaId={c.lead.stageId} dias={dias} onMovido={() => void refetch()} />
+            <BarraEtapas leadId={c.lead.id} etapaId={c.lead.stageId} dias={dias} onMovido={() => { void refetch(); setVCriterio((v) => v + 1); }} />
+            <div className="mt-2">
+              <CriterioEtapa contactId={c.id} version={vCriterio} onMovido={() => void refetch()} />
+            </div>
           </div>
         )}
       </header>
@@ -462,7 +467,7 @@ export function ContactoPagina({ id }: { id: string }) {
           <aside className="order-2 space-y-4 lg:order-3">
             {/* 068 — Citas, pedidos… (registros vinculados de la plantilla). */}
             <Tarjeta>
-              <RegistrosFicha contactId={c.id} onCambio={() => void refetch()} />
+              <RegistrosFicha contactId={c.id} onCambio={() => { void refetch(); setVCriterio((v) => v + 1); }} />
             </Tarjeta>
             <Tarjeta>
               <AnuncioDeContacto contactId={c.id} />
@@ -558,7 +563,7 @@ export function ContactoPagina({ id }: { id: string }) {
             </Tarjeta>
             {/* 068 — Los datos que pide la plantilla del negocio (sin PLANTILLAS no pinta nada). */}
             <Tarjeta>
-              <CamposFicha contactId={c.id} onCambio={() => void refetch()} />
+              <CamposFicha contactId={c.id} onCambio={() => { void refetch(); setVCriterio((v) => v + 1); }} />
             </Tarjeta>
             {c.lead && (
               <Tarjeta>

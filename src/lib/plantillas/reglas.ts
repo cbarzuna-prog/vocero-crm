@@ -70,7 +70,12 @@ export function revisarPlantilla(pl: Plantilla): Problema[] {
     if (etapas.has(e.clave)) p.push({ donde, regla: "Clave repetida" });
     etapas.add(e.clave);
     for (const req of e.requisitos ?? []) {
-      const ok = req.startsWith("registro:") ? registros.has(req.slice(9)) : claves.has(req);
+      let ok = claves.has(req);
+      if (req.startsWith("registro:")) {
+        const [tipo, estado] = req.slice(9).split(":");
+        const t = pl.registros.find((r) => r.clave === tipo);
+        ok = !!t && (estado === undefined || t.estados.some((x) => x.clave === estado && !x.final));
+      }
       if (!ok) p.push({ donde, regla: `El criterio mira «${req}», que no existe` });
     }
     if (e.ambarMin != null && e.rojoMin != null && e.ambarMin > e.rojoMin)
@@ -118,4 +123,11 @@ export function valorLleno(v: unknown): boolean {
   if (typeof v === "string") return v.trim().length > 0;
   if (Array.isArray(v)) return v.length > 0;
   return true;
+}
+
+/** `registro:<tipo>` o `registro:<tipo>:<estado>` → sus partes (null si es un campo). */
+export function requisitoRegistro(req: string): { tipo: string; estado: string | null } | null {
+  if (!req.startsWith("registro:")) return null;
+  const [tipo = "", estado] = req.slice(9).split(":");
+  return { tipo, estado: estado ?? null };
 }

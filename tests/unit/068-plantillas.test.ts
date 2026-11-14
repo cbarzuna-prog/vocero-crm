@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { BRUMA } from "@/lib/plantillas/bruma";
 import { plantillaPorClave, plantillasOfrecidas, PLANTILLAS } from "@/lib/plantillas/catalogo";
 import { GENERAL } from "@/lib/plantillas/general";
-import { camposExtraibles, esquemaValor, revisarPlantilla, valorLleno } from "@/lib/plantillas/reglas";
+import { camposExtraibles, esquemaValor, requisitoRegistro, revisarPlantilla, valorLleno } from "@/lib/plantillas/reglas";
 import type { Plantilla } from "@/lib/plantillas/tipos";
 import { parseFlag } from "@/server/plantillas/flag";
 
@@ -50,6 +50,15 @@ describe("068 — reglas que ninguna plantilla puede romper (spec §3)", () => {
     const r = reglas(mala);
     expect(r).toContain("El criterio mira «no_existe», que no existe");
     expect(r).toContain("El criterio mira «registro:cita», que no existe");
+  });
+
+  it("un requisito puede pedir un registro en un estado activo, pero no en uno final o inexistente", () => {
+    const con = (req: string): Plantilla => ({ ...BRUMA, etapas: BRUMA.etapas.map((e) => (e.clave === "confirmada" ? { ...e, requisitos: [req] } : e)) });
+    expect(revisarPlantilla(con("registro:cita:confirmada"))).toEqual([]);
+    expect(revisarPlantilla(con("registro:cita:atendida")).map((x) => x.regla)).toContain("El criterio mira «registro:cita:atendida», que no existe");
+    expect(revisarPlantilla(con("registro:cita:volando")).length).toBe(1);
+    expect(requisitoRegistro("registro:cita:confirmada")).toEqual({ tipo: "cita", estado: "confirmada" });
+    expect(requisitoRegistro("servicio_interes")).toBeNull();
   });
   it("exige etapas abiertas, una ganada y una perdida", () => {
     expect(reglas({ ...GENERAL, etapas: GENERAL.etapas.filter((e) => e.tipo !== "won") })).toContain("Necesita exactamente una etapa ganada");

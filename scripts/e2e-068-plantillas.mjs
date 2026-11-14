@@ -103,6 +103,15 @@ await ficha.getByLabel("Cómo le gusta").blur();
 await page.waitForTimeout(600);
 check("ficha: los «Más datos» se abren y guardan", (await api(`/api/contactos/${cid}/ficha-valores`)).json.valores.preferencias?.valor === "Degradado bajo, sin gel");
 
+// ---------- Fase 5 · Criterio de etapa ----------
+const criterio = page.getByRole("region", { name: "Para pasar a Cita agendada" });
+check("criterio: la ficha dice qué falta para la siguiente etapa", await criterio.waitFor({ timeout: 30_000 }).then(() => true, () => false));
+const tc0 = await criterio.innerText();
+check("criterio: el servicio ya está (listo) y falta la cita", /Servicio que busca\s*\(listo\)/.test(tc0) && /cita por venir\s*\(falta\)/.test(tc0), tc0);
+check("criterio: sin cumplir todo, no ofrece mover", (await criterio.getByRole("button").count()) === 0);
+const crit0 = (await api(`/api/contactos/${cid}/criterio`)).json.criterio;
+check("criterio: la API calcula lo mismo", crit0.etapaActual.nombre === "Consulta" && crit0.siguiente.cumple === false, JSON.stringify(crit0));
+
 const citas = page.getByRole("region", { name: "Citas" });
 check("registros: la ficha tiene la tarjeta de citas", await citas.waitFor({ timeout: 30_000 }).then(() => true, () => false));
 await citas.getByRole("button", { name: /Nueva/ }).click();
@@ -118,6 +127,17 @@ await citas.getByText("Corte", { exact: true }).waitFor({ timeout: 15_000 });
 const regs = (await api(`/api/contactos/${cid}/registros`)).json.registros;
 check("registros: la cita se crea con el precio del catálogo (₡7 000)", regs.length === 1 && regs[0].importeCents === 700_000 && regs[0].moneda === "CRC" && regs[0].estado === "agendada", JSON.stringify(regs));
 check("registros: la tarjeta muestra precio y profesional", /₡7[\s.,]?000/.test(await citas.innerText()) && (await citas.innerText()).includes("Andrea"), await citas.innerText());
+const pasar = criterio.getByRole("button", { name: "Pasar a Cita agendada" });
+check("criterio: con la cita agendada, todo queda listo y ofrece pasar", await pasar.waitFor({ timeout: 15_000 }).then(() => true, () => false), await criterio.innerText().catch(() => ""));
+await pasar.click();
+await page.getByRole("region", { name: "Para pasar a Confirmada" }).waitFor({ timeout: 15_000 }).catch(() => null);
+const b2 = await (await page.request.get(`${BASE}/api/pipeline/board`)).json();
+const etapaDe = (bd) => bd.stages.find((s) => s.id === bd.leads.find((l) => l.contactId === cid || l.contact?.id === cid)?.stageId)?.name;
+check("criterio: «Pasar a…» mueve el trato (y nunca lo mueve solo)", etapaDe(b2) === "Cita agendada", etapaDe(b2));
+const conf = page.getByRole("region", { name: "Para pasar a Confirmada" });
+check("criterio: ahora pide que la cita esté confirmada (no salta solo)", /Cita confirmada\s*\(falta\)/.test(await conf.innerText().catch(() => "")) && (await conf.getByRole("button").count()) === 0, await conf.innerText().catch(() => ""));
+await citas.getByLabel(/Estado de Corte/).selectOption("confirmada");
+check("criterio: al confirmar la cita, ofrece «Pasar a Confirmada»", await conf.getByRole("button", { name: "Pasar a Confirmada" }).waitFor({ timeout: 15_000 }).then(() => true, () => false));
 await citas.getByLabel(/Estado de Corte/).selectOption("atendida");
 await page.waitForTimeout(600);
 check("registros: el estado se cambia en la tarjeta", (await api(`/api/contactos/${cid}/registros`)).json.registros[0].estado === "atendida");

@@ -52,14 +52,15 @@ await dlg.getByLabel("Correo").fill(`datos-${stamp}@ejemplo.com`);
 await dlg.getByLabel("Teléfono").fill("123");
 await dlg.getByRole("button", { name: "Guardar" }).click();
 check("un teléfono inválido se rechaza con un motivo claro", await dlg.getByRole("alert").filter({ hasText: /teléfono no parece válido/ }).waitFor({ timeout: 10_000 }).then(() => true, () => false));
-await dlg.getByLabel("Teléfono").fill("8877 6655");
+const ocho = `8${String(Math.floor(Math.random() * 1e7)).padStart(7, "0")}`;
+await dlg.getByLabel("Teléfono").fill(`${ocho.slice(0, 4)} ${ocho.slice(4)}`);
 await dlg.getByRole("button", { name: "Guardar" }).click();
 await dlg.waitFor({ state: "detached", timeout: 15_000 });
 await datos.getByText(`datos-${stamp}@ejemplo.com`).waitFor({ timeout: 15_000 });
 const fila = (await api("/api/contactos")).json.contactos.find((c) => c.id === id);
-check("el teléfono de 8 dígitos se guarda con el 506", fila?.phone === "50688776655", fila?.phone);
+check("el teléfono de 8 dígitos se guarda con el 506", fila?.phone === `506${ocho}`, fila?.phone);
 check("el correo queda en la ficha", fila?.email === `datos-${stamp}@ejemplo.com`, fila?.email);
-check("el encabezado y la ficha muestran el mismo teléfono", (await page.locator("main").first().innerText()).slice(0, 300).replace(/\D/g, "").includes("88776655") && (await datos.innerText()).replace(/\D/g, "").includes("88776655"));
+check("el encabezado y la ficha muestran el mismo teléfono", (await page.locator("main").first().innerText()).slice(0, 300).replace(/\D/g, "").includes(ocho) && (await datos.innerText()).replace(/\D/g, "").includes(ocho));
 
 // Celular: la tarjeta cabe.
 const movil = await browser.newContext({ viewport: { width: 390, height: 844 }, storageState: await ctx.storageState(), isMobile: true, hasTouch: true });

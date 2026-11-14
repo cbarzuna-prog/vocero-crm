@@ -26,6 +26,7 @@ import type {
 } from "@/lib/types";
 import { cn, formatPhone } from "@/lib/utils";
 import { AnuncioOrigen } from "@/components/anuncio-origen";
+import { CriterioEtapa } from "@/components/fork/plantillas/criterio-etapa";
 import { ContactAvatar } from "@/components/avatar";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -332,6 +333,10 @@ export function ContactPanel({
         {stages.length > 0 && leadId && (
           <section className="border-b p-4">
             <p className="kicker mb-3">Etapa del pipeline</p>
+            {/* 068 (fork): qué falta para la siguiente etapa; sin PLANTILLAS no pinta nada. */}
+            <div className="mb-3 empty:hidden">
+              <CriterioEtapa contactId={contactId} version={`${refreshKey}:${currentStageId ?? ""}`} compacto onMovido={() => void refreshLive()} />
+            </div>
             <ol>
               {stages.map((s, i) => {
                 const done = currentIndex >= 0 && i < currentIndex;

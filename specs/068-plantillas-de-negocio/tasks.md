@@ -23,7 +23,7 @@ Cada fase termina con sus pruebas en verde y su commit.
 - [x] T12 Registros vinculados: API y tarjetas («Nueva cita», cambiar estado).
 
 ## Fase 5 · Etapas
-- [ ] T13 Criterio de etapa en la barra de la ficha y en el panel de la Bandeja; sugerencia «¿Pasar a…?».
+- [x] T13 Criterio de etapa en la barra de la ficha y en el panel de la Bandeja; sugerencia «¿Pasar a…?». Requisitos `registro:<tipo>:<estado>` (Bruma: «Confirmada» pide la cita confirmada, no solo agendada).
 
 ## Fase 6 · IA
 - [ ] T14 `extraer.ts` y `kk_extraccion`, con la rama del ai-mock.

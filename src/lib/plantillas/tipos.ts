@@ -56,7 +56,8 @@ export type Etapa = {
   criterio?: string;
   /**
    * Lo que el criterio mira, para la lista de verificación: claves de campos
-   * de la ficha, o `registro:<tipo>` (tiene un registro activo de ese tipo).
+   * de la ficha, `registro:<tipo>` (tiene un registro activo de ese tipo) o
+   * `registro:<tipo>:<estado>` (tiene uno de ese tipo en ese estado, no final).
    */
   requisitos?: string[];
   /** El siguiente paso sugerido en esta etapa. */

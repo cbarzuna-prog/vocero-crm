@@ -20,7 +20,7 @@ export const BRUMA: Plantilla = {
   etapas: [
     { clave: "consulta", nombre: "Consulta", tipo: "open", criterio: "Escribió preguntando; todavía no tiene cita", accion: "Responder con precios y horarios disponibles", ambarMin: 5, rojoMin: 60 },
     { clave: "cita_agendada", nombre: "Cita agendada", tipo: "open", criterio: "Eligió servicio y tiene una cita", requisitos: ["servicio_interes", "registro:cita"], accion: "Confirmar la cita el día antes" },
-    { clave: "confirmada", nombre: "Confirmada", tipo: "open", criterio: "Confirmó que viene", requisitos: ["servicio_interes", "registro:cita"], accion: "Recibirlo y, al terminar, ofrecer la próxima cita" },
+    { clave: "confirmada", nombre: "Confirmada", tipo: "open", criterio: "Confirmó que viene", requisitos: ["registro:cita:confirmada"], accion: "Recibirlo y, al terminar, ofrecer la próxima cita" },
     { clave: "atendido", nombre: "Atendido", tipo: "won" },
     { clave: "perdido", nombre: "Perdido", tipo: "lost" },
   ],

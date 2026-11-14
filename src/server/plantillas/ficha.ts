@@ -205,7 +205,10 @@ export async function actualizarRegistro(
   return dto(fila!);
 }
 
-/** ¿Tiene el contacto un registro activo (estado no final) de ese tipo? Para los criterios de etapa. */
+/**
+ * Registros activos (estado no final) por contacto, para los criterios de
+ * etapa: el set trae `<tipo>` y `<tipo>:<estado>` de cada uno.
+ */
 export async function registrosActivos(organizationId: string, contactIds: string[]): Promise<Map<string, Set<string>>> {
   const m = new Map<string, Set<string>>();
   if (!contactIds.length) return m;
@@ -220,7 +223,7 @@ export async function registrosActivos(organizationId: string, contactIds: strin
     const final = tipo?.estados.find((e) => e.clave === f.estado)?.final;
     if (final) continue;
     if (!m.has(f.contactId)) m.set(f.contactId, new Set());
-    m.get(f.contactId)!.add(f.tipo);
+    m.get(f.contactId)!.add(f.tipo).add(`${f.tipo}:${f.estado}`);
   }
   return m;
 }
