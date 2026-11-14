@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { apiError, parseBody, withAuth } from "@/lib/api";
 import { canConfigure } from "@/lib/auth/roles";
-import { plantillasOfrecidas } from "@/lib/plantillas/catalogo";
+import { plantillasOfrecidas, resumenPlantilla } from "@/lib/plantillas/catalogo";
 import { aplicarPlantilla, PlantillaError } from "@/server/plantillas/aplicar";
 import { configNegocio } from "@/server/plantillas/config";
 import { plantillasDemoEnabled, plantillasDisabledResponse, plantillasEnabled } from "@/server/plantillas/flag";
@@ -14,18 +14,7 @@ export const GET = withAuth(async (session) => {
   const actual = await configNegocio(session.organizationId);
   return Response.json({
     actual: actual ? { plantilla: actual.plantilla, setupPaso: actual.setupPaso } : null,
-    plantillas: plantillasOfrecidas(plantillasDemoEnabled()).map((p) => ({
-      clave: p.clave,
-      nombre: p.nombre,
-      descripcion: p.descripcion,
-      demo: !!p.demo,
-      etapas: p.etapas.filter((e) => e.tipo === "open").map((e) => e.nombre),
-      clientes: p.vocabulario.clientes,
-      embudo: p.vocabulario.embudo,
-      catalogo: p.vocabulario.catalogo ?? null,
-      camposDestacados: p.campos.filter((c) => c.destacado).map((c) => c.etiqueta),
-      alerta: p.etapas.find((e) => e.ambarMin != null) ?? null,
-    })),
+    plantillas: plantillasOfrecidas(plantillasDemoEnabled()).map(resumenPlantilla),
   });
 });
 

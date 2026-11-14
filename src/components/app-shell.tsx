@@ -31,6 +31,7 @@ export function AppShell({
   agenda = false,
   tareas = false,
   propiedades = false,
+  embudo,
   kicker,
   aviso = null,
   children,
@@ -46,6 +47,8 @@ export function AppShell({
   /** 046 — módulos del fork (banderas `TAREAS` y `PROPIEDADES`). */
   tareas?: boolean;
   propiedades?: boolean;
+  /** 068 (fork) — Nombre del embudo según la plantilla del negocio. */
+  embudo?: string;
   /** 028 — La etiqueta bajo el logo (`navKicker`). */
   kicker?: string;
   /**
@@ -97,6 +100,7 @@ export function AppShell({
         agenda={agenda}
         tareas={tareas}
         propiedades={propiedades}
+        embudo={embudo}
         kicker={kicker}
         open={navOpen}
         onClose={() => setNavOpen(false)}
@@ -122,7 +126,7 @@ export function AppShell({
         <main className="min-h-0 min-w-0 flex-1 overflow-hidden">{children}</main>
         {/* 050 (fork) — barra inferior y «+» en el celular, solo con los módulos del fork. */}
         {(tareas || propiedades) && (
-          <BarraMovil tareas={tareas} propiedades={propiedades} onMas={() => setNavOpen(true)} />
+          <BarraMovil tareas={tareas} propiedades={propiedades} embudo={embudo} onMas={() => setNavOpen(true)} />
         )}
       </div>
     </div>

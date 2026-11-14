@@ -14,6 +14,7 @@ import { navKicker } from "@/lib/channels";
 import { avisoIaDe } from "@/server/ai/aviso";
 import { AvisoIaBanner } from "@/components/avisos/aviso-ia";
 import { AvisoEntorno } from "@/components/fork/aviso-entorno";
+import { configNegocio } from "@/server/plantillas/config";
 
 export default async function AppLayout({
   children,
@@ -31,6 +32,8 @@ export default async function AppLayout({
   // bot roto. Se resuelve en el servidor y en el layout para que se vea desde
   // CUALQUIER pantalla, no solo desde el panel de un contacto (#85).
   const aviso = await avisoIaDe(session.organizationId);
+  // 068 (fork): el vocabulario de la plantilla del negocio (null sin PLANTILLAS).
+  const negocio = await configNegocio(session.organizationId);
 
   return (
     <AppShell
@@ -48,6 +51,7 @@ export default async function AppLayout({
       agenda={agendaEnabled()}
       tareas={tareasEnabled()}
       propiedades={propiedadesEnabled()}
+      embudo={negocio?.config.vocabulario.embudo}
       kicker={navKicker([...enabledChannels()])}
       aviso={
         <>

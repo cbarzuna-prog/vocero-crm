@@ -153,10 +153,13 @@ export function CrearRapido({
 export function BarraMovil({
   tareas,
   propiedades,
+  embudo,
   onMas,
 }: {
   tareas: boolean;
   propiedades: boolean;
+  /** 068 — Nombre del embudo según la plantilla del negocio. */
+  embudo?: string;
   onMas: () => void;
 }) {
   const pathname = usePathname();
@@ -198,7 +201,7 @@ export function BarraMovil({
     };
   }, []);
 
-  const pipeline = { href: "/pipeline", label: "Compradores", icon: Kanban, badge: 0, danger: false }; // 063
+  const pipeline = { href: "/pipeline", label: embudo ?? "Compradores", icon: Kanban, badge: 0, danger: false }; // 063 · 068
   // Cinco celdas: dos a cada lado del «+». Con propiedades, el Pipeline (un
   // tablero ancho, incómodo en el teléfono) queda en «Más».
   const izquierda = [

@@ -22,3 +22,10 @@ export async function configNegocio(organizationId: string): Promise<ConfigNegoc
   if (!r) return null;
   return { plantilla: r.plantilla, version: r.version, setupPaso: r.setupPaso, config: r.config as unknown as Plantilla };
 }
+
+/** 068 — ¿Hay que llevar a esta persona al setup? Solo a quien administra, con la bandera, sin terminar. */
+export async function necesitaSetup(organizationId: string, puedeConfigurar: boolean): Promise<boolean> {
+  if (!plantillasEnabled() || !puedeConfigurar) return false;
+  const n = await configNegocio(organizationId);
+  return !n || n.setupPaso != null;
+}

@@ -13,3 +13,35 @@ export function plantillasOfrecidas(conDemo: boolean): Plantilla[] {
 export function plantillaPorClave(clave: string): Plantilla | null {
   return PLANTILLAS.find((p) => p.clave === clave) ?? null;
 }
+
+/** Lo que el setup muestra de cada plantilla (tarjeta del paso 1 y resumen del paso 3). */
+export type ResumenPlantilla = {
+  clave: string;
+  nombre: string;
+  descripcion: string;
+  demo: boolean;
+  etapas: string[];
+  clientes: string;
+  embudo: string;
+  catalogo: string | null;
+  serviciosCatalogo: number;
+  camposDestacados: string[];
+  alerta: { ambarMin: number; rojoMin: number } | null;
+};
+
+export function resumenPlantilla(p: Plantilla): ResumenPlantilla {
+  const conTiempo = p.etapas.find((e) => e.ambarMin != null && e.rojoMin != null);
+  return {
+    clave: p.clave,
+    nombre: p.nombre,
+    descripcion: p.descripcion,
+    demo: !!p.demo,
+    etapas: p.etapas.filter((e) => e.tipo === "open").map((e) => e.nombre),
+    clientes: p.vocabulario.clientes,
+    embudo: p.vocabulario.embudo,
+    catalogo: p.vocabulario.catalogo ?? null,
+    serviciosCatalogo: p.catalogo?.length ?? 0,
+    camposDestacados: p.campos.filter((c) => c.destacado).map((c) => c.etiqueta),
+    alerta: conTiempo ? { ambarMin: conTiempo.ambarMin!, rojoMin: conTiempo.rojoMin! } : null,
+  };
+}

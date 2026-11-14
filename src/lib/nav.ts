@@ -57,6 +57,7 @@ export function appNavGroups({
   agenda = false,
   tareas = false,
   propiedades = false,
+  embudo,
   role,
 }: {
   /** 015 — "Citas" solo existe si esta instancia encendió la agenda. */
@@ -67,13 +68,15 @@ export function appNavGroups({
   propiedades?: boolean;
   /** #86 — La guía de inicio solo para quien puede configurar. */
   role?: string | null;
+  /** 068 (fork) — Cómo llama la plantilla del negocio a su embudo («Reservas», «Tratos»). */
+  embudo?: string;
 }): NavGroup[] {
   const trabajo: NavItem[] = [
     ...(tareas ? [{ href: "/hoy", label: "Hoy", icon: Sun, tareasBadge: true }] : []),
     { href: "/inbox", label: "Bandeja", icon: Inbox, badge: true },
     // 063 (fork): con el inventario encendido hay dos embudos, nombrados por
     // la persona que se atiende: «Compradores» (el pipeline) y «Captación externa» (lo que traen terceros; 064).
-    { href: "/pipeline", label: propiedades ? "Compradores" : "Pipeline", icon: Kanban },
+    { href: "/pipeline", label: embudo ?? (propiedades ? "Compradores" : "Pipeline"), icon: Kanban },
     ...(propiedades ? [{ href: "/captaciones", label: "Captación externa", icon: KeyRound }] : []),
     { href: "/contacts", label: "Contactos", icon: Users },
   ];

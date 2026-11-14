@@ -14,8 +14,8 @@ Cada fase termina con sus pruebas en verde y su commit.
 - [x] T7 API: `GET/POST /api/plantillas` (catálogo y aplicar), `GET /api/negocio`.
 
 ## Fase 3 · Setup
-- [ ] T8 `/bienvenida`, en tres pasos, con retomar.
-- [ ] T9 Redirección desde «Hoy» y la guía de inicio cuando falta la plantilla; vocabulario del menú según la configuración.
+- [x] T8 `/bienvenida`, en tres pasos, con retomar.
+- [x] T9 Redirección desde «Hoy» y la guía de inicio cuando falta la plantilla; vocabulario del menú según la configuración.
 
 ## Fase 4 · Ficha
 - [ ] T10 API de valores (`/api/contactos/[id]/ficha-valores`) validada contra la configuración.

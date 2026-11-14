@@ -28,6 +28,7 @@
     "test:e2e:rediseno": "node --env-file=.env scripts/e2e-063-rediseno.mjs",
     "test:e2e:entornos": "node --env-file=.env scripts/e2e-066-entornos.mjs",
     "test:e2e:datos-contacto": "node --env-file=.env scripts/e2e-067-datos-contacto.mjs",
+    "test:e2e:plantillas": "node scripts/e2e-068-plantillas.mjs",
     "test:e2e:web-leads": "node --env-file=.env scripts/e2e-058-web-leads.mjs",
     "test:e2e:contactos": "node --env-file=.env scripts/e2e-057-contactos.mjs",
     "test:e2e:revision": "node --env-file=.env scripts/e2e-056-revision.mjs",
