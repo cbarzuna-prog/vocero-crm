@@ -28,6 +28,8 @@ import { cuando } from "./contactos-client";
 import { useAtencionDatos } from "./atencion";
 import { AnuncioDeContacto, TratoFicha } from "./trato-ficha";
 import { DatosContacto } from "./datos-contacto";
+import { CamposFicha } from "./plantillas/campos-ficha";
+import { RegistrosFicha } from "./plantillas/registros-ficha";
 
 const ICONO: Record<EventoHistorial["tipo"], typeof Phone> = {
   alta: UserPlus,
@@ -458,6 +460,10 @@ export function ContactoPagina({ id }: { id: string }) {
 
           {/* Derecha: tareas, propiedades y lo que llegó del sitio. */}
           <aside className="order-2 space-y-4 lg:order-3">
+            {/* 068 — Citas, pedidos… (registros vinculados de la plantilla). */}
+            <Tarjeta>
+              <RegistrosFicha contactId={c.id} onCambio={() => void refetch()} />
+            </Tarjeta>
             <Tarjeta>
               <AnuncioDeContacto contactId={c.id} />
             </Tarjeta>
@@ -549,6 +555,10 @@ export function ContactoPagina({ id }: { id: string }) {
                 ultimaActividad={c.ultimaActividad}
                 onEditar={() => setEditando(true)}
               />
+            </Tarjeta>
+            {/* 068 — Los datos que pide la plantilla del negocio (sin PLANTILLAS no pinta nada). */}
+            <Tarjeta>
+              <CamposFicha contactId={c.id} onCambio={() => void refetch()} />
             </Tarjeta>
             {c.lead && (
               <Tarjeta>

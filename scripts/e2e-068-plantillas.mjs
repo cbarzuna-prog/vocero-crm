@@ -75,6 +75,55 @@ const board = await (await page.request.get(`${BASE}/api/pipeline/board`)).json(
 check("embudo: tiene las etapas de Bruma", board.stages.map((s) => s.name).join("|") === "Consulta|Cita agendada|Confirmada|Atendido|Perdido", board.stages.map((s) => s.name).join("|"));
 void menu;
 
+// ---------- Fase 4 · Ficha según el giro ----------
+const api = async (path, init = {}) => {
+  const r = await page.request.fetch(`${BASE}${path}`, { ...init, headers: { origin: BASE, "content-type": "application/json", ...(init.headers ?? {}) } });
+  let json = null;
+  try { json = await r.json(); } catch { /* sin JSON */ }
+  return { status: r.status(), json };
+};
+const stamp = Date.now().toString(36);
+const nuevo = (await api("/api/contacts", { method: "POST", data: { name: `Clienta ${stamp}`, phone: `5067${String(Math.floor(Math.random() * 1e7)).padStart(7, "0")}` } })).json;
+const cid = nuevo.contact.id;
+await page.goto(`${BASE}/contacts/${cid}`);
+const ficha = page.getByRole("region", { name: "Ficha del negocio" });
+check("ficha: muestra los datos de la plantilla", await ficha.waitFor({ timeout: 60_000 }).then(() => true, () => false));
+const tf = await ficha.innerText();
+check("ficha: agrupados por momento (primer contacto / durante la venta / más datos)", ["Al primer contacto", "Durante la venta", "Más datos"].every((t) => tf.includes(t)), tf);
+check("ficha: con los campos de Bruma", ["Servicio que busca", "Profesional preferido", "Cada cuánto viene"].every((t) => tf.includes(t)), tf);
+await ficha.getByLabel("Servicio que busca").selectOption("Corte y barba");
+await page.waitForTimeout(600);
+const fv = (await api(`/api/contactos/${cid}/ficha-valores`)).json;
+check("ficha: un dato se guarda al elegirlo", fv.valores.servicio_interes?.valor === "Corte y barba" && fv.valores.servicio_interes?.fuente === "manual", JSON.stringify(fv.valores));
+check("ficha: un valor fuera de la lista se rechaza con motivo", (await api(`/api/contactos/${cid}/ficha-valores`, { method: "PUT", data: { campo: "servicio_interes", valor: "Tatuaje" } })).status === 422);
+check("ficha: un dato que no existe en la plantilla se rechaza", (await api(`/api/contactos/${cid}/ficha-valores`, { method: "PUT", data: { campo: "alergias", valor: "x" } })).status === 422);
+await ficha.getByRole("button", { name: /Más datos/ }).click();
+await ficha.getByLabel("Cómo le gusta").fill("Degradado bajo, sin gel");
+await ficha.getByLabel("Cómo le gusta").blur();
+await page.waitForTimeout(600);
+check("ficha: los «Más datos» se abren y guardan", (await api(`/api/contactos/${cid}/ficha-valores`)).json.valores.preferencias?.valor === "Degradado bajo, sin gel");
+
+const citas = page.getByRole("region", { name: "Citas" });
+check("registros: la ficha tiene la tarjeta de citas", await citas.waitFor({ timeout: 30_000 }).then(() => true, () => false));
+await citas.getByRole("button", { name: /Nueva/ }).click();
+const dlg = page.getByRole("dialog");
+const manana = new Date(Date.now() + 86_400_000);
+const local = `${manana.getFullYear()}-${String(manana.getMonth() + 1).padStart(2, "0")}-${String(manana.getDate()).padStart(2, "0")}T10:30`;
+await dlg.getByLabel("Fecha y hora").fill(local);
+await dlg.getByLabel("Servicio").selectOption("Corte");
+await dlg.getByLabel("Profesional").selectOption("Andrea");
+await dlg.getByRole("button", { name: "Guardar" }).click();
+await dlg.waitFor({ state: "detached", timeout: 15_000 });
+await citas.getByText("Corte", { exact: true }).waitFor({ timeout: 15_000 });
+const regs = (await api(`/api/contactos/${cid}/registros`)).json.registros;
+check("registros: la cita se crea con el precio del catálogo (₡7 000)", regs.length === 1 && regs[0].importeCents === 700_000 && regs[0].moneda === "CRC" && regs[0].estado === "agendada", JSON.stringify(regs));
+check("registros: la tarjeta muestra precio y profesional", /₡7[\s.,]?000/.test(await citas.innerText()) && (await citas.innerText()).includes("Andrea"), await citas.innerText());
+await citas.getByLabel(/Estado de Corte/).selectOption("atendida");
+await page.waitForTimeout(600);
+check("registros: el estado se cambia en la tarjeta", (await api(`/api/contactos/${cid}/registros`)).json.registros[0].estado === "atendida");
+check("registros: un tipo que no existe se rechaza", (await api(`/api/contactos/${cid}/registros`, { method: "POST", data: { tipo: "vehiculo" } })).status === 422);
+await foto(page, "068-ficha");
+
 // Celular: el setup cabe sin desplazamiento horizontal.
 const movil = await browser.newContext({ viewport: { width: 390, height: 844 }, storageState: await ctx.storageState(), isMobile: true, hasTouch: true });
 const pm = await movil.newPage();

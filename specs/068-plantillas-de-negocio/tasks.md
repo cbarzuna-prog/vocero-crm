@@ -18,9 +18,9 @@ Cada fase termina con sus pruebas en verde y su commit.
 - [x] T9 Redirección desde «Hoy» y la guía de inicio cuando falta la plantilla; vocabulario del menú según la configuración.
 
 ## Fase 4 · Ficha
-- [ ] T10 API de valores (`/api/contactos/[id]/ficha-valores`) validada contra la configuración.
-- [ ] T11 Tarjeta de campos por momento, con edición en línea y campos condicionales.
-- [ ] T12 Registros vinculados: API y tarjetas («Nueva cita», cambiar estado).
+- [x] T10 API de valores (`/api/contactos/[id]/ficha-valores`) validada contra la configuración.
+- [x] T11 Tarjeta de campos por momento, con edición en línea y campos condicionales.
+- [x] T12 Registros vinculados: API y tarjetas («Nueva cita», cambiar estado).
 
 ## Fase 5 · Etapas
 - [ ] T13 Criterio de etapa en la barra de la ficha y en el panel de la Bandeja; sugerencia «¿Pasar a…?».
