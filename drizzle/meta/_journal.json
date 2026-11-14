@@ -225,6 +225,13 @@
       "when": 1794255716415,
       "tag": "0031_resumen_contacto",
       "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "7",
+      "when": 1794636329136,
+      "tag": "0032_plantillas_negocio",
+      "breakpoints": true
     }
   ]
 }

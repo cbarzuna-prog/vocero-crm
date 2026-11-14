@@ -47,6 +47,10 @@ const prefixes = {
   captacionEvento: "cev",
   // 060 — colaboración (co-corredores)
   participante: "ppa",
+  // 068 (fork · Hiyou) — motor de plantillas
+  fichaValor: "fv",
+  registro: "reg",
+  sugerencia: "sug",
 } as const;
 
 export type IdKind = keyof typeof prefixes;

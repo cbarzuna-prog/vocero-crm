@@ -1692,3 +1692,118 @@ export const resumenContacto = pgTable("kk_resumen_contacto", {
   siguientePaso: text("siguiente_paso"),
   generadoAt: timestamp("generado_at").notNull().defaultNow(),
 });
+
+/* ============================================================
+ * 068 (fork · Hiyou) — Motor de plantillas de negocio.
+ * `kk_config_negocio` guarda la COPIA editable de la plantilla que eligió el
+ * negocio (lo que el negocio cambia es suyo; una versión nueva de la
+ * plantilla no lo pisa). Los valores de la ficha, los registros vinculados y
+ * las sugerencias de la IA viven en tablas genéricas, validadas contra esa
+ * copia. Detrás de la bandera `PLANTILLAS`; la migración se aplica igual.
+ * ============================================================ */
+
+export const configNegocio = pgTable("kk_config_negocio", {
+  organizationId: text("organization_id")
+    .primaryKey()
+    .references(() => organization.id, { onDelete: "cascade" }),
+  plantilla: text("plantilla").notNull(),
+  version: integer("version").notNull(),
+  config: jsonb("config").$type<Record<string, unknown>>().notNull(),
+  /** Hasta dónde llegó el setup (1, 2, 3; null = terminado). */
+  setupPaso: smallint("setup_paso"),
+  aplicadaAt: timestamp("aplicada_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+/** Qué significa cada etapa (criterio de paso) y qué mira la lista de verificación. */
+export const etapaCriterio = pgTable("kk_etapa_criterio", {
+  stageId: text("stage_id")
+    .primaryKey()
+    .references(() => pipelineStage.id, { onDelete: "cascade" }),
+  organizationId: text("organization_id")
+    .notNull()
+    .references(() => organization.id, { onDelete: "cascade" }),
+  /** La clave de la etapa en la plantilla (para reconocerla al reaplicar). */
+  clave: text("clave").notNull(),
+  criterio: text("criterio"),
+  requisitos: text("requisitos").array().notNull().default(sql`'{}'::text[]`),
+  accion: text("accion"),
+});
+
+export const fichaValor = pgTable(
+  "kk_ficha_valor",
+  {
+    id: text("id").primaryKey(),
+    organizationId: text("organization_id")
+      .notNull()
+      .references(() => organization.id, { onDelete: "cascade" }),
+    contactId: text("contact_id")
+      .notNull()
+      .references(() => contact.id, { onDelete: "cascade" }),
+    campo: text("campo").notNull(),
+    valor: jsonb("valor").$type<unknown>().notNull(),
+    fuente: text("fuente", { enum: ["manual", "ia", "web", "importado"] }).notNull(),
+    porUserId: text("por_user_id").references(() => user.id, { onDelete: "set null" }),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (t) => [uniqueIndex("kk_ficha_valor_contacto_campo_uq").on(t.contactId, t.campo), index("kk_ficha_valor_org_idx").on(t.organizationId)]
+);
+
+export const registro = pgTable(
+  "kk_registro",
+  {
+    id: text("id").primaryKey(),
+    organizationId: text("organization_id")
+      .notNull()
+      .references(() => organization.id, { onDelete: "cascade" }),
+    contactId: text("contact_id")
+      .notNull()
+      .references(() => contact.id, { onDelete: "cascade" }),
+    tipo: text("tipo").notNull(),
+    titulo: text("titulo").notNull(),
+    estado: text("estado").notNull(),
+    fecha: timestamp("fecha"),
+    importeCents: bigint("importe_cents", { mode: "number" }),
+    moneda: text("moneda", { enum: ["CRC", "USD"] }),
+    datos: jsonb("datos").$type<Record<string, unknown>>().notNull().default({}),
+    creadoPorUserId: text("creado_por_user_id").references(() => user.id, { onDelete: "set null" }),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (t) => [index("kk_registro_org_contacto_idx").on(t.organizationId, t.contactId), index("kk_registro_org_tipo_fecha_idx").on(t.organizationId, t.tipo, t.fecha)]
+);
+
+export const sugerencia = pgTable(
+  "kk_sugerencia",
+  {
+    id: text("id").primaryKey(),
+    organizationId: text("organization_id")
+      .notNull()
+      .references(() => organization.id, { onDelete: "cascade" }),
+    contactId: text("contact_id")
+      .notNull()
+      .references(() => contact.id, { onDelete: "cascade" }),
+    /** Clave del campo, o `__etapa` para sugerir un cambio de etapa. */
+    campo: text("campo").notNull(),
+    valor: jsonb("valor").$type<unknown>().notNull(),
+    evidencia: text("evidencia"),
+    mensajeId: text("mensaje_id"),
+    estado: text("estado", { enum: ["pendiente", "aceptada", "descartada"] }).notNull().default("pendiente"),
+    resueltaPorUserId: text("resuelta_por_user_id").references(() => user.id, { onDelete: "set null" }),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    resueltaAt: timestamp("resuelta_at"),
+  },
+  (t) => [index("kk_sugerencia_contacto_estado_idx").on(t.contactId, t.estado), index("kk_sugerencia_org_idx").on(t.organizationId)]
+);
+
+/** Hasta qué mensaje ya leyó la IA de cada contacto (no volver a gastar en lo mismo). */
+export const extraccion = pgTable("kk_extraccion", {
+  contactId: text("contact_id")
+    .primaryKey()
+    .references(() => contact.id, { onDelete: "cascade" }),
+  organizationId: text("organization_id")
+    .notNull()
+    .references(() => organization.id, { onDelete: "cascade" }),
+  ultimoMensajeAt: timestamp("ultimo_mensaje_at").notNull(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});

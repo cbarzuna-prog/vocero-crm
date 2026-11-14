@@ -9,9 +9,9 @@ Cada fase termina con sus pruebas en verde y su commit.
 - [x] T4 Pruebas unitarias de las reglas y de ambas plantillas.
 
 ## Fase 2 · Datos y aplicación
-- [ ] T5 Esquema y migración `0032` (las seis tablas del plan).
-- [ ] T6 `aplicarPlantilla` (idempotente) y `configNegocio`.
-- [ ] T7 API: `GET/POST /api/plantillas` (catálogo y aplicar), `GET /api/negocio`.
+- [x] T5 Esquema y migración `0032` (las seis tablas del plan).
+- [x] T6 `aplicarPlantilla` (idempotente) y `configNegocio`.
+- [x] T7 API: `GET/POST /api/plantillas` (catálogo y aplicar), `GET /api/negocio`.
 
 ## Fase 3 · Setup
 - [ ] T8 `/bienvenida`, en tres pasos, con retomar.
