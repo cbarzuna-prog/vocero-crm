@@ -1,7 +1,7 @@
 # 068 (fork · Hiyou) — Motor de plantillas de negocio
 
 **Carril:** ciclo completo (spec → plan → tareas). Escrito **antes** de programar.
-**Estado:** borrador para aprobación del dueño (2026-11-13).
+**Estado:** aprobado con cambios por el dueño (2026-11-14). Ver §9.
 **Base de evidencia:** cuatro investigaciones cruzadas y documentadas en el
 proyecto (`hiyou-investigacion-fichas.md`, `hiyou-quejas-y-principios.md`),
 más el borrador visual del lienzo «Hiyou CRM — setup y plantillas».
@@ -226,3 +226,16 @@ me bloquee el número.*
    las ve en el momento en que las necesita.
 3. Para Knock Knock, ¿encendemos esto primero en el sandbox y lo prueba su
    equipo una semana antes de pasarlo al CRM real?
+
+## 9. Decisiones del dueño (2026-11-14)
+
+1. **Primera prueba: un negocio inventado + General**, en vez de Bienes raíces.
+   Así se demuestra que el motor es genérico sin tocar a Knock Knock. El negocio
+   inventado es **«Estudio Bruma»** (barbería y estética, subtipo ficticio
+   marcado `demo`): gira alrededor de citas (registro vinculado), tiene catálogo
+   de servicios y recordatorios, y no usa datos de salud. Bienes raíces se
+   escribe después, cuando el motor esté probado.
+2. **Las sugerencias de la IA se generan al abrir el chat o la ficha**, solo si
+   hay mensajes nuevos desde la última extracción.
+3. **Se prueba en el sandbox con datos inventados**, no con la copia del CRM
+   real. El CRM real no enciende `PLANTILLAS` en esta fase.
