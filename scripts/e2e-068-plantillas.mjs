@@ -74,6 +74,13 @@ check("menú: el embudo se llama como en la plantilla («Reservas»)", await pag
 const board = await (await page.request.get(`${BASE}/api/pipeline/board`)).json();
 check("embudo: tiene las etapas de Bruma", board.stages.map((s) => s.name).join("|") === "Consulta|Cita agendada|Confirmada|Atendido|Perdido", board.stages.map((s) => s.name).join("|"));
 void menu;
+check("menú: sin agente conectado, no muestra Agente ni Laboratorio", !(await page.getByRole("link", { name: "Laboratorio" }).count()) && !(await page.getByRole("link", { name: "Agente", exact: true }).count()));
+await page.goto(`${BASE}/pipeline`);
+await page.getByRole("heading", { name: "Reservas" }).waitFor({ timeout: 30_000 }).catch(() => null);
+check("embudo: el título usa el vocabulario («Reservas», no «Compradores»)", await page.getByRole("heading", { name: "Reservas" }).isVisible().catch(() => false));
+const buscador = page.getByLabel("Buscar en Reservas");
+check("embudo: el buscador no habla de inmuebles (sin «KK-»)", !((await buscador.getAttribute("placeholder").catch(() => "KK-")) ?? "KK-").includes("KK-"));
+check("embudo: no dice «tratos»", !(await page.locator("main").first().innerText()).includes("tratos"));
 
 // ---------- Fase 4 · Ficha según el giro ----------
 const api = async (path, init = {}) => {
@@ -89,6 +96,11 @@ await page.goto(`${BASE}/contacts/${cid}`);
 const ficha = page.getByRole("region", { name: "Ficha del negocio" });
 check("ficha: muestra los datos de la plantilla", await ficha.waitFor({ timeout: 60_000 }).then(() => true, () => false));
 const tf = await ficha.innerText();
+const orden = await page.evaluate(() => {
+  const f = document.querySelector('[aria-label="Ficha del negocio"]'), d = document.querySelector('[aria-label="Datos de contacto"]');
+  return f && d ? !!(f.compareDocumentPosition(d) & Node.DOCUMENT_POSITION_FOLLOWING) : null;
+});
+check("ficha: los datos del giro van antes que los datos de contacto", orden === true, String(orden));
 check("ficha: agrupados por momento (primer contacto / durante la venta / más datos)", ["Al primer contacto", "Durante la venta", "Más datos"].every((t) => tf.includes(t)), tf);
 check("ficha: con los campos de Bruma", ["Servicio que busca", "Profesional preferido", "Cada cuánto viene"].every((t) => tf.includes(t)), tf);
 await ficha.getByLabel("Servicio que busca").selectOption("Corte y barba");

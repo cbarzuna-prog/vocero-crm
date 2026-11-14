@@ -15,6 +15,7 @@ import { avisoIaDe } from "@/server/ai/aviso";
 import { AvisoIaBanner } from "@/components/avisos/aviso-ia";
 import { AvisoEntorno } from "@/components/fork/aviso-entorno";
 import { configNegocio } from "@/server/plantillas/config";
+import { despachoActivo } from "@/server/brains/config";
 
 export default async function AppLayout({
   children,
@@ -52,6 +53,7 @@ export default async function AppLayout({
       tareas={tareasEnabled()}
       propiedades={propiedadesEnabled()}
       embudo={negocio?.config.vocabulario.embudo}
+      sinAgente={!!negocio && !despachoActivo()}
       kicker={navKicker([...enabledChannels()])}
       aviso={
         <>

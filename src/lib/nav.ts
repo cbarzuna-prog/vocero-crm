@@ -59,7 +59,10 @@ export function appNavGroups({
   propiedades = false,
   embudo,
   role,
+  sinAgente = false,
 }: {
+  /** 068 (fork) — Negocio con plantilla y sin agente conectado: el grupo «Agente» (guía, agente, laboratorio) es ruido. */
+  sinAgente?: boolean;
   /** 015 — "Citas" solo existe si esta instancia encendió la agenda. */
   agenda?: boolean;
   /** 046 — «Hoy» va primero: es la pantalla de inicio cuando existe. */
@@ -99,7 +102,7 @@ export function appNavGroups({
 
   return [
     { title: "Trabajo", items: trabajo },
-    { title: "Agente", items: agente },
+    ...(sinAgente ? [] : [{ title: "Agente", items: agente }]),
     // 019 — Se mide al final: primero se atiende y se organiza.
     { items: [{ href: "/results", label: "Resultados", icon: ChartColumn }] },
   ];

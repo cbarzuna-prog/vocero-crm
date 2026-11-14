@@ -47,7 +47,7 @@ export type BoardLead = {
  * `movil` (fork 052): en el celular, una etapa a la vez en vez del tablero.
  * `atencion` (fork 062): semáforo de atención en cada tarjeta.
  */
-export function PipelineClient({ movil = false, atencion = false }: { movil?: boolean; atencion?: boolean } = {}) {
+export function PipelineClient({ movil = false, atencion = false, titulo, conPropiedades = false }: { movil?: boolean; atencion?: boolean; titulo?: string; conPropiedades?: boolean } = {}) {
   const [version, setVersion] = useState(0);
   // fork 063 — buscador y «Solo en rojo» del tablero de Compradores.
   const [busqueda, setBusqueda] = useState("");
@@ -193,13 +193,13 @@ export function PipelineClient({ movil = false, atencion = false }: { movil?: bo
   const tablero = (
     <div className="flex h-full flex-col">
       <header className="flex flex-wrap items-center justify-between gap-2 border-b px-4 py-3 sm:px-6 sm:py-4">
-        <h2 className="text-[17px] font-bold tracking-tight">{atencion ? "Compradores" : "Pipeline"}</h2>
+        <h2 className="text-[17px] font-bold tracking-tight">{titulo ?? (atencion ? "Compradores" : "Pipeline")}</h2>
         <Button variant="outline" size="sm" onClick={() => setManaging(true)}>
           <Settings2 className="h-4 w-4" /> Gestionar etapas
         </Button>
       </header>
       {atencion && (
-        <BarraCompradores leads={leads} datos={datosAtn} q={busqueda} onQ={setBusqueda} soloRojo={soloRojo} onSoloRojo={setSoloRojo} />
+        <BarraCompradores leads={leads} datos={datosAtn} q={busqueda} onQ={setBusqueda} soloRojo={soloRojo} onSoloRojo={setSoloRojo} titulo={titulo ?? "Compradores"} conPropiedades={conPropiedades} />
       )}
 
       {/* El tablero se arrastra en horizontal; en el teléfono cada columna

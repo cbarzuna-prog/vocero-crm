@@ -368,9 +368,6 @@ export function ContactoPagina({ id }: { id: string }) {
         {c.lead && (
           <div className="mt-3">
             <BarraEtapas leadId={c.lead.id} etapaId={c.lead.stageId} dias={dias} onMovido={() => { void refetch(); setVCriterio((v) => v + 1); }} />
-            <div className="mt-2">
-              <CriterioEtapa contactId={c.id} version={vCriterio} onMovido={() => void refetch()} />
-            </div>
           </div>
         )}
       </header>
@@ -381,13 +378,17 @@ export function ContactoPagina({ id }: { id: string }) {
           <div className="order-1 space-y-4 lg:order-2">
             <ResumenIa contactId={c.id} />
 
+            {/* 068: una sola caja de «qué sigue»: la atención (cuánto espera, responder/agendar)
+                y, debajo, lo que falta para la siguiente etapa. */}
+            {!atn && c.lead && <CriterioEtapa contactId={c.id} version={vCriterio} onMovido={() => void refetch()} />}
             {atn && (
               <div
                 className={cn(
-                  "flex flex-wrap items-center gap-3 rounded-xl border px-4 py-3",
+                  "rounded-xl border px-4 py-3",
                   atn.nivel === "rojo" ? "border-danger/40 bg-danger-tint" : atn.nivel === "ambar" || atn.motivo === "etapa" ? "border-warning/50 bg-warning-tint" : "bg-card"
                 )}
               >
+                <div className="flex flex-wrap items-center gap-3">
                 <div className="min-w-0 flex-1">
                   <p className="text-[14px] font-semibold">{atn.motivo === "agendado" ? `Siguiente paso: ${atn.accion}` : atn.motivo === "etapa" && atn.nivel === "ok" ? "Sin siguiente paso agendado" : atn.accion}</p>
                   <p className="text-[12.5px] text-text-2">
@@ -403,6 +404,8 @@ export function ContactoPagina({ id }: { id: string }) {
                     {atn.motivo === "mensaje" ? "Responder" : "Agendar"}
                   </Button>
                 )}
+                </div>
+                {c.lead && <CriterioEtapa contactId={c.id} version={vCriterio} onMovido={() => void refetch()} embebido />}
               </div>
             )}
 
@@ -548,6 +551,10 @@ export function ContactoPagina({ id }: { id: string }) {
 
           {/* Izquierda: quién es y qué busca, y las notas del equipo. */}
           <div className="order-3 space-y-4 lg:order-1">
+            {/* 068 — Los datos que pide la plantilla del negocio arriba: es lo más útil de la ficha (sin PLANTILLAS no pinta nada). */}
+            <Tarjeta>
+              <CamposFicha contactId={c.id} onCambio={() => { void refetch(); setVCriterio((v) => v + 1); }} />
+            </Tarjeta>
             {/* 067 — Los datos de contacto también dentro de la ficha (se repiten a propósito). */}
             <Tarjeta>
               <DatosContacto
@@ -560,10 +567,6 @@ export function ContactoPagina({ id }: { id: string }) {
                 ultimaActividad={c.ultimaActividad}
                 onEditar={() => setEditando(true)}
               />
-            </Tarjeta>
-            {/* 068 — Los datos que pide la plantilla del negocio (sin PLANTILLAS no pinta nada). */}
-            <Tarjeta>
-              <CamposFicha contactId={c.id} onCambio={() => { void refetch(); setVCriterio((v) => v + 1); }} />
             </Tarjeta>
             {c.lead && (
               <Tarjeta>

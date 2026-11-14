@@ -32,6 +32,7 @@ export function AppShell({
   tareas = false,
   propiedades = false,
   embudo,
+  sinAgente,
   kicker,
   aviso = null,
   children,
@@ -49,6 +50,7 @@ export function AppShell({
   propiedades?: boolean;
   /** 068 (fork) — Nombre del embudo según la plantilla del negocio. */
   embudo?: string;
+  sinAgente?: boolean;
   /** 028 — La etiqueta bajo el logo (`navKicker`). */
   kicker?: string;
   /**
@@ -101,6 +103,7 @@ export function AppShell({
         tareas={tareas}
         propiedades={propiedades}
         embudo={embudo}
+        sinAgente={sinAgente}
         kicker={kicker}
         open={navOpen}
         onClose={() => setNavOpen(false)}

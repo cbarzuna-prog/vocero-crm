@@ -110,7 +110,11 @@ export function BarraCompradores({
   onQ,
   soloRojo,
   onSoloRojo,
+  titulo = "Compradores",
+  conPropiedades = true,
 }: {
+  titulo?: string;
+  conPropiedades?: boolean;
   leads: LeadMin[];
   datos: AtencionDto | null;
   q: string;
@@ -123,7 +127,7 @@ export function BarraCompradores({
   return (
     <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b px-4 py-2.5 sm:px-6">
       <p className="text-[13px] text-text-2">
-        {abiertos.length} {abiertos.length === 1 ? "trato abierto" : "tratos abiertos"}
+        {abiertos.length} en curso
         {rojos > 0 && <span className="font-semibold text-danger-text"> · {rojos} esperan atención</span>}
       </p>
       <label className="flex h-9 w-full items-center gap-2 rounded-md bg-subtle px-3 text-[13px] text-text-3 sm:w-64">
@@ -131,8 +135,8 @@ export function BarraCompradores({
         <input
           value={q}
           onChange={(e) => onQ(e.target.value)}
-          placeholder="Buscar persona, teléfono o KK-…"
-          aria-label="Buscar en Compradores"
+          placeholder={conPropiedades ? "Buscar persona, teléfono o KK-…" : "Buscar persona o teléfono"}
+          aria-label={`Buscar en ${titulo}`}
           className="min-w-0 flex-1 bg-transparent text-foreground outline-none placeholder:text-text-3"
         />
       </label>

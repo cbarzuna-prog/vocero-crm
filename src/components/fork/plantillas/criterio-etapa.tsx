@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
  * lista de verificación. Cuando se cumple todo, ofrece «Pasar a …»: nunca
  * mueve solo. Va en la ficha y en el panel de la Bandeja.
  */
-export function CriterioEtapa({ contactId, version = 0, onMovido, compacto }: { contactId: string; version?: number | string; onMovido?: () => void; compacto?: boolean }) {
+export function CriterioEtapa({ contactId, version = 0, onMovido, compacto, embebido }: { contactId: string; version?: number | string; onMovido?: () => void; compacto?: boolean; embebido?: boolean }) {
   const [c, setC] = useState<CriterioDto>(null);
   const [moviendo, setMoviendo] = useState(false);
   const cargar = useCallback(async () => {
@@ -33,7 +33,10 @@ export function CriterioEtapa({ contactId, version = 0, onMovido, compacto }: { 
   }
 
   return (
-    <section aria-label={`Para pasar a ${sig.nombre}`} className={cn("rounded-lg border p-3", sig.cumple ? "border-success/40 bg-success-tint" : "border-border bg-muted/40")}>
+    <section
+      aria-label={`Para pasar a ${sig.nombre}`}
+      className={cn(embebido ? "mt-3 border-t border-current/10 pt-3" : "rounded-lg border p-3", !embebido && (sig.cumple ? "border-success/40 bg-success-tint" : "border-border bg-muted/40"))}
+    >
       <p className="text-[12.5px] font-semibold text-text-2">
         Para pasar a <b className="text-foreground">«{sig.nombre}»</b>
         {!compacto && sig.criterio ? <span className="font-normal text-text-3"> — {sig.criterio}</span> : null}
